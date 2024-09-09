@@ -49,4 +49,13 @@ app.listen(3010, () => {
   console.log("Server is running on port 3000");
 });
 
+app.get("/", (req, res) => {
+  res.send(`
+      <div>
+        <h1>Notto</h1>
+        <p>Server is running</p>
+      </div>
+    `);
+});
+
 cron.schedule(`*/${interval} * * * * *`, checkTime);
