@@ -3,6 +3,7 @@ const app = express();
 const cron = require("node-cron");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const { default: axios } = require("axios");
+require("dotenv").config();
 
 const { MONGO_URI, ULTRA_MEGA_SUPER_SECRET, API_URL } = process.env;
 
