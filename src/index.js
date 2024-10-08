@@ -30,6 +30,8 @@ const checkTime = async () => {
       const diff = collection[i].frequency - (date % collection[i].frequency);
 
       if (diff < interval * 1000) {
+        console.log(`Game ${collection[i].gameId} is ending`);
+        console.log(Date.now());
         setTimeout(() => {
           try {
             axios.post(`${API_URL}/loto/${collection[i].gameId}/end`, {
@@ -47,7 +49,7 @@ const checkTime = async () => {
 };
 
 app.listen(3010, () => {
-  console.log("Server is running on port 3000");
+  console.log("Server is running on port 3010");
 });
 
 app.get("/", (req, res) => {
