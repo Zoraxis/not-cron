@@ -3,6 +3,7 @@ const app = express();
 const cron = require("node-cron");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const { default: axios } = require("axios");
+const { main: end } = require("./end");
 require("dotenv").config();
 
 const { MONGO_URI, ULTRA_MEGA_SUPER_SECRET, API_URL } = process.env;
@@ -37,6 +38,7 @@ const checkTime = async () => {
             axios.post(`${API_URL}/loto/${collection[i].gameId}/end`, {
               secret: ULTRA_MEGA_SUPER_SECRET,
             });
+            end();
           } catch (error) {
             console.log(error);
           }
@@ -62,3 +64,4 @@ app.get("/", (req, res) => {
 });
 
 cron.schedule(`*/${interval} * * * * *`, checkTime);
+//3600000
