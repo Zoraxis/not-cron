@@ -115,12 +115,12 @@ const checkTime = async () => {
         console.log("==============================");
         console.log(`Game ${collection[i].gameId} is ending`);
         console.log(Date.now());
+        end();
         setTimeout(() => {
           try {
             axios.post(`${API_URL}/loto/${collection[i].gameId}/end`, {
               secret: ULTRA_MEGA_SUPER_SECRET,
             });
-            end();
           } catch (error) {
             console.log(error);
           }
