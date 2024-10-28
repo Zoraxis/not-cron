@@ -7,11 +7,10 @@ import {
   internal,
   beginCell,
 } from "@ton/ton";
+import { contractAddress, mnemonic } from "./const.js";
 
 async function main() {
   // open wallet v4 (notice the correct wallet version here)
-  const mnemonic =
-    "uphold number uncover grape bread beef result garage boil genuine jeans ocean sleep sign beauty pyramid measure olympic move wage garment bench ripple planet";
   const key = await mnemonicToWalletKey(mnemonic.split(" "));
   const wallet = WalletContractV5R1.create({ publicKey: key.publicKey });
 
@@ -47,7 +46,7 @@ async function main() {
       sendMode: SendMode.PAY_GAS_SEPARATELY, // + SendMode.IGNORE_ERRORS,
       messages: [
         internal({
-          to: "EQAu-K55DDzBwi4Kgx0M26_M5S064DdylXIDZv9D1uBQ767b",
+          to: contractAddress,
           value: "0.01", // 0.05 TON
           bounce: true,
           body: payload,

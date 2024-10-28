@@ -11,10 +11,8 @@ import {
   JettonMaster,
   toNano,
 } from "@ton/ton";
+import { contractAddress, mnemonic } from "./const.js";
 
-const recipientAddress = "EQAu-K55DDzBwi4Kgx0M26_M5S064DdylXIDZv9D1uBQ767b";
-const mnemonic =
-  "uphold number uncover grape bread beef result garage boil genuine jeans ocean sleep sign beauty pyramid measure olympic move wage garment bench ripple planet";
 const amount = 1;
 
 const jettonMasterAddress = "kQD0GKBM8ZbryVk2aESmzfU6b9b_8era_IkvBSELujFZPsyy"; // USDT
@@ -53,7 +51,7 @@ async function main() {
     );
     const userJettonAddress = await jettonMaster.getWalletAddress(wallet.address);
 
-    const destinationAddress = Address.parse(recipientAddress);
+    const destinationAddress = Address.parse(contractAddress);
 
     const transferPayload = beginCell()
       .storeUint(0xf8a7ea5, 32) // OP code for Jetton transfer

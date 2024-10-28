@@ -1,10 +1,90 @@
-const express = require("express");
+// const express = require("express");
+// const app = express();
+// const cron = require("node-cron");
+// const { MongoClient, ServerApiVersion } = require("mongodb");
+// const { default: axios } = require("axios");
+// const { main: end } = require("./end");
+// require("dotenv").config();
+//rewrite as imports
+import { MongoClient, ServerApiVersion } from "mongodb";
+import express from "express";
+import cron from "node-cron";
+import axios from "axios";
+import dotenv from "dotenv";
+dotenv.config();
+
+import { mnemonicToWalletKey } from "@ton/crypto";
+import {
+  SendMode,
+  TonClient,
+  WalletContractV5R1,
+  fromNano,
+  internal,
+  beginCell,
+} from "@ton/ton";
+import { contractAddress, mnemonic } from "./const.js";
+
 const app = express();
-const cron = require("node-cron");
-const { MongoClient, ServerApiVersion } = require("mongodb");
-const { default: axios } = require("axios");
-const { main: end } = require("./end");
-require("dotenv").config();
+
+async function end() {
+  // open wallet v4 (notice the correct wallet version here)
+  const key = await mnemonicToWalletKey(mnemonic.split(" "));
+  const wallet = WalletContractV5R1.create({ publicKey: key.publicKey });
+
+  try {
+    console.log("==============================");
+    // initialize ton rpc client on testnet
+    const client = new TonClient({
+      endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
+      apiKey:
+        "94730209e75a9928c1b0b24b62ed308858d6e9b1b4001b795b2364bdbd752455",
+    });
+
+    // make sure wallet is deployed
+    if (!(await client.isContractDeployed(wallet.address))) {
+      return console.log("wallet is not deployed");
+    }
+
+    const balance = await client.getBalance(wallet.address);
+    console.log("balance:", fromNano(balance));
+    // send 0.05 TON to EQA4V9tF4lY2S_J-sEQR7aUj9IwW-Ou2vJQlCn--2DLOLR5e
+    const walletContract = client.open(wallet);
+    const seqno = await walletContract.getSeqno();
+    const payload = beginCell()
+      .storeUint(0x87f29cf5, 32)
+      .storeUint(0, 64)
+      .endCell();
+
+    await walletContract.sendTransfer({
+      seqno,
+      secretKey: key.secretKey,
+      sendMode: SendMode.PAY_GAS_SEPARATELY, // + SendMode.IGNORE_ERRORS,
+      messages: [
+        internal({
+          to: contractAddress,
+          value: "0.01", // 0.05 TON
+          bounce: true,
+          body: payload,
+        }),
+      ],
+    });
+
+    // wait until confirmed
+    let currentSeqno = seqno;
+    while (currentSeqno == seqno) {
+      // console.log("waiting for transaction to confirm...");
+      await sleep(1500);
+      currentSeqno = await walletContract.getSeqno();
+    }
+    console.log("transaction confirmed!");
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 const { MONGO_URI, ULTRA_MEGA_SUPER_SECRET, API_URL } = process.env;
 
@@ -31,6 +111,8 @@ const checkTime = async () => {
       const diff = collection[i].frequency - (date % collection[i].frequency);
 
       if (diff < interval * 1000) {
+        console.log("==============================");
+        console.log("==============================");
         console.log(`Game ${collection[i].gameId} is ending`);
         console.log(Date.now());
         setTimeout(() => {
