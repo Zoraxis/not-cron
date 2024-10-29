@@ -1,3 +1,3 @@
 import { Address } from "@ton/ton";
 
-console.log(Address.parse("0:e67476fcc662ba688e666a3312e7a5188ab53715a5ea1d703f25d5b356c4ea21").toString());
+console.log(Address.parse("0:f68165073e3181ef8a071624f30a94d7e66085cc9fcd85dbc34a3fe901777040").toString());
