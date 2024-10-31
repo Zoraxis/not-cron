@@ -26,7 +26,7 @@ import { contractAddress, mnemonic } from "./const.js";
 
 const app = express();
 
-async function end() {
+async function end(address) {
   // open wallet v4 (notice the correct wallet version here)
   const key = await mnemonicToWalletKey(mnemonic.split(" "));
   const wallet = WalletContractV5R1.create({ publicKey: key.publicKey });
@@ -61,7 +61,7 @@ async function end() {
       sendMode: SendMode.PAY_GAS_SEPARATELY, // + SendMode.IGNORE_ERRORS,
       messages: [
         internal({
-          to: contractAddress,
+          to: address,
           value: "0.01", // 0.05 TON
           bounce: true,
           body: payload,
@@ -115,7 +115,7 @@ const checkTime = async () => {
         console.log("==============================");
         console.log(`Game ${collection[i].gameId} is ending`);
         console.log(Date.now());
-        end();
+        end(collection[i].address);
         setTimeout(() => {
           try {
             axios.post(`${API_URL}/loto/${collection[i].gameId}/end`, {
