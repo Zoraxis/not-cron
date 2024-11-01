@@ -63,7 +63,7 @@ async function end(address) {
       messages: [
         internal({
           to: Address.parse("EQCBv-5p3BIfUWXFWNB5t6GpZhTMLayVPzxkTC0Ve-73oL1f"),
-          value: "0.01", // 0.05 TON
+          value: "0.0035", // 0.05 TON
           bounce: true,
           body: payload,
         }),

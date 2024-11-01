@@ -47,7 +47,7 @@ async function main() {
       messages: [
         internal({
           to: contractAddress,
-          value: "0.01", // 0.05 TON
+          value: "0.003", // 0.05 TON
           bounce: true,
           body: payload,
         }),

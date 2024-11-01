@@ -64,7 +64,7 @@ async function end(address) {
       messages: [
         internal({
           to: Address.parse(address),
-          value: "0.01", // 0.05 TON
+          value: "0.002", // 0.05 TON
           bounce: true,
           body: payload,
         }),

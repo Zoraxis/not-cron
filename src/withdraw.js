@@ -49,7 +49,7 @@ async function main() {
       sendMode: SendMode.PAY_GAS_SEPARATELY, // + SendMode.IGNORE_ERRORS,
       messages: [
         internal({
-          to: "EQAu-K55DDzBwi4Kgx0M26_M5S064DdylXIDZv9D1uBQ767b",
+          to: "kQCBv-5p3BIfUWXFWNB5t6GpZhTMLayVPzxkTC0Ve-73oAbV",
           value: "0.01", // 0.05 TON
           bounce: true,
           body: payload,
