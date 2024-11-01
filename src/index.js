@@ -77,9 +77,9 @@ async function end(address) {
       await sleep(1500);
       currentSeqno = await walletContract.getSeqno();
     }
-    console.log("transaction confirmed!");
+    console.log(`blockchain confirmed! - ${(new Date()).toTimeString()}`);
   } catch (e) {
-    console.log("transaction ERROR!")
+    console.log("blockchain ERROR!");
     // console.log(e);
   }
 }
@@ -116,21 +116,21 @@ const checkTime = async () => {
         console.log("==============================");
         console.log("==============================");
         console.log(`Game ${collection[i].gameId} is ending`);
-        console.log((new Date()).toTimeString());
         setTimeout(async () => {
           try {
             end(collection[i].address);
           } catch (error) {
             console.log(error);
           }
-        }, diff - 1000);
+        }, diff - 1500);
         setTimeout(async () => {
           try {
             const res = await axios.post(`${API_URL}/loto/${collection[i].gameId}/end`, {
               secret: ULTRA_MEGA_SUPER_SECRET,
             });
-          } catch (error) {
-            console.log(error);
+            console.log(`server confirmed ${(new Date()).toTimeString()}`)
+          } catch {
+            console.log("blockchain ERROR!");
           }
         }, diff - 200);
       }
