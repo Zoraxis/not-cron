@@ -46,6 +46,7 @@ async function end(address) {
       return console.log("wallet is not deployed");
     }
 
+    console.log(wallet.address)
     const balance = await client.getBalance(wallet.address);
     console.log("balance:", fromNano(balance));
     // send 0.05 TON to EQA4V9tF4lY2S_J-sEQR7aUj9IwW-Ou2vJQlCn--2DLOLR5e
@@ -62,7 +63,7 @@ async function end(address) {
       sendMode: SendMode.PAY_GAS_SEPARATELY, // + SendMode.IGNORE_ERRORS,
       messages: [
         internal({
-          to: Address.parse("EQCBv-5p3BIfUWXFWNB5t6GpZhTMLayVPzxkTC0Ve-73oL1f"),
+          to: Address.parse(address),
           value: "0.01", // 0.05 TON
           bounce: true,
           body: payload,
@@ -79,7 +80,7 @@ async function end(address) {
     }
     console.log("transaction confirmed!");
   } catch (e) {
-    console.log("transaction ERROR!")
+    console.log("transaction ERROR!");
     // console.log(e);
   }
 }
@@ -102,50 +103,36 @@ const interval = 10;
 
 const checkTime = async () => {
   try {
-    await client.connect();
-    await client.db("notto").command({ ping: 1 });
-
-    const database = client.db("notto");
-    const collection = await database.collection("games").find({}).toArray();
-
-    const date = Date.now();
-    for (let i = 0; i < collection.length; i++) {
-      const diff = collection[i].frequency - (date % collection[i].frequency);
-
-      if (diff < interval * 1000) {
-        console.log("==============================");
-        console.log("==============================");
-        console.log(`Game ${collection[i].gameId} is ending`);
-        console.log(Date.now());
-        end(collection[i].address);
-        setTimeout(() => {
-          try {
-            axios.post(`${API_URL}/loto/${collection[i].gameId}/end`, {
-              secret: ULTRA_MEGA_SUPER_SECRET,
-            });
-          } catch (error) {
-            console.log(error);
-          }
-        }, diff - 200);
-      }
+    console.log("==============================");
+    console.log("==============================");
+    console.log(Date.now());
+    const address = "EQCBv-5p3BIfUWXFWNB5t6GpZhTMLayVPzxkTC0Ve-73oL1f"
+    end(address);
+    try {
+      axios.post(`${API_URL}/loto/${4}/end`, {
+        secret: ULTRA_MEGA_SUPER_SECRET,
+      });
+    } catch (error) {
+      console.log(error);
     }
   } finally {
     await client.close();
   }
 };
 
-app.listen(3010, () => {
-  console.log("Server is running on port 3010");
-});
+checkTime();
+// app.listen(3010, () => {
+//   console.log("Server is running on port 3010");
+// });
 
-app.get("/", (req, res) => {
-  res.send(`
-      <div>
-        <h1>Notto</h1>
-        <p>Server is running</p>
-      </div>
-    `);
-});
+// app.get("/", (req, res) => {
+//   res.send(`
+//       <div>
+//         <h1>Notto</h1>
+//         <p>Server is running</p>
+//       </div>
+//     `);
+// });
 
-cron.schedule(`*/${interval} * * * * *`, checkTime);
-//3600000
+// cron.schedule(`*/${interval} * * * * *`, checkTime);
+// //3600000
