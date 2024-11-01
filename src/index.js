@@ -120,9 +120,10 @@ const checkTime = async () => {
         end(collection[i].address);
         setTimeout(() => {
           try {
-            axios.post(`${API_URL}/loto/${collection[i].gameId}/end`, {
+            const res = axios.post(`${API_URL}/loto/${collection[i].gameId}/end`, {
               secret: ULTRA_MEGA_SUPER_SECRET,
             });
+            console.log(res);
           } catch (error) {
             console.log(error);
           }
