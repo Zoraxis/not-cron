@@ -117,12 +117,12 @@ const checkTime = async () => {
         console.log("==============================");
         console.log(`Game ${collection[i].gameId} is ending`);
         setTimeout(async () => {
-          try {
-            end(collection[i].address);
-          } catch (error) {
-            console.log(error);
-          }
-        }, diff - 1500);
+          end(collection[i].address);
+          // try {
+          // } catch (error) {
+          //   console.log(error);
+          // }
+        }, 0);//diff - 1500);
         setTimeout(async () => {
           try {
             const res = await axios.post(`${API_URL}/loto/${collection[i].gameId}/end`, {
