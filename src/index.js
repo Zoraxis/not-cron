@@ -62,7 +62,7 @@ async function end(address) {
       sendMode: SendMode.PAY_GAS_SEPARATELY, // + SendMode.IGNORE_ERRORS,
       messages: [
         internal({
-          to: Address.parse("EQCBv-5p3BIfUWXFWNB5t6GpZhTMLayVPzxkTC0Ve-73oL1f"),
+          to: Address.parse(address),
           value: "0.0035", // 0.05 TON
           bounce: true,
           body: payload,
