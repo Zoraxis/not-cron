@@ -77,7 +77,7 @@ async function end(address) {
       await sleep(1500);
       currentSeqno = await walletContract.getSeqno();
     }
-    console.log(`blockchain confirmed! - ${(new Date()).toTimeString()}`);
+    console.log(`blockchain confirmed! - ${new Date().toTimeString()}`);
   } catch (e) {
     console.log("blockchain ERROR!");
     // console.log(e);
@@ -116,19 +116,23 @@ const checkTime = async () => {
         console.log("==============================");
         console.log("==============================");
         console.log(`Game ${collection[i].gameId} is ending`);
-        setTimeout(async () => {
-          end(collection[i].address);
-          // try {
-          // } catch (error) {
-          //   console.log(error);
-          // }
-        }, 0);//diff - 1500);
+        console.log(collection[i].address);
+        end(collection[i].address);
+        // setTimeout(async () => {
+        // try {
+        // } catch (error) {
+        //   console.log(error);
+        // }
+        // }, 0);//diff - 1500);
         setTimeout(async () => {
           try {
-            const res = await axios.post(`${API_URL}/loto/${collection[i].gameId}/end`, {
-              secret: ULTRA_MEGA_SUPER_SECRET,
-            });
-            console.log(`server confirmed ${(new Date()).toTimeString()}`)
+            const res = await axios.post(
+              `${API_URL}/loto/${collection[i].gameId}/end`,
+              {
+                secret: ULTRA_MEGA_SUPER_SECRET,
+              }
+            );
+            console.log(`server confirmed ${new Date().toTimeString()}`);
           } catch {
             console.log("blockchain ERROR!");
           }
@@ -155,3 +159,4 @@ app.get("/", (req, res) => {
 
 cron.schedule(`*/${interval} * * * * *`, checkTime);
 //3600000
+//2592000000
