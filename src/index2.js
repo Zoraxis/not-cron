@@ -106,7 +106,7 @@ const checkTime = async () => {
     console.log("==============================");
     console.log("==============================");
     console.log(Date.now());
-    const address = "EQCBv-5p3BIfUWXFWNB5t6GpZhTMLayVPzxkTC0Ve-73oL1f"
+    const address = "EQA8GEfq_nBKLKsUCsJL23P3EW1TZfu6FP2VqQcuL1K_x2EN"
     end(address);
     try {
       axios.post(`${API_URL}/loto/${4}/end`, {
