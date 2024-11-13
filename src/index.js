@@ -113,6 +113,8 @@ const checkTime = async () => {
       const diff = collection[i].frequency - (date % collection[i].frequency);
 
       if (diff < interval * 1000) {
+        if (collection[i]?.players?.lentgh <= 0) continue;
+
         console.log("==============================");
         console.log("==============================");
         console.log(`Game ${collection[i].gameId} is ending`);
