@@ -1,16 +1,10 @@
-// const express = require("express");
-// const app = express();
-// const cron = require("node-cron");
-// const { MongoClient, ServerApiVersion } = require("mongodb");
-// const { default: axios } = require("axios");
-// const { main: end } = require("./end");
-// require("dotenv").config();
-//rewrite as imports
 import { MongoClient, ServerApiVersion } from "mongodb";
 import express from "express";
 import cron from "node-cron";
 import axios from "axios";
 import dotenv from "dotenv";
+import http from "http";
+import { Server } from "socket.io";
 dotenv.config();
 
 import { mnemonicToWalletKey } from "@ton/crypto";
@@ -23,9 +17,11 @@ import {
   beginCell,
   Address,
 } from "@ton/ton";
-import { contractAddress, mnemonic } from "./const.js";
+import { mnemonic } from "./const.js";
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
 
 async function end(address) {
   // open wallet v4 (notice the correct wallet version here)
@@ -113,7 +109,7 @@ const checkTime = async () => {
       const diff = collection[i].frequency - (date % collection[i].frequency);
 
       if (diff < interval * 1000) {
-        if (collection[i]?.players?.lentgh <= 0) continue;
+        if (collection[i]?.players?.length <= 0) continue;
 
         console.log("==============================");
         console.log("==============================");
@@ -145,6 +141,20 @@ const checkTime = async () => {
     await client.close();
   }
 };
+
+io.on("connection", (socket) => {
+  console.log("a user connected");
+
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
+
+  // Define other socket events here
+  socket.on("example_event", (data) => {
+    console.log("example_event received:", data);
+    // Handle the event
+  });
+});
 
 app.listen(3010, () => {
   console.log("Server is running on port 3010");
