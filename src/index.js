@@ -26,9 +26,11 @@ const { MONGO_URI, ULTRA_MEGA_SUPER_SECRET, API_URL, ALLOWED_ORIGIN } =
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
+  path: "/game",
   cors: {
     origin: true,
     methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   },
 });
 
@@ -120,7 +122,7 @@ const checkTime = async () => {
 
       if (diff < interval * 1000) {
         const { gameId, address } = collection[i];
-        console.log("send end", gameId, collection[i]?.players?.length );
+        console.log("send end", gameId, collection[i]?.players?.length);
         io.to(gameId).emit("game.ended", gameId);
         if (collection[i]?.players?.length <= 0) continue;
 
