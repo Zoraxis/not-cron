@@ -17,11 +17,23 @@ import {
   beginCell,
   Address,
 } from "@ton/ton";
+import cors from "cors";
 import { mnemonic } from "./const.js";
+
+const { MONGO_URI, ULTRA_MEGA_SUPER_SECRET, API_URL, ALLOWED_ORIGIN } =
+  process.env;
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: ALLOWED_ORIGIN,
+    methods: ["GET", "POST"],
+  },
+});
+
+app.use(cors());
+app.use(express.json());
 
 async function end(address) {
   // open wallet v4 (notice the correct wallet version here)
@@ -84,8 +96,6 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const { MONGO_URI, ULTRA_MEGA_SUPER_SECRET, API_URL } = process.env;
-
 const client = new MongoClient(MONGO_URI, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -109,27 +119,21 @@ const checkTime = async () => {
       const diff = collection[i].frequency - (date % collection[i].frequency);
 
       if (diff < interval * 1000) {
+        const { gameId, address } = collection[i];
+        console.log("send end", gameId, collection[i]?.players?.length );
+        io.to(gameId).emit("game.ended", gameId);
         if (collection[i]?.players?.length <= 0) continue;
 
         console.log("==============================");
         console.log("==============================");
-        console.log(`Game ${collection[i].gameId} is ending`);
-        console.log(collection[i].address);
-        end(collection[i].address);
-        // setTimeout(async () => {
-        // try {
-        // } catch (error) {
-        //   console.log(error);
-        // }
-        // }, 0);//diff - 1500);
+        console.log(`Game ${gameId} is ending`);
+        console.log(address);
+        end(address);
         setTimeout(async () => {
           try {
-            const res = await axios.post(
-              `${API_URL}/loto/${collection[i].gameId}/end`,
-              {
-                secret: ULTRA_MEGA_SUPER_SECRET,
-              }
-            );
+            const res = await axios.post(`${API_URL}/loto/${gameId}/end`, {
+              secret: ULTRA_MEGA_SUPER_SECRET,
+            });
             console.log(`server confirmed ${new Date().toTimeString()}`);
           } catch {
             console.log("blockchain ERROR!");
@@ -138,26 +142,59 @@ const checkTime = async () => {
       }
     }
   } finally {
-    await client.close();
+    // await client.close();
   }
 };
 
+const gameGetHandler = async (gameId, userId) => {
+  await client.connect();
+  const database = client.db("notto");
+  const games = await database
+    .collection("games")
+    .find({
+      gameId,
+    })
+    .toArray();
+  const game = games[0];
+  // await client.close();
+  return game;
+};
+
 io.on("connection", (socket) => {
+  socket.join(1);
   console.log("a user connected");
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });
 
-  // Define other socket events here
-  socket.on("example_event", (data) => {
-    console.log("example_event received:", data);
-    // Handle the event
+  socket.on("game.join", async (gameId) => {
+    console.log(`user joined game`, gameId);
+    const leaveJoin = async () => {
+      await socket.leave(1);
+      await socket.leave(2);
+      await socket.leave(3);
+      await socket.leave(4);
+      socket.join(gameId);
+    };
+    leaveJoin();
+
+    // const game = await gameGetHandler(gameId);
+    // socket.emit("game", game);
+  });
+
+  socket.on("game.get", async (gameId) => {
+    const game = await gameGetHandler(gameId);
+    socket.emit("game", game);
   });
 });
 
 app.listen(3010, () => {
-  console.log("Server is running on port 3010");
+  console.log("server is running on port 3010");
+});
+
+server.listen(3011, () => {
+  console.log("websocket running at http://localhost:3011");
 });
 
 app.get("/", (req, res) => {
@@ -167,6 +204,16 @@ app.get("/", (req, res) => {
         <p>Server is running</p>
       </div>
     `);
+});
+
+app.post("/loto/join", (req, res) => {
+  const { secret, data } = req.body;
+  if (!secret === ULTRA_MEGA_SUPER_SECRET) res.send("not ok");
+
+  const { gameId, userName } = data;
+
+  console.log(`user joined game FRFR`, userName);
+  io.to(gameId).emit("game.joined", userName);
 });
 
 cron.schedule(`*/${interval} * * * * *`, checkTime);
