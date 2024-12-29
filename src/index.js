@@ -26,7 +26,6 @@ const { MONGO_URI, ULTRA_MEGA_SUPER_SECRET, API_URL, ALLOWED_ORIGIN } =
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  path: "/game",
   cors: {
     origin: true,
     methods: ["GET", "POST"],

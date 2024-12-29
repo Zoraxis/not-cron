@@ -1,8 +1,6 @@
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:3011", {
-  path: "/game",
-});
+const socket = io("http://localhost:3011");
 
 socket.on("connect", () => {
   console.log("Connected to WebSocket server");
