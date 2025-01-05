@@ -122,9 +122,10 @@ const checkTime = async () => {
       if (diff < interval * 1000) {
         const { gameId, address } = collection[i];
         console.log("send end", gameId, collection[i]?.players?.length);
-        io.to(gameId).emit("game.ended", gameId);
+        io.to(gameId).emit("game.current.ended", gameId);
         if (collection[i]?.players?.length <= 0) continue;
 
+        io.emit("game.ended", collection[i]);
         console.log("==============================");
         console.log("==============================");
         console.log(`Game ${gameId} is ending`);
