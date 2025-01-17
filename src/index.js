@@ -125,7 +125,9 @@ const checkTime = async () => {
         io.to(gameId).emit("game.current.ended", gameId);
         if (collection[i]?.players?.length <= 0) continue;
 
-        io.emit("game.ended", collection[i]);
+        setTimeout(() => {
+          io.emit("game.ended", collection[i]);
+        }, 1000 * 60 * 14);
         console.log("==============================");
         console.log("==============================");
         console.log(`Game ${gameId} is ending`);
