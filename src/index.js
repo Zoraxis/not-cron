@@ -166,6 +166,7 @@ const gameGetHandler = async (gameId, userId) => {
 
 io.on("connection", (socket) => {
   socket.join(1);
+  socket.emit("time", Date.now());
   console.log("a user connected");
 
   socket.on("disconnect", () => {
