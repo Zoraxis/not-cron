@@ -121,19 +121,19 @@ const checkTime = async () => {
 
       if (diff < interval * 1000) {
         const { gameId, address } = collection[i];
-        console.log("send end", gameId, collection[i]?.players?.length);
-        io.to(gameId).emit("game.current.ended", gameId);
         if (collection[i]?.players?.length <= 0) continue;
-
-        setTimeout(() => {
-          io.emit("game.ended", collection[i]);
-        }, 1000 * 60 * 14);
         console.log("==============================");
         console.log("==============================");
         console.log(`Game ${gameId} is ending`);
         console.log(address);
         end(address);
         setTimeout(async () => {
+          console.log("send end", gameId, collection[i]?.players?.length);
+          io.to(gameId).emit("game.current.ended", gameId);
+
+          setTimeout(() => {
+            io.emit("game.ended", collection[i]);
+          }, 1000 * 60 * 14);
           try {
             const res = await axios.post(`${API_URL}/loto/${gameId}/end`, {
               secret: ULTRA_MEGA_SUPER_SECRET,
