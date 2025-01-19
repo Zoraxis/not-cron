@@ -133,7 +133,7 @@ const checkTime = async () => {
 
           setTimeout(() => {
             io.emit("game.ended", collection[i]);
-          }, 1000 * 60 * 14);
+          }, 1000 * 14);
           try {
             const res = await axios.post(`${API_URL}/loto/${gameId}/end`, {
               secret: ULTRA_MEGA_SUPER_SECRET,
