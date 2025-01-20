@@ -194,6 +194,10 @@ io.on("connection", (socket) => {
   });
 });
 
+const syncTime = async () => {
+  io.emit("time", Date.now());
+};
+
 app.listen(3010, () => {
   console.log("server is running on port 3010");
 });
@@ -222,5 +226,7 @@ app.post("/loto/join", (req, res) => {
 });
 
 cron.schedule(`*/${interval} * * * * *`, checkTime);
+cron.schedule("*/30 * * * * *", syncTime);
+
 //3600000
 //2592000000
