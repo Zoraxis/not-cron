@@ -226,7 +226,7 @@ app.post("/loto/join", (req, res) => {
 });
 
 cron.schedule(`*/${interval} * * * * *`, checkTime);
-cron.schedule("*/30 * * * * *", syncTime);
+cron.schedule("*/15 * * * * *", syncTime);
 
 //3600000
 //2592000000
