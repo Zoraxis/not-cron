@@ -227,6 +227,11 @@ app.post("/loto/join", (req, res) => {
   io.to(gameId).emit("game.joined", userName);
 });
 
+app.post("/transactions", (req, res) => {
+  console.log("transactions");
+  console.log(req.body);
+});
+
 cron.schedule(`*/${interval} * * * * *`, checkTime);
 cron.schedule("*/15 * * * * *", syncTime);
 
