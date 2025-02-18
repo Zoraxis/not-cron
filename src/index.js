@@ -5,8 +5,6 @@ import axios from "axios";
 import dotenv from "dotenv";
 import http from "http";
 import { Server } from "socket.io";
-dotenv.config();
-
 import { mnemonicToWalletKey } from "@ton/crypto";
 import {
   SendMode,
@@ -19,6 +17,8 @@ import {
 } from "@ton/ton";
 import cors from "cors";
 import { mnemonic } from "./const.js";
+import WebSocket from "ws";
+dotenv.config();
 
 const { MONGO_URI, ULTRA_MEGA_SUPER_SECRET, API_URL, ALLOWED_ORIGIN } =
   process.env;
@@ -141,8 +141,9 @@ const checkTime = async () => {
               secret: ULTRA_MEGA_SUPER_SECRET,
             });
             console.log(`server confirmed ${new Date().toTimeString()}`);
-          } catch {
+          } catch (error) {
             console.log("blockchain ERROR!");
+            console.log(error);
           }
         }, diff - 200);
       }
@@ -231,6 +232,56 @@ app.post("/transactions", (req, res) => {
   console.log("transactions");
   console.log(req.body);
 });
+
+const transactionListener = async () => {
+  const TONAPI_WS_URL = "wss://testnet.tonapi.io/v2/websocket";
+
+  console.log("Connecting to TONAPI WebSocket...");
+  const account1 = await gameGetHandler(1);
+  const WALLET_ADDRESS = Address.parseFriendly(
+    account1.address
+  ).address.toRawString(); // Stelle sicher, dass dies eine gültige Adresse ist
+  console.log(WALLET_ADDRESS);
+
+  // WebSocket-Verbindung herstellen
+  const ws = new WebSocket(TONAPI_WS_URL);
+
+  ws.on("open", () => {
+    console.log("WebSocket verbunden, Abonnement wird gesendet...");
+
+    // Abonnement für Konto-Updates (inkl. Transaktionen)
+    const subscriptionMessage = {
+      jsonrpc: "2.0",
+      id: 1,
+      method: "subscribe_account",
+      params: [WALLET_ADDRESS],
+    };
+
+    ws.send(JSON.stringify(subscriptionMessage));
+  });
+
+  ws.on("message", (data) => {
+    try {
+      const message = JSON.parse(data);
+      console.log("Eingehende Nachricht:", message);
+
+      if (message.result) {
+        console.log("📩 Transaktions-Update:", message.result);
+      }
+    } catch (error) {
+      console.error("Fehler beim Verarbeiten der Nachricht:", error);
+    }
+  });
+
+  ws.on("error", (error) => {
+    console.error("WebSocket-Fehler:", error);
+  });
+
+  ws.on("close", () => {
+    console.log("WebSocket-Verbindung geschlossen");
+  });
+};
+// transactionListener();
 
 cron.schedule(`*/${interval} * * * * *`, checkTime);
 cron.schedule("*/15 * * * * *", syncTime);
