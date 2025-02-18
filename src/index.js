@@ -167,6 +167,55 @@ const gameGetHandler = async (gameId, userId) => {
   return game;
 };
 
+const transactionListener = async (address) => {
+  const TONAPI_WS_URL = "wss://testnet.tonapi.io/v2/websocket";
+
+  console.log("Connecting to TONAPI WebSocket...");
+
+  // WebSocket-Verbindung herstellen
+  const ws = new WebSocket(TONAPI_WS_URL);
+
+  ws.on("open", () => {
+    console.log("WebSocket verbunden, Abonnement wird gesendet...");
+
+    // Abonnement für Konto-Updates (inkl. Transaktionen)
+    const subscriptionMessage = {
+      jsonrpc: "2.0",
+      id: 1,
+      method: "subscribe_account",
+      params: [address],
+    };
+
+    ws.send(JSON.stringify(subscriptionMessage));
+  });
+
+  ws.on("message", (data) => {
+    try {
+      const message = JSON.parse(data);
+      console.log("Eingehende Nachricht:", message);
+
+      if (message.result) {
+        console.log("📩 Transaktions-Update:", message.result);
+      }
+    } catch (error) {
+      console.error("Fehler beim Verarbeiten der Nachricht:", error);
+    }
+  });
+
+  ws.on("error", (error) => {
+    console.error("WebSocket-Fehler:", error);
+  });
+
+  ws.on("close", () => {
+    console.log("WebSocket-Verbindung geschlossen");
+  });
+};
+transactionListener(
+  Address.parseFriendly(
+    "EQAUq6WgTjbXTPVwKa9dz1SKdbKLX3TZxHbl4yk0eP1zrxHm"
+  ).address.toRawString()
+);
+
 io.on("connection", (socket) => {
   socket.join(1);
   socket.emit("time", Date.now());
@@ -189,6 +238,11 @@ io.on("connection", (socket) => {
 
     // const game = await gameGetHandler(gameId);
     // socket.emit("game", game);
+  });
+
+  socket.on("game.pay", async ({ gameId, address }) => {
+    console.log(address);
+    transactionListener(address);
   });
 
   socket.on("game.get", async (gameId) => {
@@ -232,56 +286,6 @@ app.post("/transactions", (req, res) => {
   console.log("transactions");
   console.log(req.body);
 });
-
-const transactionListener = async () => {
-  const TONAPI_WS_URL = "wss://testnet.tonapi.io/v2/websocket";
-
-  console.log("Connecting to TONAPI WebSocket...");
-  const account1 = await gameGetHandler(1);
-  const WALLET_ADDRESS = Address.parseFriendly(
-    account1.address
-  ).address.toRawString(); // Stelle sicher, dass dies eine gültige Adresse ist
-  console.log(WALLET_ADDRESS);
-
-  // WebSocket-Verbindung herstellen
-  const ws = new WebSocket(TONAPI_WS_URL);
-
-  ws.on("open", () => {
-    console.log("WebSocket verbunden, Abonnement wird gesendet...");
-
-    // Abonnement für Konto-Updates (inkl. Transaktionen)
-    const subscriptionMessage = {
-      jsonrpc: "2.0",
-      id: 1,
-      method: "subscribe_account",
-      params: [WALLET_ADDRESS],
-    };
-
-    ws.send(JSON.stringify(subscriptionMessage));
-  });
-
-  ws.on("message", (data) => {
-    try {
-      const message = JSON.parse(data);
-      console.log("Eingehende Nachricht:", message);
-
-      if (message.result) {
-        console.log("📩 Transaktions-Update:", message.result);
-      }
-    } catch (error) {
-      console.error("Fehler beim Verarbeiten der Nachricht:", error);
-    }
-  });
-
-  ws.on("error", (error) => {
-    console.error("WebSocket-Fehler:", error);
-  });
-
-  ws.on("close", () => {
-    console.log("WebSocket-Verbindung geschlossen");
-  });
-};
-// transactionListener();
 
 cron.schedule(`*/${interval} * * * * *`, checkTime);
 cron.schedule("*/15 * * * * *", syncTime);
