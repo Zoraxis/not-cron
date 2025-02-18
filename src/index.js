@@ -184,7 +184,7 @@ ws.on("open", () => {
     const subscriptionMessage = {
       jsonrpc: "2.0",
       id: 1,
-      method: "subscribe_account",
+      method: "subscribe_trace",
       params: [address],
     };
 
