@@ -167,17 +167,19 @@ const gameGetHandler = async (gameId, userId) => {
   return game;
 };
 
-const transactionListener = async (address) => {
-  const TONAPI_WS_URL = "wss://testnet.tonapi.io/v2/websocket";
+let listenToAccount = async (address) => {};
 
-  console.log("Connecting to TONAPI WebSocket...");
+const TONAPI_WS_URL = "wss://testnet.tonapi.io/v2/websocket";
 
-  // WebSocket-Verbindung herstellen
-  const ws = new WebSocket(TONAPI_WS_URL);
+console.log("Connecting to TONAPI WebSocket...");
 
-  ws.on("open", () => {
-    console.log("WebSocket verbunden, Abonnement wird gesendet...");
+// WebSocket-Verbindung herstellen
+const ws = new WebSocket(TONAPI_WS_URL);
 
+ws.on("open", () => {
+  console.log("WebSocket verbunden, Abonnement wird gesendet...");
+
+  listenToAccount = async (address) => {
     // Abonnement für Konto-Updates (inkl. Transaktionen)
     const subscriptionMessage = {
       jsonrpc: "2.0",
@@ -187,34 +189,34 @@ const transactionListener = async (address) => {
     };
 
     ws.send(JSON.stringify(subscriptionMessage));
-  });
+  };
+  listenToAccount(
+    Address.parseFriendly(
+      "EQAUq6WgTjbXTPVwKa9dz1SKdbKLX3TZxHbl4yk0eP1zrxHm"
+    ).address.toRawString()
+  );
+});
 
-  ws.on("message", (data) => {
-    try {
-      const message = JSON.parse(data);
-      console.log("Eingehende Nachricht:", message);
+ws.on("message", (data) => {
+  try {
+    const message = JSON.parse(data);
+    console.log("Eingehende Nachricht:", message);
 
-      if (message.result) {
-        console.log("📩 Transaktions-Update:", message.result);
-      }
-    } catch (error) {
-      console.error("Fehler beim Verarbeiten der Nachricht:", error);
+    if (message.result) {
+      console.log("📩 Transaktions-Update:", message.result);
     }
-  });
+  } catch (error) {
+    console.error("Fehler beim Verarbeiten der Nachricht:", error);
+  }
+});
 
-  ws.on("error", (error) => {
-    console.error("WebSocket-Fehler:", error);
-  });
+ws.on("error", (error) => {
+  console.error("WebSocket-Fehler:", error);
+});
 
-  ws.on("close", () => {
-    console.log("WebSocket-Verbindung geschlossen");
-  });
-};
-transactionListener(
-  Address.parseFriendly(
-    "EQAUq6WgTjbXTPVwKa9dz1SKdbKLX3TZxHbl4yk0eP1zrxHm"
-  ).address.toRawString()
-);
+ws.on("close", () => {
+  console.log("WebSocket-Verbindung geschlossen");
+});
 
 io.on("connection", (socket) => {
   socket.join(1);
@@ -242,7 +244,7 @@ io.on("connection", (socket) => {
 
   socket.on("game.pay", async ({ gameId, address }) => {
     console.log(address);
-    transactionListener(address);
+    listenToAccount(address);
   });
 
   socket.on("game.get", async (gameId) => {
