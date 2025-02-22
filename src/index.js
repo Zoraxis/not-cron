@@ -199,7 +199,7 @@ async function checkTransaction(game, database) {
 
     console.log(`Found ${transactions.length} new transactions`);
     for (let i = 0; i < transactions.length; i++) {
-      console.log("New transaction detected:", transactions[i]);
+      // console.log("New transaction detected:", transactions[i]);
       if (i === transactions.length - 1) {
         const { lt } = transactions[i];
         await games.updateOne({ gameId }, { $set: { lastFetchedLt: lt } });
