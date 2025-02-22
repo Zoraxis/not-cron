@@ -14,14 +14,22 @@ import {
   internal,
   beginCell,
   Address,
+  TonClient4,
+  toNano,
 } from "@ton/ton";
 import cors from "cors";
 import { mnemonic } from "./const.js";
-import WebSocket from "ws";
 dotenv.config();
 
-const { MONGO_URI, ULTRA_MEGA_SUPER_SECRET, API_URL, ALLOWED_ORIGIN } =
-  process.env;
+const {
+  MONGO_URI,
+  ULTRA_MEGA_SUPER_SECRET,
+  API_URL,
+  ALLOWED_ORIGIN,
+  TONCENTER_KEY,
+} = process.env;
+const TONCENTER_API_URL = "https://testnet.toncenter.com/api/v2/";
+const TONAPI_URL = "https://testnet.tonapi.io/v2/";
 
 const app = express();
 const server = http.createServer(app);
@@ -167,56 +175,87 @@ const gameGetHandler = async (gameId, userId) => {
   return game;
 };
 
-let listenToAccount = async (address) => {};
-
-const TONAPI_WS_URL = "wss://testnet.tonapi.io/v2/websocket";
-
-console.log("Connecting to TONAPI WebSocket...");
-
-// WebSocket-Verbindung herstellen
-const ws = new WebSocket(TONAPI_WS_URL);
-
-ws.on("open", () => {
-  console.log("WebSocket verbunden, Abonnement wird gesendet...");
-
-  listenToAccount = async (address) => {
-    // Abonnement für Konto-Updates (inkl. Transaktionen)
-    const subscriptionMessage = {
-      jsonrpc: "2.0",
-      id: 1,
-      method: "subscribe_trace",
-      params: [address],
-    };
-
-    ws.send(JSON.stringify(subscriptionMessage));
-  };
-  listenToAccount(
-    Address.parseFriendly(
-      "EQAUq6WgTjbXTPVwKa9dz1SKdbKLX3TZxHbl4yk0eP1zrxHm"
-    ).address.toRawString()
-  );
-});
-
-ws.on("message", (data) => {
+async function checkTransaction(game, database) {
   try {
-    const message = JSON.parse(data);
-    console.log("Eingehende Nachricht:", message);
+    console.log("Checking transactions...");
+    const { gameId, address, lastFetchedLt } = game;
+    const correctAddress = Address.parseFriendly(address).address.toString();
 
-    if (message.result) {
-      console.log("📩 Transaktions-Update:", message.result);
+    const games = database.collection("games");
+    const transaction_pool = database.collection("transaction_pool");
+
+    // Get transactions for the contract
+    // const txResponse = await axios.get(
+    //   `${TONCENTER_API_URL}getTransactions?api_key=${TONCENTER_KEY}&address=${correctAddress}&lt=${
+    //     lastFetchedLt ?? 0
+    //   }`
+    // );
+    const txResponse = await axios.get(
+      `${TONAPI_URL}blockchain/accounts/${correctAddress}/transactions?after_lt=${
+        lastFetchedLt ?? 31650441000000
+      }`
+    );
+    const transactions = txResponse.data.transactions;
+
+    console.log(`Found ${transactions.length} new transactions`);
+    for (let i = 0; i < transactions.length; i++) {
+      console.log("New transaction detected:", transactions[i]);
+      if (i === transactions.length - 1) {
+        const { lt } = transactions[i];
+        await games.updateOne({ gameId }, { $set: { lastFetchedLt: lt } });
+      }
+
+      // TODO: Check if transaction is incoming
+
+      const awaitingTransactions = await transaction_pool
+        .find({ gameId })
+        .toArray();
+      console.log("checking awaitng");
+      const source = transactions[i].in_msg?.source.address;
+
+      const isAwaiting = awaitingTransactions.find(
+        (at) => at.address == source
+      );
+      console.log(isAwaiting);
+      if (!isAwaiting) {
+        console.log("Transaction is not awaiting");
+        continue;
+      }
+
+      console.log("Transaction is awaiting");
+      const { value } = transactions[i].in_msg;
+      console.log("Transaction value:", value, toNano(game.entry));
+      const isPaid = BigInt(value) >= toNano(game.entry);
+
+      if (!isPaid) continue;
+
+      const res = await axios.post(`${API_URL}/loto/${gameId}/played`, {
+        secret: ULTRA_MEGA_SUPER_SECRET,
+        address: isAwaiting.address,
+      });
+
+      await transaction_pool.deleteOne({
+        gameId,
+        address: isAwaiting.address,
+      });
     }
   } catch (error) {
-    console.error("Fehler beim Verarbeiten der Nachricht:", error);
+    console.error(
+      "Error while checking transactions:",
+      error.response?.data || error.message
+    );
   }
-});
+}
 
-ws.on("error", (error) => {
-  console.error("WebSocket-Fehler:", error);
-});
-
-ws.on("close", () => {
-  console.log("WebSocket-Verbindung geschlossen");
-});
+const checkTransactions = async () => {
+  await client.connect();
+  const database = client.db("notto");
+  const games = database.collection("games");
+  const allGames = await games.find({}).toArray();
+  for (const game of allGames) {
+    checkTransaction(game, database);
+  }
+};
 
 io.on("connection", (socket) => {
   socket.join(1);
@@ -243,13 +282,43 @@ io.on("connection", (socket) => {
   });
 
   socket.on("game.pay", async ({ gameId, address }) => {
-    console.log(address);
-    listenToAccount(address);
+    console.log(`user want pay game`, gameId, address);
+    await client.connect();
+    const database = client.db("notto");
+    const games = database.collection("games");
+    const transaction_pool = database.collection("transaction_pool");
+
+    const isAlreadyInPool = await transaction_pool.findOne({ gameId, address });
+    if (isAlreadyInPool) return;
+
+    const game = await games.findOne({ gameId });
+
+    await transaction_pool.insertOne({ gameId, address, entry: game.entry });
   });
 
   socket.on("game.get", async (gameId) => {
     const game = await gameGetHandler(gameId);
     socket.emit("game", game);
+  });
+
+  socket.on("game.payed", async ({ gameId, address, boc }) => {
+    console.log(`user payed game`, gameId, address);
+    await client.connect();
+    const database = client.db("notto");
+    const games = database.collection("games");
+    const transaction_pool = database.collection("transaction_pool");
+
+    await transaction_pool.deleteOne({
+      gameId,
+      address,
+    });
+
+    const res = await axios.post(`${API_URL}/loto/${gameId}/played`, {
+      secret: ULTRA_MEGA_SUPER_SECRET,
+      address,
+    });
+
+    socket.emit("game.joined", { gameId, address });
   });
 });
 
@@ -291,6 +360,7 @@ app.post("/transactions", (req, res) => {
 
 cron.schedule(`*/${interval} * * * * *`, checkTime);
 cron.schedule("*/15 * * * * *", syncTime);
+cron.schedule("*/5 * * * * *", checkTransactions);
 
 //3600000
 //2592000000
