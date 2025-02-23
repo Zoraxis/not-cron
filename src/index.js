@@ -142,7 +142,7 @@ const checkTime = async () => {
           if (collection[i]?.players?.length >= 1) {
             setTimeout(() => {
               io.emit("game.ended", collection[i]);
-            }, 1000 * 14);
+            }, 1000 * 20);
           }
           try {
             const res = await axios.post(`${API_URL}/loto/${gameId}/end`, {
@@ -350,7 +350,7 @@ app.post("/loto/join", (req, res) => {
   const { gameId, userName } = data;
 
   console.log(`user joined game FRFR`, userName);
-  io.to(gameId).emit("game.joined", userName);
+  io.emit("game.joined", userName);
 });
 
 app.post("/transactions", (req, res) => {
