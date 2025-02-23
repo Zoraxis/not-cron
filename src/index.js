@@ -26,7 +26,7 @@ const {
   ULTRA_MEGA_SUPER_SECRET,
   API_URL,
   ALLOWED_ORIGIN,
-  TONCENTER_KEY,
+  TONAPI_KEY,
 } = process.env;
 const TONCENTER_API_URL = "https://testnet.toncenter.com/api/v2/";
 const TONAPI_URL = "https://testnet.tonapi.io/v2/";
@@ -193,7 +193,12 @@ async function checkTransaction(game, database) {
     const txResponse = await axios.get(
       `${TONAPI_URL}blockchain/accounts/${correctAddress}/transactions?after_lt=${
         lastFetchedLt ?? 31650441000000
-      }`
+      }`,
+      {
+        headers: {
+          Authorization: `Bearer ${TONAPI_KEY}`,
+        },
+      }
     );
     const transactions = txResponse.data.transactions;
 
