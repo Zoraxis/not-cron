@@ -317,6 +317,8 @@ io.on("connection", (socket) => {
       secret: ULTRA_MEGA_SUPER_SECRET,
       address,
     });
+
+    socket.emit("game.joined", { gameId, address });
   });
 });
 
