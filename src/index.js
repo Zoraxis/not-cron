@@ -347,10 +347,10 @@ app.post("/loto/join", (req, res) => {
   const { secret, data } = req.body;
   if (!secret === ULTRA_MEGA_SUPER_SECRET) res.send("not ok");
 
-  const { gameId, userName } = data;
+  const { gameId, address } = data;
 
-  console.log(`user joined game FRFR`, userName);
-  io.emit("game.joined", userName);
+  console.log(`user joined game FRFR`, address);
+  io.emit("game.joined", { gameId, address });
 });
 
 app.post("/transactions", (req, res) => {
