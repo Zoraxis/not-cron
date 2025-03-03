@@ -44,6 +44,8 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
+let games = {};
+
 async function end(address) {
   // open wallet v4 (notice the correct wallet version here)
   const key = await mnemonicToWalletKey(mnemonic.split(" "));
@@ -129,6 +131,9 @@ const checkTime = async () => {
 
       if (diff < interval * 1000) {
         const { gameId, address } = collection[i];
+        games[gameId].players = [];
+        games[gameId].prize = 0;
+        games[gameId].lastUpdated = Date.now();
         if (collection[i]?.players?.length <= 0) continue;
         console.log("==============================");
         console.log("==============================");
@@ -262,6 +267,17 @@ const checkTransactions = async () => {
   }
 };
 
+const setup = async () => {
+  for (let i = 1; i <= 4; i++) {
+    const game = await gameGetHandler(i);
+    game.lastUpdated = Date.now();
+    games[i] = game;
+  }
+  console.log(games);
+};
+
+setup();
+
 io.on("connection", (socket) => {
   socket.join(1);
   socket.emit("time", Date.now());
@@ -302,8 +318,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("game.get", async (gameId) => {
-    const game = await gameGetHandler(gameId);
+    const game = await games[gameId];
     socket.emit("game", game);
+  });
+
+  socket.on("game.fecher", async (gameId) => {
+    socket.emit("game.fecher", games[gameId].lastUpdated);
   });
 
   socket.on("game.payed", async ({ gameId, address, boc }) => {
@@ -322,8 +342,6 @@ io.on("connection", (socket) => {
       secret: ULTRA_MEGA_SUPER_SECRET,
       address,
     });
-
-    socket.emit("game.joined", { gameId, address });
   });
 });
 
@@ -355,6 +373,12 @@ app.post("/loto/join", (req, res) => {
   const { gameId, address } = data;
 
   console.log(`user joined game FRFR`, address);
+  games[gameId].players.push({
+    address,
+    timestamp: Date.now(),
+  });
+  games[gameId].prize += games[gameId].entry;
+  games[gameId].lastUpdated = Date.now();
   io.emit("game.joined", { gameId, address });
 });
 
