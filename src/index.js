@@ -18,7 +18,11 @@ import {
   toNano,
 } from "@ton/ton";
 import cors from "cors";
-import { mnemonic } from "./const.js";
+import { mnemonic } from "../past/const.js";
+import { TimeoutRouteHandle } from "./routes/util/timeout.js";
+import { PayedSocketHandle } from "./socket/game/payed.js";
+import { PaySocketHandle } from "./socket/game/pay.js";
+import { JoinRouteHandle } from "./routes/loto/join.js";
 dotenv.config();
 
 const {
@@ -33,7 +37,7 @@ const TONAPI_URL = "https://testnet.tonapi.io/v2/";
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
+export const io = new Server(server, {
   cors: {
     origin: true,
     methods: ["GET", "POST"],
@@ -44,7 +48,7 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
-let games = {};
+export let games = {};
 
 async function end(address) {
   // open wallet v4 (notice the correct wallet version here)
@@ -107,7 +111,7 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const client = new MongoClient(MONGO_URI, {
+export const client = new MongoClient(MONGO_URI, {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
@@ -287,35 +291,7 @@ io.on("connection", (socket) => {
     console.log("user disconnected");
   });
 
-  socket.on("game.join", async (gameId) => {
-    console.log(`user joined game`, gameId);
-    const leaveJoin = async () => {
-      await socket.leave(1);
-      await socket.leave(2);
-      await socket.leave(3);
-      await socket.leave(4);
-      socket.join(gameId);
-    };
-    leaveJoin();
-
-    // const game = await gameGetHandler(gameId);
-    // socket.emit("game", game);
-  });
-
-  socket.on("game.pay", async ({ gameId, address }) => {
-    console.log(`user want pay game`, gameId, address);
-    await client.connect();
-    const database = client.db("notto");
-    const games = database.collection("games");
-    const transaction_pool = database.collection("transaction_pool");
-
-    const isAlreadyInPool = await transaction_pool.findOne({ gameId, address });
-    if (isAlreadyInPool) return;
-
-    const game = await games.findOne({ gameId });
-
-    await transaction_pool.insertOne({ gameId, address, entry: game.entry });
-  });
+  socket.on("game.pay", PaySocketHandle);
 
   socket.on("game.get", async (gameId) => {
     const game = await games[gameId];
@@ -326,23 +302,7 @@ io.on("connection", (socket) => {
     socket.emit("game.fecher", games[gameId].lastUpdated);
   });
 
-  socket.on("game.payed", async ({ gameId, address, boc }) => {
-    console.log(`user payed game`, gameId, address);
-    await client.connect();
-    const database = client.db("notto");
-    const games = database.collection("games");
-    const transaction_pool = database.collection("transaction_pool");
-
-    await transaction_pool.deleteOne({
-      gameId,
-      address,
-    });
-
-    const res = await axios.post(`${API_URL}/loto/${gameId}/played`, {
-      secret: ULTRA_MEGA_SUPER_SECRET,
-      address,
-    });
-  });
+  socket.on("game.payed", PayedSocketHandle);
 });
 
 const syncTime = async () => {
@@ -366,53 +326,8 @@ app.get("/", (req, res) => {
     `);
 });
 
-app.post("/loto/join", (req, res) => {
-  const { secret, data } = req.body;
-  if (!secret === ULTRA_MEGA_SUPER_SECRET) res.send("not ok");
-
-  const { gameId, address } = data;
-
-  console.log(`user joined game FRFR`, address);
-  games[gameId].players.push({
-    address,
-    timestamp: Date.now(),
-  });
-  games[gameId].prize += games[gameId].entry;
-  games[gameId].lastUpdated = Date.now();
-  io.emit("game.joined", { gameId, address });
-});
-
-app.post("/loto/join", (req, res) => {
-  const { secret, data } = req.body;
-  if (!secret === ULTRA_MEGA_SUPER_SECRET) res.send("not ok");
-
-  const { gameId, address } = data;
-
-  console.log(`user joined game FRFR`, address);
-  games[gameId].players.push({
-    address,
-    timestamp: Date.now(),
-  });
-  games[gameId].prize += games[gameId].entry;
-  games[gameId].lastUpdated = Date.now();
-  io.emit("game.joined", { gameId, address });
-});
-
-app.post("/util/timeout", (req, res) => {
-  const { secret, data } = req.body;
-  if (!secret === ULTRA_MEGA_SUPER_SECRET) res.send("not ok");
-
-  const { url, seconds, payload } = data;
-
-  setTimeout(() => {
-    axios.post(`${API_URL}/${url}`, { ...payload, secret: ULTRA_MEGA_SUPER_SECRET });
-  }, 1000 * 60 * seconds);
-});
-
-app.post("/transactions", (req, res) => {
-  console.log("transactions");
-  console.log(req.body);
-});
+app.post("/loto/join", JoinRouteHandle);
+app.post("/util/timeout", TimeoutRouteHandle);
 
 cron.schedule(`*/${interval} * * * * *`, checkTime);
 cron.schedule("*/15 * * * * *", syncTime);
