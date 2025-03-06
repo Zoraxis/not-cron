@@ -47,7 +47,7 @@ export const end_results = async (game) => {
 
   const { _id, ...gameData } = game;
 
-  console.log(`res ${gameData.players.length} ${gameData.prize} ${gameData.gameId}`);
+  console.log(`res ${gameData.players.length} ${gameData.prize} ${gameData.gameId} ${winnerAddress}`);
 
   archive_games.insertOne({
     ...gameData,

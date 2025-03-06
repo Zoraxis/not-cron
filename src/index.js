@@ -137,7 +137,7 @@ const checkTime = async () => {
 
       if (diff < interval * 1000) {
         const { gameId, address } = collection[i];
-        const gameClone = games[gameId];
+        const gameClone = JSON.parse(JSON.stringify(games[gameId]));
         games[gameId].players = [];
         games[gameId].prize = 0;
         games[gameId].lastUpdated = Date.now();
