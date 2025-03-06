@@ -189,6 +189,7 @@ const gameGetHandler = async (gameId, userId) => {
 async function checkTransaction(game, database) {
   let found = 0;
   let awaiting = 0;
+  let errors = 0;
   try {
     const { gameId, address, lastFetchedLt } = game;
     const correctAddress = Address.parseFriendly(address).address.toString();
@@ -255,13 +256,10 @@ async function checkTransaction(game, database) {
       });
     }
   } catch (error) {
-    console.error(
-      "Error while checking transactions:",
-      error.response?.data || error.message
-    );
+    errors++;
   }
 
-  return `${found}:${awaiting}`;
+  return `${found}:${awaiting}${errors > 0 ? `-${errors}` : ""}`;
 }
 
 const checkTransactions = async () => {
@@ -272,7 +270,7 @@ const checkTransactions = async () => {
   let reportString = "";
   for (const game of allGames) {
     const res = await checkTransaction(game, database);
-    reportString += res;
+    reportString += `${res} `;
   }
   console.log(reportString);
 };
