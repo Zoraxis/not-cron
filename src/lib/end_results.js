@@ -18,10 +18,7 @@ export const end_results = async (game) => {
     .beginParse()
     .loadAddress();
 
-  console.log("Winnner Address", winnerAddress);
-
   const winner = Address.parseFriendly(winnerAddress.toString());
-  console.log(`Raw WInner: ${winner.address.toRawString()}`);
   const winnerUser = await users.findOne({
     address: winner.address.toRawString(),
   });
@@ -49,6 +46,8 @@ export const end_results = async (game) => {
   const { value: fee } = await settings.findOne({ name: "fee" });
 
   const { _id, ...gameData } = game;
+
+  console.log(`res ${gameData.players.length} ${gameData.prize} ${gameData.gameId}`);
 
   archive_games.insertOne({
     ...gameData,
