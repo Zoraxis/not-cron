@@ -48,6 +48,8 @@ export const end_results = async (game) => {
 
   const { value: fee } = await settings.findOne({ name: "fee" });
 
+  console.log("Winner", winner.toString());
+
   archive_games.insertOne({
     ...game,
     endedAt: Date.now(),

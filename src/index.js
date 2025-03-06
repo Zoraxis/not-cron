@@ -137,6 +137,7 @@ const checkTime = async () => {
 
       if (diff < interval * 1000) {
         const { gameId, address } = collection[i];
+        const gameClone = games[gameId];
         games[gameId].players = [];
         games[gameId].prize = 0;
         games[gameId].lastUpdated = Date.now();
@@ -153,17 +154,17 @@ const checkTime = async () => {
 
           if (collection[i]?.players?.length >= 1) {
             setTimeout(() => {
-              end_results(collection[i]);
+              end_results(gameClone);
             }, 1000 * 10);
             setTimeout(() => {
               io.emit("game.ended", collection[i]);
             }, 1000 * 20);
           }
           try {
-            const res = await axios.post(`${API_URL}/loto/${gameId}/end`, {
-              secret: ULTRA_MEGA_SUPER_SECRET,
-            });
-            console.log(`server confirmed ${new Date().toTimeString()}`);
+            // const res = await axios.post(`${API_URL}/loto/${gameId}/end`, {
+            //   secret: ULTRA_MEGA_SUPER_SECRET,
+            // });
+            // console.log(`server confirmed ${new Date().toTimeString()}`);
           } catch (error) {
             console.log("server ERROR!");
             console.log(error);
