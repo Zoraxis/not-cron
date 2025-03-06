@@ -16,9 +16,10 @@ export const end_results = async (game) => {
   const slice = res.stack;
   const winnerAddress = Cell.fromBoc(Buffer.from(slice[0].cell, "hex"))[0]
     .beginParse()
-    .loadAddress();
+    .loadAddress()
+    .toString();
 
-  const winner = Address.parseFriendly(winnerAddress.toString());
+  const winner = Address.parseFriendly(winnerAddress);
   const winnerUser = await users.findOne({
     address: winner.address.toRawString(),
   });
@@ -47,7 +48,9 @@ export const end_results = async (game) => {
 
   const { _id, ...gameData } = game;
 
-  console.log(`res ${gameData.players.length} ${gameData.prize} ${gameData.gameId} ${winnerAddress}`);
+  console.log(
+    `res ${gameData.players.length} ${gameData.prize} ${gameData.gameId} ${winnerAddress}`
+  );
 
   archive_games.insertOne({
     ...gameData,
