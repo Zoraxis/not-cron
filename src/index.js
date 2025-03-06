@@ -187,8 +187,9 @@ const gameGetHandler = async (gameId, userId) => {
 };
 
 async function checkTransaction(game, database) {
+  let found = 0;
+  let awaiting = 0;
   try {
-    console.log("Checking transactions...");
     const { gameId, address, lastFetchedLt } = game;
     const correctAddress = Address.parseFriendly(address).address.toString();
 
@@ -213,7 +214,7 @@ async function checkTransaction(game, database) {
     );
     const transactions = txResponse.data.transactions;
 
-    console.log(`Found ${transactions.length} new transactions`);
+    found = transactions.length;
     for (let i = 0; i < transactions.length; i++) {
       // console.log("New transaction detected:", transactions[i]);
       if (i === transactions.length - 1) {
@@ -226,7 +227,6 @@ async function checkTransaction(game, database) {
       const awaitingTransactions = await transaction_pool
         .find({ gameId })
         .toArray();
-      console.log("checking awaitng");
       const source = transactions[i].in_msg?.source.address;
 
       const isAwaiting = awaitingTransactions.find(
@@ -234,11 +234,10 @@ async function checkTransaction(game, database) {
       );
       console.log(isAwaiting);
       if (!isAwaiting) {
-        console.log("Transaction is not awaiting");
         continue;
       }
 
-      console.log("Transaction is awaiting");
+      awaiting++;
       const { value } = transactions[i].in_msg;
       console.log("Transaction value:", value, toNano(game.entry));
       const isPaid = BigInt(value) >= toNano(game.entry);
@@ -261,6 +260,8 @@ async function checkTransaction(game, database) {
       error.response?.data || error.message
     );
   }
+
+  return `${found}:${awaiting}`;
 }
 
 const checkTransactions = async () => {
@@ -268,9 +269,12 @@ const checkTransactions = async () => {
   const database = client.db("notto");
   const games = database.collection("games");
   const allGames = await games.find({}).toArray();
+  let reportString = "";
   for (const game of allGames) {
-    checkTransaction(game, database);
+    const res = await checkTransaction(game, database);
+    reportString += res;
   }
+  console.log(reportString);
 };
 
 const setup = async () => {
