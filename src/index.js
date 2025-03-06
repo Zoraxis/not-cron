@@ -24,6 +24,7 @@ import { PayedSocketHandle } from "./socket/game/payed.js";
 import { PaySocketHandle } from "./socket/game/pay.js";
 import { JoinRouteHandle } from "./routes/loto/join.js";
 import { end_results } from "./lib/end_results.js";
+import { end_server } from "./lib/end_server.js";
 dotenv.config();
 
 const {
@@ -148,9 +149,12 @@ const checkTime = async () => {
         setTimeout(async () => {
           console.log("send end", gameId, collection[i]?.players?.length);
           io.to(gameId).emit("game.current.ended", gameId);
+          end_server(gameId);
 
           if (collection[i]?.players?.length >= 1) {
-            end_results(collection[i]);
+            setTimeout(() => {
+              end_results(collection[i]);
+            }, 1000 * 10);
             setTimeout(() => {
               io.emit("game.ended", collection[i]);
             }, 1000 * 20);
