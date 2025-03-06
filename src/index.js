@@ -233,7 +233,6 @@ async function checkTransaction(game, database) {
       const isAwaiting = awaitingTransactions.find(
         (at) => at.address == source
       );
-      console.log(isAwaiting);
       if (!isAwaiting) {
         continue;
       }

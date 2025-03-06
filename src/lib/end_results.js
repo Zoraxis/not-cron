@@ -1,5 +1,6 @@
 import { Address, Cell } from "@ton/ton";
 import { client } from "../index.js";
+import { getTonApi } from "../routes/util/getTonApi.js";
 
 export const end_results = async (game) => {
   await client.connect();
