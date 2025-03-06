@@ -150,12 +150,12 @@ const checkTime = async () => {
           io.to(gameId).emit("game.current.ended", gameId);
 
           if (collection[i]?.players?.length >= 1) {
+            end_results(collection[i]);
             setTimeout(() => {
               io.emit("game.ended", collection[i]);
             }, 1000 * 20);
           }
           try {
-            end_results(collection[i]);
             const res = await axios.post(`${API_URL}/loto/${gameId}/end`, {
               secret: ULTRA_MEGA_SUPER_SECRET,
             });
