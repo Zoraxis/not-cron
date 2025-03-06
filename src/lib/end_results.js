@@ -52,11 +52,16 @@ export const end_results = async (game) => {
     `res ${gameData.players.length} ${gameData.prize} ${gameData.gameId} ${winnerAddress}`
   );
 
+const winnerIndex = gameData.players.findIndex(
+    (player) => player.id === winnerUser.id
+);
+
   archive_games.insertOne({
     ...gameData,
     endedAt: Date.now(),
     fee,
     winner: winnerAddress,
+    winnerNumber: winnerIndex ?? 0,
     transaction: hash,
   });
 };
