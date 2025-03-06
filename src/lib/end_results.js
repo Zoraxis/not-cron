@@ -1,5 +1,8 @@
+import { Address, Cell } from "@ton/ton";
+import { client } from "..";
+
 export const end_results = async (game) => {
-  const client = await clientPromise;
+  await client.connect();
   const db = client.db("notto");
 
   const users = await db.collection("users");
