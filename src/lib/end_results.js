@@ -1,5 +1,5 @@
 import { Address, Cell } from "@ton/ton";
-import { client } from "..";
+import { client } from "../index.js";
 
 export const end_results = async (game) => {
   await client.connect();
