@@ -1,9 +1,9 @@
 import axios from "axios";
 import { client } from "../../index.js";
-
-const { ULTRA_MEGA_SUPER_SECRET, API_URL } = process.env;
+dotenv.config();
 
 export const PayedSocketHandle = async ({ gameId, address, boc }) => {
+  const { ULTRA_MEGA_SUPER_SECRET, API_URL } = process.env;
   console.log(`user payed game`, gameId, address);
   await client.connect();
   const database = client.db("notto");

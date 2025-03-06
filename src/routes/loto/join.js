@@ -1,8 +1,8 @@
 import { games, io } from "../../index.js";
-
-const { ULTRA_MEGA_SUPER_SECRET } = process.env;
+dotenv.config();
 
 export const JoinRouteHandle = (req, res) => {
+  const { ULTRA_MEGA_SUPER_SECRET } = process.env;
   const { secret, data } = req.body;
   if (secret !== ULTRA_MEGA_SUPER_SECRET) res.send("not ok");
 

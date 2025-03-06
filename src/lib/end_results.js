@@ -1,5 +1,5 @@
 export const end_results = async (game) => {
-    const client = await clientPromise;
+  const client = await clientPromise;
   const db = client.db("notto");
 
   const users = await db.collection("users");
@@ -42,7 +42,7 @@ export const end_results = async (game) => {
     console.log("Error while getting win transaction", error);
   }
 
-  const { value: fee } = (await settings.findOne({ name: "fee" }));
+  const { value: fee } = await settings.findOne({ name: "fee" });
 
   archive_games.insertOne({
     ...game,
@@ -51,4 +51,4 @@ export const end_results = async (game) => {
     winner: winner.toString(),
     transaction: hash,
   });
-}
+};
