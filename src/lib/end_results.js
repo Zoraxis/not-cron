@@ -48,13 +48,13 @@ export const end_results = async (game) => {
 
   const { value: fee } = await settings.findOne({ name: "fee" });
 
-  console.log("Winner", winner.toString());
+  const { _id, ...gameData } = game;
 
   archive_games.insertOne({
-    ...game,
+    ...gameData,
     endedAt: Date.now(),
     fee,
-    winner: winner.toString(),
+    winner: winnerAddress,
     transaction: hash,
   });
 };
