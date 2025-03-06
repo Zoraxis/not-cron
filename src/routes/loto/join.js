@@ -1,4 +1,5 @@
 import { games, io } from "../../index.js";
+import dotenv from "dotenv";
 dotenv.config();
 
 export const JoinRouteHandle = (req, res) => {

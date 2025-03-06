@@ -1,5 +1,6 @@
 import axios from "axios";
 import { client } from "../../index.js";
+import dotenv from "dotenv";
 dotenv.config();
 
 export const PayedSocketHandle = async ({ gameId, address, boc }) => {
