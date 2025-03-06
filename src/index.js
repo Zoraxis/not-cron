@@ -23,6 +23,7 @@ import { TimeoutRouteHandle } from "./routes/util/timeout.js";
 import { PayedSocketHandle } from "./socket/game/payed.js";
 import { PaySocketHandle } from "./socket/game/pay.js";
 import { JoinRouteHandle } from "./routes/loto/join.js";
+import { end_results } from "./lib/end_results.js";
 dotenv.config();
 
 const {
@@ -154,12 +155,13 @@ const checkTime = async () => {
             }, 1000 * 20);
           }
           try {
+            end_results(collection[i]);
             const res = await axios.post(`${API_URL}/loto/${gameId}/end`, {
               secret: ULTRA_MEGA_SUPER_SECRET,
             });
             console.log(`server confirmed ${new Date().toTimeString()}`);
           } catch (error) {
-            console.log("blockchain ERROR!");
+            console.log("server ERROR!");
             console.log(error);
           }
         }, diff - 200);
