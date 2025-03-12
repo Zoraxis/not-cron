@@ -1,6 +1,7 @@
 import { Address, Cell } from "@ton/ton";
 import { client } from "../index.js";
 import { getTonApi } from "../routes/util/getTonApi.js";
+import { hideAddress } from "../utils/hideAddress.js";
 
 export const end_results = async (game) => {
   await client.connect();
@@ -52,10 +53,8 @@ export const end_results = async (game) => {
     `res ${gameData.players.length} ${gameData.prize} ${gameData.gameId} ${winnerAddress}`
   );
 
-  console.log(winnerUser);
-  console.log(gameData.players);
   const winnerIndex = gameData.players.findIndex(
-    (player) => player.id === winnerUser._id
+    (player) => player.address === hideAddress(winnerAddress)
   );
 
   archive_games.insertOne({
