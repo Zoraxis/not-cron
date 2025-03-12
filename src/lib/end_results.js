@@ -37,15 +37,13 @@ export const end_results = async (game) => {
           console.log(transaction?.in_msg?.decoded_body?.sender);
         }
       }
-      console.log(data);
       console.log(game.address);
 
       const outTrasaction = data.transactions.find(
         (transaction) =>
           transaction?.in_msg?.decoded_body?.sender &&
-          Address.parseRaw(transaction?.in_msg?.decoded_body?.sender).equals(
-            Address.parse(game.address)
-          )
+          transaction?.in_msg?.decoded_body?.sender ==
+            Address.parseFriendly(game.address).address.toRawString()
       );
       hash = outTrasaction?.hash ?? "0";
     }
@@ -61,15 +59,16 @@ export const end_results = async (game) => {
     `res ${gameData.players.length} ${gameData.prize} ${gameData.gameId} ${winnerAddress}`
   );
 
+  console.log(winnerUser);
   console.log(hideAddress(winnerAddress));
   console.log(gameData.players);
 
   const winnerIndexById = gameData.players.findIndex(
-    (player) => player.id === winnerUser._id
+    (player) => player.id == winnerUser._id
   );
 
   const winnerIndexByAddress = gameData.players.findIndex(
-    (player) => player.address === hideAddress(winnerAddress)
+    (player) => player.address == hideAddress(winnerAddress)
   );
 
   const winnerIndex =
