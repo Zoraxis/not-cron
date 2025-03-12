@@ -52,6 +52,8 @@ export const end_results = async (game) => {
     `res ${gameData.players.length} ${gameData.prize} ${gameData.gameId} ${winnerAddress}`
   );
 
+  console.log(winnerUser);
+  console.log(gameData.players);
   const winnerIndex = gameData.players.findIndex(
     (player) => player.id === winnerUser._id
   );

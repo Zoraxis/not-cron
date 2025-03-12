@@ -276,7 +276,7 @@ const checkTransactions = async () => {
     const res = await checkTransaction(game, database);
     reportString += `${res} `;
   }
-  console.log(reportString);
+  // console.log(reportString);
 };
 
 const setup = async () => {
