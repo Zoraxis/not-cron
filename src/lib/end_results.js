@@ -31,6 +31,12 @@ export const end_results = async (game) => {
       const data = await getTonApi(
         `blockchain/accounts/${winnerAddress}/transactions`
       );
+      for (const transaction of data.transactions) {
+        console.log(transaction?.in_msg);
+        if (transaction?.in_msg?.decoded_body?.sender) {
+          console.log(transaction?.in_msg?.decoded_body?.sender);
+        }
+      }
       console.log(data);
       console.log(game.address);
 
@@ -58,9 +64,16 @@ export const end_results = async (game) => {
   console.log(hideAddress(winnerAddress));
   console.log(gameData.players);
 
-  const winnerIndex = gameData.players.findIndex(
+  const winnerIndexById = gameData.players.findIndex(
+    (player) => player.id === winnerUser._id
+  );
+
+  const winnerIndexByAddress = gameData.players.findIndex(
     (player) => player.address === hideAddress(winnerAddress)
   );
+
+  const winnerIndex =
+    winnerIndexByAddress !== -1 ? winnerIndexByAddress : winnerIndexById;
 
   archive_games.insertOne({
     ...gameData,
