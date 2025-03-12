@@ -37,7 +37,7 @@ export const end_results = async (game) => {
           console.log(transaction?.in_msg?.decoded_body?.sender);
         }
       }
-      console.log(game.address);
+      console.log(Address.parseFriendly(game.address).address.toRawString());
 
       const outTrasaction = data.transactions.find(
         (transaction) =>
@@ -45,6 +45,7 @@ export const end_results = async (game) => {
           transaction?.in_msg?.decoded_body?.sender ==
             Address.parseFriendly(game.address).address.toRawString()
       );
+      console.log(outTrasaction);
       hash = outTrasaction?.hash ?? "0";
     }
   } catch (error) {
@@ -64,7 +65,9 @@ export const end_results = async (game) => {
   console.log(gameData.players);
 
   const winnerIndexById = gameData.players.findIndex(
-    (player) => player.id == winnerUser._id
+    (player) =>
+      player.id ==
+      winnerUser._id.toString().replace("new ObjectId('", "").replace("')", "")
   );
 
   const winnerIndexByAddress = gameData.players.findIndex(

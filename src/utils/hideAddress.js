@@ -1,3 +1,5 @@
+import { Address } from "@ton/ton";
+
 export const hideAddress = (address, num = 7) => {
   try {
     const friendlyAddress = Address.parse(address).toString();
