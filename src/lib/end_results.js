@@ -31,6 +31,8 @@ export const end_results = async (game) => {
       const data = await getTonApi(
         `blockchain/accounts/${winnerAddress}/transactions`
       );
+      console.log(data);
+      console.log(game.address);
 
       const outTrasaction = data.transactions.find(
         (transaction) =>
