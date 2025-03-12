@@ -37,6 +37,8 @@ export const end_results = async (game) => {
           console.log(transaction?.in_msg?.decoded_body?.sender);
         }
       }
+      console.log(game.address);
+      console.log(Address.parseFriendly(game.address));
       console.log(Address.parseFriendly(game.address).address.toRawString());
 
       const outTrasaction = data.transactions.find(
