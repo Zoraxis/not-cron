@@ -208,6 +208,13 @@ async function checkTransaction(game, database) {
     //     lastFetchedLt ?? 0
     //   }`
     // );
+
+    const awaitingTransactions = await transaction_pool
+      .find({ gameId })
+      .toArray();
+
+    if (awaitingTransactions.length == 0) return "-:-";
+
     const txResponse = await axios.get(
       `${TONAPI_URL}blockchain/accounts/${correctAddress}/transactions?after_lt=${
         lastFetchedLt ?? 31650441000000
@@ -229,10 +236,6 @@ async function checkTransaction(game, database) {
       }
 
       // TODO: Check if transaction is incoming
-
-      const awaitingTransactions = await transaction_pool
-        .find({ gameId })
-        .toArray();
       const source = transactions[i].in_msg?.source.address;
 
       const isAwaiting = awaitingTransactions.find(
