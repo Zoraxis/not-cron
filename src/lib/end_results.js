@@ -31,7 +31,7 @@ export const end_results = async (game) => {
     if ((game?.players?.length ?? 0) != 0) {
       const lt = await getLogicTime(game.address);
       const data = await getTonApi(
-        `blockchain/accounts/${winnerAddress}/transactions?after_lt=${lt}`
+        `blockchain/accounts/${winnerAddress}/transactions?after_lt=${lt - 1000}`
       );
       for (const transaction of data.transactions) {
         console.log(transaction?.in_msg);
