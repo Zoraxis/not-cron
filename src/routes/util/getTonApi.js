@@ -21,6 +21,6 @@ const makeRequest = async (url) => {
     return data;
   } catch (error) {
     console.error("TON API request failed:", error);
-    throw error;
+    return null;
   }
 };

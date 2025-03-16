@@ -31,7 +31,8 @@ export const end_results = async (game) => {
       const accData = await getTonApi(
         `blockchain/accounts/${winnerAddress}`
       );
-      const lastTransLt = accData.last_transaction_lt
+      const lastTransLt = accData.last_transaction_lt;
+      await new Promise((resolve) => setTimeout(resolve, 750));
       const data = await getTonApi(
         `blockchain/accounts/${winnerAddress}/transactions?after_lt=${lastTransLt - 10}`
       );
