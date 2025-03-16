@@ -72,6 +72,9 @@ export const end_results = async (game) => {
 
   let winnerIndexById = -1;
   try {
+    console.log(
+      winnerUser._id.toString().replace("new ObjectId('", "").replace("')", "")
+    );
     winnerIndexById = gameData.players.findIndex(
       (player) =>
         player.id ==
@@ -82,7 +85,7 @@ export const end_results = async (game) => {
     );
   } catch {}
 
-  let winnerIndexByAddress = 0;
+  let winnerIndexByAddress = -1;
   try {
     winnerIndexByAddress = gameData.players.findIndex(
       (player) => player.address == hideAddress(winnerAddress)
