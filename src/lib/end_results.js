@@ -2,6 +2,7 @@ import { Address, Cell } from "@ton/ton";
 import { client } from "../index.js";
 import { getTonApi } from "../routes/util/getTonApi.js";
 import { hideAddress } from "../utils/hideAddress.js";
+import { getLogicTime } from "./get_lt.js";
 
 export const end_results = async (game) => {
   await client.connect();
@@ -28,8 +29,9 @@ export const end_results = async (game) => {
   let hash = "0";
   try {
     if ((game?.players?.length ?? 0) != 0) {
+      const lt = await getLogicTime(game.address);
       const data = await getTonApi(
-        `blockchain/accounts/${winnerAddress}/transactions`
+        `blockchain/accounts/${winnerAddress}/transactions?after_lt=${lt}`
       );
       for (const transaction of data.transactions) {
         console.log(transaction?.in_msg);
@@ -37,15 +39,15 @@ export const end_results = async (game) => {
           console.log(transaction?.in_msg?.decoded_body?.sender);
         }
       }
-      console.log(game.address);
-      console.log(Address.parseFriendly(game.address));
-      console.log(Address.parseFriendly(game.address).address.toRawString());
+
+      const gameRawAddress = Address.parseFriendly(
+        game.address
+      ).address.toRawString();
 
       const outTrasaction = data.transactions.find(
         (transaction) =>
           transaction?.in_msg?.decoded_body?.sender &&
-          transaction?.in_msg?.decoded_body?.sender ==
-            Address.parseFriendly(game.address).address.toRawString()
+          transaction?.in_msg?.decoded_body?.sender == gameRawAddress
       );
       console.log(outTrasaction);
       hash = outTrasaction?.hash ?? "0";
