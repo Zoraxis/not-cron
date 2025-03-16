@@ -25,6 +25,7 @@ import { PaySocketHandle } from "./socket/game/pay.js";
 import { JoinRouteHandle } from "./routes/loto/join.js";
 import { end_results } from "./lib/end_results.js";
 import { end_server } from "./lib/end_server.js";
+import { sleep } from "./utils/await.js";
 dotenv.config();
 
 const {
@@ -51,6 +52,7 @@ app.use(cors());
 app.use(express.json());
 
 export let games = {};
+export let history = [0, 0, 0, 0];
 
 async function end(address) {
   // open wallet v4 (notice the correct wallet version here)
@@ -109,10 +111,6 @@ async function end(address) {
   }
 }
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 export const client = new MongoClient(MONGO_URI, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -155,7 +153,7 @@ const checkTime = async () => {
           if (collection[i]?.players?.length >= 1) {
             setTimeout(() => {
               end_results(gameClone);
-            }, 1000 * 60 * 1);
+            }, 1000 * 10);
             setTimeout(() => {
               io.emit("game.ended", collection[i]);
             }, 1000 * 15);
@@ -311,6 +309,10 @@ io.on("connection", (socket) => {
 
   socket.on("game.fecher", async (gameId) => {
     socket.emit("game.fecher", games[gameId].lastUpdated);
+  });
+
+  socket.on("history.fecher", async (gameId) => {
+    socket.emit("history.fecher", history[gameId]);
   });
 
   socket.on("game.payed", PayedSocketHandle);

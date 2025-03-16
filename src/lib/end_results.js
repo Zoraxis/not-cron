@@ -2,6 +2,7 @@ import { Address, Cell } from "@ton/ton";
 import { client } from "../index.js";
 import { getTonApi } from "../routes/util/getTonApi.js";
 import { hideAddress } from "../utils/hideAddress.js";
+import { sleep } from "../utils/await.js";
 
 export const end_results = async (game) => {
   await client.connect();
@@ -25,57 +26,12 @@ export const end_results = async (game) => {
     address: winner.address.toRawString(),
   });
 
-  let hash = "0";
-  try {
-    if ((game?.players?.length ?? 0) != 0) {
-      const accData = await getTonApi(
-        `blockchain/accounts/${winnerAddress}`
-      );
-      const lastTransLt = accData.last_transaction_lt;
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const data = await getTonApi(
-        `blockchain/accounts/${winnerAddress}/transactions?after_lt=${lastTransLt - 100}`
-      );
-      for (const transaction of data.transactions) {
-        console.log(transaction);
-        if (transaction?.in_msg?.decoded_body?.text) {
-          console.log(transaction?.in_msg?.decoded_body?.text);
-        }
-      }
-
-      const gameRawAddress = Address.parseFriendly(
-        game.address
-      ).address.toRawString();
-
-      const outTrasaction = data.transactions.find(
-        (transaction) =>
-          transaction?.in_msg?.decoded_body?.text &&
-          transaction?.in_msg?.decoded_body?.text == "Notto: You won the game!"
-      );
-      console.log(outTrasaction);
-      hash = outTrasaction?.hash ?? "0";
-    }
-  } catch (error) {
-    console.log("Error while getting win transaction", error);
-  }
-
   const { value: fee } = await settings.findOne({ name: "fee" });
 
   const { _id, ...gameData } = game;
-
-  // console.log(
-  //   `res ${gameData.players.length} ${gameData.prize} ${gameData.gameId} ${winnerAddress}`
-  // );
-
-  // console.log(winnerUser);
-  // console.log(hideAddress(winnerAddress));
-  // console.log(gameData.players);
-
   let winnerIndexById = -1;
+
   try {
-    // console.log(
-    //   winnerUser._id.toString().replace("new ObjectId('", "").replace("')", "")
-    // );
     winnerIndexById = gameData.players.findIndex(
       (player) =>
         player.id ==
@@ -96,12 +52,57 @@ export const end_results = async (game) => {
   const winnerIndex =
     winnerIndexByAddress !== -1 ? winnerIndexByAddress : winnerIndexById;
 
+  const endetAt = Date.now();
+
   archive_games.insertOne({
     ...gameData,
-    endedAt: Date.now(),
+    endedAt: endetAt,
     fee,
     winner: winnerAddress,
     winnerNumber: winnerIndex ?? 0,
-    transaction: hash,
+    transaction: 0,
   });
+  history[gameRawAddress.gameId] = Date.now();
+
+  await sleep(1000 * 60);
+
+  let hash = "0";
+  try {
+    if ((game?.players?.length ?? 0) == 0) return;
+
+    const accData = await getTonApi(`blockchain/accounts/${winnerAddress}`);
+    const lastTransLt = accData.last_transaction_lt;
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const data = await getTonApi(
+      `blockchain/accounts/${winnerAddress}/transactions?after_lt=${
+        lastTransLt - 300
+      }`
+    );
+    for (const transaction of data.transactions) {
+      console.log(transaction);
+      if (transaction?.in_msg?.decoded_body?.text) {
+        console.log(transaction?.in_msg?.decoded_body?.text);
+      }
+    }
+
+    const gameRawAddress = Address.parseFriendly(
+      game.address
+    ).address.toRawString();
+
+    const outTrasaction = data.transactions.find(
+      (transaction) =>
+        transaction?.in_msg?.decoded_body?.text &&
+        transaction?.in_msg?.decoded_body?.text == "Notto: You won the game!"
+    );
+    console.log(outTrasaction);
+    hash = outTrasaction?.hash ?? "0";
+
+    archive_games.updateOne(
+      { address: game.address, endedAt: endetAt },
+      { $set: { transaction: hash } }
+    );
+    history[gameRawAddress.gameId] = Date.now();
+  } catch (error) {
+    console.log("Error while getting win transaction", error);
+  }
 };
