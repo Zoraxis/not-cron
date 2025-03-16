@@ -2,7 +2,6 @@ import { Address, Cell } from "@ton/ton";
 import { client } from "../index.js";
 import { getTonApi } from "../routes/util/getTonApi.js";
 import { hideAddress } from "../utils/hideAddress.js";
-import { getLogicTime } from "./get_lt.js";
 
 export const end_results = async (game) => {
   await client.connect();
