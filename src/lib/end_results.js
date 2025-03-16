@@ -31,14 +31,11 @@ export const end_results = async (game) => {
     if ((game?.players?.length ?? 0) != 0) {
       const lt = await getLogicTime(game.address);
       const data = await getTonApi(
-        `blockchain/accounts/${winnerAddress}/transactions?after_lt=${
-          lt - 1000
-        }`
+        `blockchain/accounts/${winnerAddress}/transactions?after_lt=${lt - 1}`
       );
       for (const transaction of data.transactions) {
-        console.log(transaction?.in_msg);
-        if (transaction?.in_msg?.decoded_body?.sender) {
-          console.log(transaction?.in_msg?.decoded_body?.sender);
+        if (transaction?.in_msg?.decoded_body?.text) {
+          console.log(transaction?.in_msg?.decoded_body?.text);
         }
       }
 
@@ -48,8 +45,8 @@ export const end_results = async (game) => {
 
       const outTrasaction = data.transactions.find(
         (transaction) =>
-          transaction?.in_msg?.decoded_body?.sender &&
-          transaction?.in_msg?.decoded_body?.sender == gameRawAddress
+          transaction?.in_msg?.decoded_body?.text &&
+          transaction?.in_msg?.decoded_body?.text == "Notto: Your won the game!"
       );
       console.log(outTrasaction);
       hash = outTrasaction?.hash ?? "0";
