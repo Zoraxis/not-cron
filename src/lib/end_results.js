@@ -68,7 +68,7 @@ export const end_results = async (game) => {
   });
   history[gameRawAddress.gameId] = Date.now();
 
-  await sleep(1000 * 60);
+  await sleep(1000 * 60 * 1.5);
 
   let hash = "0";
   try {
@@ -76,10 +76,12 @@ export const end_results = async (game) => {
 
     const accData = await getTonApi(`blockchain/accounts/${winnerAddress}`);
     const lastTransLt = accData.last_transaction_lt;
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    await sleep(1000 * 1);
+
     const data = await getTonApi(
       `blockchain/accounts/${winnerAddress}/transactions?after_lt=${
-        lastTransLt - 300
+        lastTransLt - 500
       }`
     );
     for (const transaction of data.transactions) {
