@@ -1,5 +1,4 @@
-import { Address } from "@ton/ton";
-import { TonClient4 } from "@ton/transport";
+import { Address, TonClient4 } from "@ton/ton";
 
 export async function getLogicTime(address) {
   const client = new TonClient4({
