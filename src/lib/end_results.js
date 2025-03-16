@@ -1,5 +1,5 @@
 import { Address, Cell } from "@ton/ton";
-import { client } from "../index.js";
+import { client, history } from "../index.js";
 import { getTonApi } from "../routes/util/getTonApi.js";
 import { hideAddress } from "../utils/hideAddress.js";
 import { sleep } from "../utils/await.js";
