@@ -155,7 +155,7 @@ const checkTime = async () => {
           if (collection[i]?.players?.length >= 1) {
             setTimeout(() => {
               end_results(gameClone);
-            }, 1000 * 10);
+            }, 1000 * 30);
             setTimeout(() => {
               io.emit("game.ended", collection[i]);
             }, 1000 * 20);
