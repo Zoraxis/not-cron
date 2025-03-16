@@ -5,6 +5,10 @@ import { hideAddress } from "../utils/hideAddress.js";
 import { sleep } from "../utils/await.js";
 
 export const end_results = async (game) => {
+  const gameRawAddress = Address.parseFriendly(
+    game.address
+  ).address.toRawString();
+
   await client.connect();
   const db = client.db("notto");
 
@@ -84,10 +88,6 @@ export const end_results = async (game) => {
         console.log(transaction?.in_msg?.decoded_body?.text);
       }
     }
-
-    const gameRawAddress = Address.parseFriendly(
-      game.address
-    ).address.toRawString();
 
     const outTrasaction = data.transactions.find(
       (transaction) =>
