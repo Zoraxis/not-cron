@@ -31,7 +31,9 @@ export const end_results = async (game) => {
     if ((game?.players?.length ?? 0) != 0) {
       const lt = await getLogicTime(game.address);
       const data = await getTonApi(
-        `blockchain/accounts/${winnerAddress}/transactions?after_lt=${lt - 1000}`
+        `blockchain/accounts/${winnerAddress}/transactions?after_lt=${
+          lt - 1000
+        }`
       );
       for (const transaction of data.transactions) {
         console.log(transaction?.in_msg);
@@ -68,15 +70,24 @@ export const end_results = async (game) => {
   console.log(hideAddress(winnerAddress));
   console.log(gameData.players);
 
-  const winnerIndexById = gameData.players.findIndex(
-    (player) =>
-      player.id ==
-      winnerUser._id.toString().replace("new ObjectId('", "").replace("')", "")
-  );
+  let winnerIndexById = -1;
+  try {
+    winnerIndexById = gameData.players.findIndex(
+      (player) =>
+        player.id ==
+        winnerUser._id
+          .toString()
+          .replace("new ObjectId('", "")
+          .replace("')", "")
+    );
+  } catch {}
 
-  const winnerIndexByAddress = gameData.players.findIndex(
-    (player) => player.address == hideAddress(winnerAddress)
-  );
+  let winnerIndexByAddress = 0;
+  try {
+    winnerIndexByAddress = gameData.players.findIndex(
+      (player) => player.address == hideAddress(winnerAddress)
+    );
+  } catch {}
 
   const winnerIndex =
     winnerIndexByAddress !== -1 ? winnerIndexByAddress : winnerIndexById;
