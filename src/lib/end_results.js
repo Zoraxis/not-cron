@@ -29,9 +29,12 @@ export const end_results = async (game) => {
   let hash = "0";
   try {
     if ((game?.players?.length ?? 0) != 0) {
-      const lt = await getLogicTime(game.address);
+      const accData = await getTonApi(
+        `blockchain/accounts/${winnerAddress}`
+      );
+      const lastTransLt = accData.last_transaction_lt
       const data = await getTonApi(
-        `blockchain/accounts/${winnerAddress}/transactions?after_lt=${lt - 100}`
+        `blockchain/accounts/${winnerAddress}/transactions?after_lt=${lastTransLt - 10}`
       );
       for (const transaction of data.transactions) {
         if (transaction?.in_msg?.decoded_body?.text) {
