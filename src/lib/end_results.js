@@ -34,9 +34,10 @@ export const end_results = async (game) => {
       const lastTransLt = accData.last_transaction_lt;
       await new Promise((resolve) => setTimeout(resolve, 1000));
       const data = await getTonApi(
-        `blockchain/accounts/${winnerAddress}/transactions?after_lt=${lastTransLt - 10}`
+        `blockchain/accounts/${winnerAddress}/transactions?after_lt=${lastTransLt - 100}`
       );
       for (const transaction of data.transactions) {
+        console.log(transaction);
         if (transaction?.in_msg?.decoded_body?.text) {
           console.log(transaction?.in_msg?.decoded_body?.text);
         }
@@ -62,19 +63,19 @@ export const end_results = async (game) => {
 
   const { _id, ...gameData } = game;
 
-  console.log(
-    `res ${gameData.players.length} ${gameData.prize} ${gameData.gameId} ${winnerAddress}`
-  );
+  // console.log(
+  //   `res ${gameData.players.length} ${gameData.prize} ${gameData.gameId} ${winnerAddress}`
+  // );
 
-  console.log(winnerUser);
-  console.log(hideAddress(winnerAddress));
-  console.log(gameData.players);
+  // console.log(winnerUser);
+  // console.log(hideAddress(winnerAddress));
+  // console.log(gameData.players);
 
   let winnerIndexById = -1;
   try {
-    console.log(
-      winnerUser._id.toString().replace("new ObjectId('", "").replace("')", "")
-    );
+    // console.log(
+    //   winnerUser._id.toString().replace("new ObjectId('", "").replace("')", "")
+    // );
     winnerIndexById = gameData.players.findIndex(
       (player) =>
         player.id ==
