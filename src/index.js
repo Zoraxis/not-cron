@@ -150,7 +150,7 @@ const checkTime = async () => {
           io.to(gameId).emit("game.current.ended", gameId);
           end_server(gameId);
 
-          if (collection[i]?.players?.length >= 1) {
+          if (collection[i]?.players?.length > 1) {
             setTimeout(() => {
               end_results(gameClone);
             }, 1000 * 10);
