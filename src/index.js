@@ -312,7 +312,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("history.fetcher", async (gameId) => {
-    socket.emit("history.fecther", history[gameId]);
+    socket.emit("history.fetcher", history[gameId]);
   });
 
   socket.on("game.payed", PayedSocketHandle);
