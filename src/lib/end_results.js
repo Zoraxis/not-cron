@@ -81,7 +81,7 @@ export const end_results = async (game) => {
 
     const data = await getTonApi(
       `blockchain/accounts/${winnerAddress}/transactions?after_lt=${
-        lastTransLt - 750
+        lastTransLt - 500
       }`
     );
     for (const transaction of data.transactions) {
