@@ -66,7 +66,7 @@ export const end_results = async (game) => {
     winnerNumber: winnerIndex ?? 0,
     transaction: 0,
   });
-  history[gameRawAddress.gameId] = Date.now();
+  history[game.gameId] = Date.now();
 
   await sleep(1000 * 60 * 1.6);
 
@@ -103,7 +103,7 @@ export const end_results = async (game) => {
       { address: game.address, endedAt: endetAt },
       { $set: { transaction: hash } }
     );
-    history[gameRawAddress.gameId] = Date.now();
+    history[game.gameId] = Date.now();
   } catch (error) {
     console.log("Error while getting win transaction", error);
   }

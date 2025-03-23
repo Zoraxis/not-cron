@@ -312,7 +312,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("history.fetcher", async (gameId) => {
-    console.log(history[gameId], gameId);
     socket.emit("history.fecther", history[gameId]);
   });
 
