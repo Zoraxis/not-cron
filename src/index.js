@@ -154,7 +154,9 @@ const checkTime = async () => {
             setTimeout(() => {
               end_results(gameClone);
             }, 1000 * 10);
-            io.emit("game.ended", collection[i]);
+            setTimeout(() => {
+              io.emit("game.ended", collection[i]);
+            }, 1000 * 1.5);
           }
           try {
             // const res = await axios.post(`${API_URL}/loto/${gameId}/end`, {
@@ -305,12 +307,12 @@ io.on("connection", (socket) => {
     socket.emit("game", game);
   });
 
-  socket.on("game.fetcher", async (gameId) => {
-    socket.emit("game.fetcher", games[gameId].lastUpdated);
+  socket.on("game.fecher", async (gameId) => {
+    socket.emit("game.fecher", games[gameId].lastUpdated);
   });
 
-  socket.on("history.fetcher", async (gameId) => {
-    socket.emit("history.fetcher", history[gameId]);
+  socket.on("history.fecher", async (gameId) => {
+    socket.emit("history.fecher", history[gameId]);
   });
 
   socket.on("game.payed", PayedSocketHandle);
