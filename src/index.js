@@ -156,7 +156,7 @@ const checkTime = async () => {
             }, 1000 * 10);
             setTimeout(() => {
               io.emit("game.ended", collection[i]);
-            }, 1000 * 1.5);
+            }, 1000 * 15);
           }
           try {
             // const res = await axios.post(`${API_URL}/loto/${gameId}/end`, {
