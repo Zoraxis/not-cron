@@ -305,12 +305,12 @@ io.on("connection", (socket) => {
     socket.emit("game", game);
   });
 
-  socket.on("game.fecher", async (gameId) => {
-    socket.emit("game.fecher", games[gameId].lastUpdated);
+  socket.on("game.fetcher", async (gameId) => {
+    socket.emit("game.fetcher", games[gameId].lastUpdated);
   });
 
-  socket.on("history.fecher", async (gameId) => {
-    socket.emit("history.fecher", history[gameId]);
+  socket.on("history.fetcher", async (gameId) => {
+    socket.emit("history.fetcher", history[gameId]);
   });
 
   socket.on("game.payed", PayedSocketHandle);
