@@ -10,7 +10,7 @@ export const PayedSocketHandle = async ({ gameId, address, boc }) => {
   const database = client.db("notto");
   const games = database.collection("games");
   const transaction_pool = database.collection("transaction_pool");
-  const users = await db.collection("users");
+  const users = database.collection("users");
 
   await transaction_pool.deleteOne({
     gameId,
