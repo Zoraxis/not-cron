@@ -12,5 +12,5 @@ export const JoinedHandle = ({ gameId, address }) => {
   });
   games[gameId].prize += games[gameId].entry;
   games[gameId].lastUpdated = Date.now();
-  io.emit("game.joined", { gameId, hiddenAddress });
+  io.emit("game.joined", { gameId, address: hiddenAddress });
 };
