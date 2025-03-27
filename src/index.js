@@ -250,12 +250,7 @@ async function checkTransaction(game, database) {
 
       if (!isPaid) continue;
 
-      const res = await axios.post(`${API_URL}/loto/${gameId}/played`, {
-        secret: ULTRA_MEGA_SUPER_SECRET,
-        address: isAwaiting.address,
-      });
-
-      await transaction_pool.deleteOne({
+      PayedSocketHandle({
         gameId,
         address: isAwaiting.address,
       });
