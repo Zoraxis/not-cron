@@ -313,10 +313,6 @@ io.on("connection", (socket) => {
   socket.on("game.payed", PayedSocketHandle);
 });
 
-const syncTime = async () => {
-  io.emit("time", Date.now());
-};
-
 app.listen(3010, () => {
   console.log("server is running on port 3010");
 });
@@ -334,11 +330,9 @@ app.get("/", (req, res) => {
     `);
 });
 
-app.post("/loto/join", JoinRouteHandle);
 app.post("/util/timeout", TimeoutRouteHandle);
 
 cron.schedule(`*/${interval} * * * * *`, checkTime);
-cron.schedule("*/15 * * * * *", syncTime);
 cron.schedule("*/5 * * * * *", checkTransactions);
 
 //3600000
