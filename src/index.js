@@ -22,7 +22,6 @@ import { mnemonic } from "../past/const.js";
 import { TimeoutRouteHandle } from "./routes/util/timeout.js";
 import { PayedSocketHandle } from "./socket/game/payed.js";
 import { PaySocketHandle } from "./socket/game/pay.js";
-import { JoinRouteHandle } from "./routes/loto/join.js";
 import { end_results } from "./lib/end_results.js";
 import { end_server } from "./lib/end_server.js";
 import { sleep } from "./utils/await.js";
