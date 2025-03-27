@@ -1,7 +1,7 @@
 import axios from "axios";
 import { client } from "../../index.js";
 import dotenv from "dotenv";
-import { JoinRouteHandle } from "../../routes/loto/join.js";
+import { JoinedHandle } from "../../routes/loto/join.js";
 dotenv.config();
 
 export const PayedSocketHandle = async ({ gameId, address, boc }) => {
@@ -32,7 +32,7 @@ export const PayedSocketHandle = async ({ gameId, address, boc }) => {
   );
   if (!!joined) return;
 
-  JoinRouteHandle();
+  JoinedHandle({ gameId, address });
 
   const player = {
     id: user._id,
