@@ -36,7 +36,7 @@ export const end_results = async (game) => {
   let winnerIndexById = -1;
 
   console.log(gameData.players);
-  console.log(winnerUser)
+  console.log(winnerUser);
   try {
     winnerIndexById = gameData.players.findIndex(
       (player) =>
@@ -57,6 +57,8 @@ export const end_results = async (game) => {
 
   const winnerIndex =
     winnerIndexByAddress !== -1 ? winnerIndexByAddress : winnerIndexById;
+  if (winnerIndex === -1) console.log("Winner not found in players list");
+  else console.log(`Winner found at index ${winnerIndex}`);
 
   const endetAt = Date.now();
 
@@ -98,7 +100,9 @@ export const end_results = async (game) => {
         transaction?.in_msg?.decoded_body?.text &&
         transaction?.in_msg?.decoded_body?.text == "Notto: You won the game!"
     );
-    console.log(outTrasaction);
+    if (!!outTrasaction.hash)
+      console.log("Transaction found", outTrasaction.hash);
+    else console.log("Transaction NOT found");
     hash = outTrasaction?.hash ?? "0";
 
     archive_games.updateOne(
