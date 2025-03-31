@@ -51,13 +51,13 @@ export const end_results = async (game) => {
   let winnerIndexByAddress = -1;
   try {
     winnerIndexByAddress = gameData.players.findIndex(
-      (player) => player.address == hideAddress(winnerAddress)
+      (player) => hideAddress(player.address) == hideAddress(winnerAddress)
     );
   } catch {}
 
   const winnerIndex =
     winnerIndexByAddress !== -1 ? winnerIndexByAddress : winnerIndexById;
-  if (winnerIndex === -1) console.log("Winner not found in players list");
+  if (winnerIndex === -1) console.log("Winner NOT found in players list");
   else console.log(`Winner found at index ${winnerIndex}`);
 
   const endetAt = Date.now();

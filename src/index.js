@@ -52,6 +52,7 @@ app.use(express.json());
 
 export let games = {};
 export let history = [0, 0, 0, 0];
+export let connectedUsers = [];
 
 async function end(address) {
   // open wallet v4 (notice the correct wallet version here)
@@ -286,12 +287,14 @@ const setup = async () => {
 setup();
 
 io.on("connection", (socket) => {
+  connectedUsers.push({ id: socket.id, gameId: 1 });
   socket.join(1);
   socket.emit("time", Date.now());
   console.log("a user connected");
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
+    connectedUsers = connectedUsers.filter((user) => user.id !== socket.id);
   });
 
   socket.on("game.pay", PaySocketHandle);
