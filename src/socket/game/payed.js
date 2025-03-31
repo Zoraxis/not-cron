@@ -6,7 +6,7 @@ import { hideAddress } from "../../utils/hideAddress.js";
 dotenv.config();
 
 export const PayedSocketHandle = async ({ gameId, address, boc }) => {
-  console.log(`GAME.PAID > G:${gameId} P:${games[gameId].length} + 1 A:${hideAddress(address)}`);
+  // console.log(`GAME.PAID > G:${gameId} P:${games[gameId].length} + 1 A:${hideAddress(address)}`);
   await client.connect();
   const database = client.db("notto");
   const gamesCollection = database.collection("games");
