@@ -88,12 +88,12 @@ export const end_results = async (game) => {
         lastTransLt - 500
       }`
     );
-    for (const transaction of data.transactions) {
-      console.log(transaction);
-      if (transaction?.in_msg?.decoded_body?.text) {
-        console.log(transaction?.in_msg?.decoded_body?.text);
-      }
-    }
+    // for (const transaction of data.transactions) {
+    //   console.log(transaction);
+    //   if (transaction?.in_msg?.decoded_body?.text) {
+    //     console.log(transaction?.in_msg?.decoded_body?.text);
+    //   }
+    // }
 
     const outTrasaction = data.transactions.find(
       (transaction) =>
