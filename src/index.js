@@ -52,7 +52,7 @@ app.use(express.json());
 
 export let games = {};
 export let history = [0, 0, 0, 0];
-export let connectedUsers = [];
+export let connectedUsers = {};
 
 async function end(address) {
   // open wallet v4 (notice the correct wallet version here)
@@ -146,7 +146,9 @@ const checkTime = async () => {
         console.log(address);
         end(address);
         setTimeout(async () => {
-          console.log(`END.EMIT > G:${gameId} P:${collection[i]?.players?.length}`);
+          console.log(
+            `END.EMIT > G:${gameId} P:${collection[i]?.players?.length}`
+          );
           io.to(gameId).emit("game.current.ended", gameId);
           end_server(gameId);
 
@@ -278,14 +280,27 @@ const setup = async () => {
 setup();
 
 io.on("connection", (socket) => {
-  socket.join(1);
   socket.emit("time", Date.now());
-  console.log(`SOCKET.U > [${connectedUsers.length}] + 1`);
-  connectedUsers.push({ id: socket.id, gameId: 1 });
+  console.log(`SOCKET.U > [${Object.keys(connectedUsers).length}] + 1`);
+  connectedUsers[socket.id] = { gameId: 1 };
 
   socket.on("disconnect", () => {
-    console.log(`SOCKET.U > [${connectedUsers.length}] - 1`);
-    connectedUsers = connectedUsers.filter((user) => user.id !== socket.id);
+    console.log(`SOCKET.U > [${Object.keys(connectedUsers).length}] - 1`);
+    delete connectedUsers[socket.id];
+  });
+
+  socket.on("connection.address", (address) => {
+    if (!address) return;
+    socket.to(address).emit("wallet.disconnect", address);
+    // connectedUsers[socket.id].address = address;
+
+    const rooms = Array.from(socket.rooms);
+    rooms.forEach((room) => {
+      if (room !== socket.id) {
+        socket.leave(room);
+      }
+    });
+    socket.join(address);
   });
 
   socket.on("game.pay", PaySocketHandle);
