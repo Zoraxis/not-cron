@@ -74,7 +74,7 @@ async function end(address) {
     }
 
     const balance = await client.getBalance(wallet.address);
-    console.log("balance:", fromNano(balance));
+    console.log("BALANCE:", fromNano(balance));
     // send 0.05 TON to EQA4V9tF4lY2S_J-sEQR7aUj9IwW-Ou2vJQlCn--2DLOLR5e
     const walletContract = client.open(wallet);
     const seqno = await walletContract.getSeqno();
@@ -104,9 +104,9 @@ async function end(address) {
       await sleep(1500);
       currentSeqno = await walletContract.getSeqno();
     }
-    console.log(`blockchain POS - ${new Date().toTimeString()}`);
+    console.log(`END.PAY.BLOCKCHAIN POS - D:${new Date().toTimeString()}`);
   } catch (e) {
-    console.log("blockchain NEG");
+    console.log("END.PAY.BLOCKCHAIN > NEG");
     // console.log(e);
   }
 }
@@ -142,11 +142,11 @@ const checkTime = async () => {
         if (collection[i]?.players?.length <= 0) continue;
         console.log("==============================");
         console.log("==============================");
-        console.log(`G ${gameId} ENDING`);
+        console.log(`GAME.ENDING > G:${gameId}`);
         console.log(address);
         end(address);
         setTimeout(async () => {
-          console.log(`END EMIT ${gameId} ${collection[i]?.players?.length}`);
+          console.log(`END.EMIT > G:${gameId} P:${collection[i]?.players?.length}`);
           io.to(gameId).emit("game.current.ended", gameId);
           end_server(gameId);
 
@@ -280,11 +280,11 @@ setup();
 io.on("connection", (socket) => {
   socket.join(1);
   socket.emit("time", Date.now());
-  console.log(`a user connected | ${connectedUsers.length} + 1`);
+  console.log(`SOCKET.U > [${connectedUsers.length}] + 1`);
   connectedUsers.push({ id: socket.id, gameId: 1 });
 
   socket.on("disconnect", () => {
-    console.log(`user disconnected | ${connectedUsers.length} - 1`);
+    console.log(`SOCKET.U > [${connectedUsers.length}] - 1`);
     connectedUsers = connectedUsers.filter((user) => user.id !== socket.id);
   });
 

@@ -2,10 +2,11 @@ import axios from "axios";
 import { client, games } from "../../index.js";
 import dotenv from "dotenv";
 import { JoinedHandle } from "../../routes/loto/join.js";
+import { hideAddress } from "../../utils/hideAddress.js";
 dotenv.config();
 
 export const PayedSocketHandle = async ({ gameId, address, boc }) => {
-  console.log(`game paid | G:${gameId} ${games[gameId].length} + 1 `, address);
+  console.log(`GAME.PAID > G:${gameId} P:${games[gameId].length} + 1 A:${hideAddress(address)}`);
   await client.connect();
   const database = client.db("notto");
   const gamesCollection = database.collection("games");
@@ -64,8 +65,8 @@ export const PayedSocketHandle = async ({ gameId, address, boc }) => {
   );
 
   if (result.modifiedCount === 1) {
-    console.log("User added to game");
+    console.log("GAME.JOIN > POS");
   } else {
-    console.log("User not added to game");
+    console.log("GAME.JOIN > NEG");
   }
 };
