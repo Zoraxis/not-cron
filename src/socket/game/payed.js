@@ -1,14 +1,14 @@
 import axios from "axios";
-import { client } from "../../index.js";
+import { client, games } from "../../index.js";
 import dotenv from "dotenv";
 import { JoinedHandle } from "../../routes/loto/join.js";
 dotenv.config();
 
 export const PayedSocketHandle = async ({ gameId, address, boc }) => {
-  console.log(`user payed game`, gameId, address);
+  console.log(`game paid | G:${gameId} ${games[gameId].length} + 1 `, address);
   await client.connect();
   const database = client.db("notto");
-  const games = database.collection("games");
+  const gamesCollection = database.collection("games");
   const transaction_pool = database.collection("transaction_pool");
   const users = database.collection("users");
 
@@ -22,7 +22,7 @@ export const PayedSocketHandle = async ({ gameId, address, boc }) => {
   });
   if (!user) return;
 
-  const game = await games.findOne({
+  const game = await gamesCollection.findOne({
     gameId: parseInt(gameId),
   });
   if (!game) return;
@@ -53,7 +53,7 @@ export const PayedSocketHandle = async ({ gameId, address, boc }) => {
     }
   );
 
-  const result = await games.updateOne(
+  const result = await gamesCollection.updateOne(
     { gameId: parseInt(gameId) },
     {
       $push: {

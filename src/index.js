@@ -104,9 +104,9 @@ async function end(address) {
       await sleep(1500);
       currentSeqno = await walletContract.getSeqno();
     }
-    console.log(`blockchain confirmed! - ${new Date().toTimeString()}`);
+    console.log(`blockchain POS - ${new Date().toTimeString()}`);
   } catch (e) {
-    console.log("blockchain ERROR!");
+    console.log("blockchain NEG");
     // console.log(e);
   }
 }
@@ -142,11 +142,11 @@ const checkTime = async () => {
         if (collection[i]?.players?.length <= 0) continue;
         console.log("==============================");
         console.log("==============================");
-        console.log(`Game ${gameId} is ending`);
+        console.log(`G ${gameId} ENDING`);
         console.log(address);
         end(address);
         setTimeout(async () => {
-          console.log("send end", gameId, collection[i]?.players?.length);
+          console.log(`END EMIT ${gameId} ${collection[i]?.players?.length}`);
           io.to(gameId).emit("game.current.ended", gameId);
           end_server(gameId);
 
@@ -158,20 +158,11 @@ const checkTime = async () => {
               io.emit("game.ended", collection[i]);
             }, 1000 * 15);
           }
-          try {
-            // const res = await axios.post(`${API_URL}/loto/${gameId}/end`, {
-            //   secret: ULTRA_MEGA_SUPER_SECRET,
-            // });
-            // console.log(`server confirmed ${new Date().toTimeString()}`);
-          } catch (error) {
-            console.log("server ERROR!");
-            console.log(error);
-          }
         }, diff - 200);
       }
     }
-  } finally {
-    // await client.close();
+  } catch (error) {
+    console.log("Error:", error);
   }
 };
 
@@ -287,13 +278,13 @@ const setup = async () => {
 setup();
 
 io.on("connection", (socket) => {
-  connectedUsers.push({ id: socket.id, gameId: 1 });
   socket.join(1);
   socket.emit("time", Date.now());
-  console.log("a user connected");
+  console.log(`a user connected | ${connectedUsers.length} + 1`);
+  connectedUsers.push({ id: socket.id, gameId: 1 });
 
   socket.on("disconnect", () => {
-    console.log("user disconnected");
+    console.log(`user disconnected | ${connectedUsers.length} - 1`);
     connectedUsers = connectedUsers.filter((user) => user.id !== socket.id);
   });
 
