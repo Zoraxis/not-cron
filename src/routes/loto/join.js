@@ -4,7 +4,7 @@ import { hideAddress } from "../../utils/hideAddress.js";
 dotenv.config();
 
 export const JoinedHandle = ({ gameId, address }) => {
-  console.log(`GAME.JOIN > G:${gameId} P:[${games[gameId].length}] + 1 A${address}`);
+  console.log(`GAME.JOIN > G:${gameId} P:[${games[gameId].players.length}] + 1 A${address}`);
   const hiddenAddress = hideAddress(address);
   games[gameId].players.push({
     address,
