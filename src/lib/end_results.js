@@ -55,8 +55,8 @@ export const end_results = async (game) => {
 
   const winnerIndex =
     winnerIndexByAddress !== -1 ? winnerIndexByAddress : winnerIndexById;
-  if (winnerIndex === -1) console.log("Winner NOT found in players list");
-  else console.log(`Winner found at index ${winnerIndex}`);
+  if (winnerIndex === -1) console.log("WINNER.NUMBER > [NOT FOUND]");
+  else console.log(`WINNER.NUMBER > ${winnerIndex}`);
 
   const endetAt = Date.now();
 
@@ -99,8 +99,8 @@ export const end_results = async (game) => {
         transaction?.in_msg?.decoded_body?.text == "Notto: You won the game!"
     );
     if (!!outTrasaction.hash)
-      console.log("Transaction found", outTrasaction.hash);
-    else console.log("Transaction NOT found");
+      console.log("WINNER.TRANSACTION >", outTrasaction.hash);
+    else console.log("WINNER.TRANSACTION > [NOT FOUND]");
     hash = outTrasaction?.hash ?? "0";
 
     archive_games.updateOne(
@@ -109,6 +109,6 @@ export const end_results = async (game) => {
     );
     history[game.gameId] = Date.now();
   } catch (error) {
-    console.log("Error while getting win transaction", error);
+    console.log("WINNER.TRANSACTION !ERORR! >", error);
   }
 };
