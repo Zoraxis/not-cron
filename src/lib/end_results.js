@@ -100,7 +100,7 @@ export const end_results = async (game) => {
         transaction?.in_msg?.decoded_body?.text &&
         transaction?.in_msg?.decoded_body?.text == "Notto: You won the game!"
     );
-    if (!!outTrasaction.hash)
+    if (!!outTrasaction?.hash)
       console.log("WINNER.TRANSACTION >", outTrasaction.hash);
     else console.log("WINNER.TRANSACTION > [NOT FOUND]");
     hash = outTrasaction?.hash ?? "0";
