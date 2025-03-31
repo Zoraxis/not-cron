@@ -46,7 +46,9 @@ export const end_results = async (game) => {
     );
   } catch {}
 
-  console.log(winnerAddress, gameData.players. winnerUser);
+  console.log(winnerAddress);
+  console.log(gameData.players);
+  console.log(winnerUser);
 
   let winnerIndexByAddress = -1;
   try {
