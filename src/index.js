@@ -279,28 +279,34 @@ const setup = async () => {
 
 setup();
 
+const getConnectedUserId = (socketId) =>
+  Object.keys(connectedUsers).indexOf(socketId);
+
 io.on("connection", (socket) => {
   socket.emit("time", Date.now());
   console.log(`SOCKET.U > [${Object.keys(connectedUsers).length}] + 1`);
-  connectedUsers[socket.id] = { gameId: 1 };
+  connectedUsers[socket.id] = { gameId: 1, address: "" };
+  socket.join(Object.keys(connectedUsers).length);
 
   socket.on("disconnect", () => {
     console.log(`SOCKET.U > [${Object.keys(connectedUsers).length}] - 1`);
     delete connectedUsers[socket.id];
   });
 
-  socket.on("connection.address", (address) => {
-    if (!address) return;
-    socket.to(address).emit("wallet.disconnect", address);
-    // connectedUsers[socket.id].address = address;
-
-    const rooms = Array.from(socket.rooms);
-    rooms.forEach((room) => {
-      if (room !== socket.id) {
-        socket.leave(room);
-      }
-    });
-    socket.join(address);
+  socket.on("connection.address", async (address) => {
+    const userIndex = getConnectedUserId(socket.id);
+    if (!address) {
+      return;
+    }
+    const sameAddressIndex = Object.values(connectedUsers).findIndex(
+      (user) => user.address == address
+    );
+    if (sameAddressIndex !== -1) {
+      const foundSocketId = Object.keys(connectedUsers)[sameAddressIndex];
+      io.to(foundSocketId).emit("wallet.disconnect", address);
+      connectedUsers[foundSocketId].address = "";
+    }
+    connectedUsers[socket.id].address = address;
   });
 
   socket.on("game.pay", PaySocketHandle);
