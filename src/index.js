@@ -294,17 +294,17 @@ io.on("connection", (socket) => {
   });
 
   socket.on("connection.address", async (address) => {
-    const userIndex = getConnectedUserId(socket.id);
-    if (!address) {
-      return;
-    }
+    if (!address) return;
     const sameAddressIndex = Object.values(connectedUsers).findIndex(
       (user) => user.address == address
     );
     if (sameAddressIndex !== -1) {
+      console.log(sameAddressIndex);
       const foundSocketId = Object.keys(connectedUsers)[sameAddressIndex];
-      io.to(foundSocketId).emit("wallet.disconnect", address);
-      connectedUsers[foundSocketId].address = "";
+      if (foundSocketId != socket.id) {
+        io.to(foundSocketId).emit("wallet.disconnect", address);
+        connectedUsers[foundSocketId].address = "";
+      }
     }
     connectedUsers[socket.id].address = address;
   });
