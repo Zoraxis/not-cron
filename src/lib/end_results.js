@@ -13,15 +13,11 @@ export const getWinnerId = async (game, winnerAddress) => {
   const db = client.db("notto");
 
   const users = await db.collection("users");
-  const settings = await db.collection("settings");
-  const archive_games = await db.collection("archive_games");
 
   const winner = Address.parseFriendly(winnerAddress);
   const winnerUser = await users.findOne({
     address: winner.address.toRawString(),
   });
-
-  const { value: fee } = await settings.findOne({ name: "fee" });
 
   const { _id, ...gameData } = game;
   let winnerIndexById = -1;
@@ -98,7 +94,6 @@ export const end_results = async (game) => {
   await client.connect();
   const db = client.db("notto");
 
-  const users = await db.collection("users");
   const settings = await db.collection("settings");
   const archive_games = await db.collection("archive_games");
 
@@ -119,6 +114,8 @@ export const end_results = async (game) => {
     await sleep(1000 * 5);
     winnerIndex = await getWinnerId(game, winnerAddress);
   }
+
+  const { value: fee } = await settings.findOne({ name: "fee" });
 
   archive_games.insertOne({
     ...gameData,
