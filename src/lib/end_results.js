@@ -97,7 +97,7 @@ export const end_results = async (game) => {
 
   await client.connect();
   const db = client.db("notto");
-  
+
   const users = await db.collection("users");
   const settings = await db.collection("settings");
   const archive_games = await db.collection("archive_games");
@@ -110,6 +110,8 @@ export const end_results = async (game) => {
     .beginParse()
     .loadAddress()
     .toString();
+
+  const { _id, ...gameData } = game;
 
   let winnerIndex = await getWinnerId(game, winnerAddress);
   while (winnerIndex == -1) {
