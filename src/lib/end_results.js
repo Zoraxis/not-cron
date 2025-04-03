@@ -89,7 +89,7 @@ export const getTransactionHash = async (game, winnerAddress) => {
 };
 
 export const end_results = async (game) => {
-  const endetAt = Date.now();
+  const endetAt = Date.now() - 9000;
 
   await client.connect();
   const db = client.db("notto");
