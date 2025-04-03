@@ -95,6 +95,13 @@ export const getTransactionHash = async (game, winnerAddress) => {
 export const end_results = async (game) => {
   const endetAt = Date.now();
 
+  await client.connect();
+  const db = client.db("notto");
+  
+  const users = await db.collection("users");
+  const settings = await db.collection("settings");
+  const archive_games = await db.collection("archive_games");
+
   const res = await getTonApi(
     `blockchain/accounts/${game.address}/methods/get_last_winner`
   );
