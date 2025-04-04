@@ -33,7 +33,7 @@ export const getWinnerId = async (game, winnerAddress) => {
     );
   } catch {}
 
-  console.log(winnerAddress);
+  console.log(winner.address.toRawString());
   console.log(gameData.players);
   console.log(winnerUser);
 
