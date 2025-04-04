@@ -271,6 +271,7 @@ const checkTransactions = async () => {
 
 const checkWalletDisconnect = async () => {
   for (const socketId of walletsToDisconnect) {
+    console.log("WALLET.DISCONNECTING... > ", socketId);
     io.to(socketId).emit("wallet.disconnect");
   }
 };
