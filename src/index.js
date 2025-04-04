@@ -53,6 +53,7 @@ app.use(express.json());
 export let games = {};
 export let history = [0, 0, 0, 0];
 export let connectedUsers = {};
+export let walletsToDisconnect = [];
 
 async function end(address) {
   // open wallet v4 (notice the correct wallet version here)
@@ -268,6 +269,12 @@ const checkTransactions = async () => {
   // console.log(reportString);
 };
 
+const checkWalletDisconnect = async () => {
+  for (const socketId of walletsToDisconnect) {
+    io.to(socketId).emit("wallet.disconnect");
+  }
+};
+
 const setup = async () => {
   for (let i = 1; i <= 4; i++) {
     const game = await gameGetHandler(i);
@@ -302,11 +309,14 @@ io.on("connection", (socket) => {
       console.log(sameAddressIndex);
       const foundSocketId = Object.keys(connectedUsers)[sameAddressIndex];
       if (foundSocketId != socket.id) {
-        io.to(foundSocketId).emit("wallet.disconnect", address);
+        walletsToDisconnect.push(foundSocketId);
         connectedUsers[foundSocketId].address = "";
       }
     }
     connectedUsers[socket.id].address = address;
+  });
+  socket.on("connection.address.removed", async () => {
+    delete walletsToDisconnect[walletsToDisconnect.indexOf(socket.id)];
   });
 
   socket.on("game.pay", PaySocketHandle);
@@ -347,6 +357,7 @@ app.get("/", (req, res) => {
 app.post("/util/timeout", TimeoutRouteHandle);
 
 cron.schedule(`*/${interval} * * * * *`, checkTime);
+cron.schedule("*/1 * * * * *", checkWalletDisconnect);
 cron.schedule("*/5 * * * * *", checkTransactions);
 
 //3600000
