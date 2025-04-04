@@ -317,7 +317,9 @@ io.on("connection", (socket) => {
     connectedUsers[socket.id].address = address;
   });
   socket.on("connection.address.removed", async () => {
+    console.log("WALLET.DISCONNECTED > ", socket.id);
     delete walletsToDisconnect[walletsToDisconnect.indexOf(socket.id)];
+    console.log(walletsToDisconnect);
   });
 
   socket.on("game.pay", PaySocketHandle);
