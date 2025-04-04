@@ -83,6 +83,7 @@ export const getTransactionHash = async (game, winnerAddress) => {
       console.log("WINNER.TRANSACTION >", outTrasaction.hash);
     else console.log("WINNER.TRANSACTION > [NOT FOUND]");
     hash = outTrasaction?.hash ?? "0";
+    return hash;
   } catch (error) {
     console.log("WINNER.TRANSACTION !ERORR! >", error);
   }
