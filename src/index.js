@@ -297,7 +297,6 @@ io.on("connection", (socket) => {
       socket.leave(room);
     }
   });
-  console.log(socket.adapter.rooms);
   connectedUsers[socket.id] = { gameId: 1, address: "" };
 
   socket.on("disconnect", () => {
