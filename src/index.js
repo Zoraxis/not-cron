@@ -303,22 +303,36 @@ io.on("connection", (socket) => {
 
   socket.on("connection.address", async (address) => {
     if (!address) return;
+    if (walletsToDisconnect.includes(socket.id)) {
+      console.log(
+        `WALLET.IGNORED > Socket: ${socket.id} is in disconnect list`
+      );
+      return;
+    }
+
     const sameAddressIndex = Object.values(connectedUsers).findIndex(
-      (user) => user.address == address
+      (user) => user.address === address
     );
     if (sameAddressIndex !== -1) {
-      console.log(sameAddressIndex);
       const foundSocketId = Object.keys(connectedUsers)[sameAddressIndex];
-      if (foundSocketId != socket.id) {
+      if (foundSocketId !== socket.id) {
+        console.log(`WALLET.CONFLICT > Disconnecting socket: ${foundSocketId}`);
         walletsToDisconnect.push(foundSocketId);
         connectedUsers[foundSocketId].address = "";
+        io.to(foundSocketId).emit("wallet.disconnect");
       }
     }
     connectedUsers[socket.id].address = address;
+    console.log(`WALLET.CONNECTED > Socket: ${socket.id}, Address: ${address}`);
   });
+
   socket.on("connection.address.removed", async () => {
     console.log("WALLET.DISCONNECTED > ", socket.id);
-    delete walletsToDisconnect[walletsToDisconnect.indexOf(socket.id)];
+    const index = walletsToDisconnect.indexOf(socket.id);
+    if (index !== -1) {
+      walletsToDisconnect.splice(index, 1);
+    }
+    connectedUsers[socket.id].address = "";
     console.log(walletsToDisconnect);
   });
 
