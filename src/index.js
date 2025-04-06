@@ -289,7 +289,13 @@ setup();
 io.on("connection", (socket) => {
   socket.emit("time", Date.now());
   console.log(`SOCKET.U > [${Object.keys(connectedUsers).length}] + 1`);
-  // console.log(socket.adapter.rooms);
+  socket.rooms.forEach((room) => {
+    if (room !== socket.id) {
+      console.log(`Leaving room: ${room}`);
+      socket.leave(room);
+    }
+  });
+  console.log(socket.adapter.rooms);
   connectedUsers[socket.id] = { gameId: 1, address: "" };
 
   socket.on("disconnect", () => {
@@ -328,7 +334,10 @@ io.on("connection", (socket) => {
   socket.on("connection.address.removed", async () => {
     console.log("WALLET.DISCONNECTED > ", socket.id);
     console.log(socket.adapter.rooms);
-    const index = walletsToDisconnect.indexOf(socket.id);
+    let index = 0;
+    Object.keys(socket.adapter.rooms).forEach((room) => {
+      index = walletsToDisconnect.indexOf(room);
+    });
     if (index !== -1) {
       walletsToDisconnect.splice(index, 1);
     }
