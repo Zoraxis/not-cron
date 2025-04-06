@@ -150,7 +150,6 @@ const checkTime = async () => {
           console.log(
             `END.EMIT > G:${gameId} P:${collection[i]?.players?.length}`
           );
-          io.to(gameId).emit("game.current.ended", gameId);
           end_server(gameId);
 
           if (collection[i]?.players?.length > 1) {
@@ -287,14 +286,11 @@ const setup = async () => {
 
 setup();
 
-const getConnectedUserId = (socketId) =>
-  Object.keys(connectedUsers).indexOf(socketId);
-
 io.on("connection", (socket) => {
   socket.emit("time", Date.now());
   console.log(`SOCKET.U > [${Object.keys(connectedUsers).length}] + 1`);
+  // console.log(socket.adapter.rooms);
   connectedUsers[socket.id] = { gameId: 1, address: "" };
-  socket.join(Object.keys(connectedUsers).length);
 
   socket.on("disconnect", () => {
     console.log(`SOCKET.U > [${Object.keys(connectedUsers).length}] - 1`);
@@ -328,6 +324,7 @@ io.on("connection", (socket) => {
 
   socket.on("connection.address.removed", async () => {
     console.log("WALLET.DISCONNECTED > ", socket.id);
+    console.log(socket.adapter.rooms);
     const index = walletsToDisconnect.indexOf(socket.id);
     if (index !== -1) {
       walletsToDisconnect.splice(index, 1);
@@ -344,7 +341,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("game.fetcher", async (gameId) => {
-    socket.emit("game.fetcher", games[gameId].lastUpdated);
+    socket.emit("game.fetcher", games[gameId]?.lastUpdated);
   });
 
   socket.on("history.fetcher", async (gameId) => {
