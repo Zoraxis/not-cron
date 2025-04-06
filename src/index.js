@@ -294,6 +294,9 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log(`SOCKET.U > [${Object.keys(connectedUsers).length}] - 1`);
+    Object.keys(socket.rooms).forEach((room) => {
+      socket.leave(room);
+    });
     delete connectedUsers[socket.id];
   });
 
