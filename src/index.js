@@ -287,6 +287,8 @@ const setup = async () => {
 setup();
 
 io.on("connection", (socket) => {
+  const clientIp = socket.handshake.address;
+  console.log(`New connection from IP: ${clientIp}, Socket ID: ${socket.id}`);
   socket.emit("time", Date.now());
   console.log(`SOCKET.U > [${Object.keys(connectedUsers).length}] + 1`);
   socket.rooms.forEach((room) => {
