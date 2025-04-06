@@ -335,7 +335,6 @@ io.on("connection", (socket) => {
 
   socket.on("connection.address.removed", async () => {
     console.log("WALLET.DISCONNECTED > ", socket.id);
-    console.log(socket.adapter.rooms);
     let index = 0;
     Object.keys(socket.adapter.rooms).forEach((room) => {
       index = walletsToDisconnect.indexOf(room);
