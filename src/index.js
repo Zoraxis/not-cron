@@ -352,9 +352,107 @@ app.get("/", (req, res) => {
   res.send(`
       <div>
         <h1>Notto</h1>
-        <p>Server is running</p>
+        <br/>
+        <br/>
+        <h3>Connected Users</h3>
+        <table id="connected-users">
+          <tr>
+            <th>Socket ID</th>
+            <th>Game ID</th>
+            <th>Address</th>
+          </tr>
+        </table>
+        <br/>
+        <h3>Games</h3>
+        <table id="games">
+          <tr>
+            <th>Game</th>
+            <th>Players</th>
+            <th>Prize</th>
+          </tr>
+        </table>
+        <br/>
+        <h3>History</h3>
+        <table id="history">
+          <tr>
+            <th>Game</th>
+            <th>History</th>
+          </tr>
+        </table>
+        <br/>
+        <h3>Wallets to Disconnect</h3>
+        <table id="wallets-to-disconnect">
+          <tr>
+            <th>Socket ID</th>
+          </tr>
+        </table>
       </div>
+      <script>
+        async function fetchData() {
+          const response = await fetch('/api/status');
+          const data = await response.json();
+
+          const connectedUsersTable = document.getElementById('connected-users');
+          connectedUsersTable.innerHTML = '<tr><th>Socket ID</th><th>Game ID</th><th>Address</th></tr>';
+          Object.keys(data.connectedUsers).forEach(socketId => {
+            const user = data.connectedUsers[socketId];
+            connectedUsersTable.innerHTML += \`
+              <tr>
+                <td>\${socketId}</td>
+                <td>\${user.gameId}</td>
+                <td>\${user.address}</td>
+              </tr>
+            \`;
+          });
+
+          const gamesTable = document.getElementById('games');
+          gamesTable.innerHTML = '<tr><th>Game</th><th>Players</th><th>Prize</th></tr>';
+          Object.keys(data.games).forEach(gameId => {
+            const game = data.games[gameId];
+            gamesTable.innerHTML += \`
+              <tr>
+                <td>\${gameId}</td>
+                <td>\${game?.players?.length ?? 0}</td>
+                <td>\${game?.prize ?? 0}</td>
+              </tr>
+            \`;
+          });
+
+          const historyTable = document.getElementById('history');
+          historyTable.innerHTML = '<tr><th>Game</th><th>History</th></tr>';
+          Object.keys(data.history).forEach(gameId => {
+            historyTable.innerHTML += \`
+              <tr>
+                <td>\${gameId}</td>
+                <td>\${data.history[gameId]}</td>
+              </tr>
+            \`;
+          });
+
+          const walletsTable = document.getElementById('wallets-to-disconnect');
+          walletsTable.innerHTML = '<tr><th>Socket ID</th></tr>';
+          data.walletsToDisconnect.forEach(socketId => {
+            walletsTable.innerHTML += \`
+              <tr>
+                <td>\${socketId}</td>
+              </tr>
+            \`;
+          });
+        }
+
+        setInterval(fetchData, 1000);
+        fetchData();
+      </script>
     `);
+});
+
+app.get("/api/status", (req, res) => {
+  res.json({
+    connectedUsers,
+    games,
+    history,
+    walletsToDisconnect,
+  });
 });
 
 app.post("/util/timeout", TimeoutRouteHandle);
