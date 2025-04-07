@@ -151,14 +151,14 @@ const checkTime = async () => {
             `END.EMIT > G:${gameId} P:${collection[i]?.players?.length}`
           );
           end_server(gameId);
+          setTimeout(() => {
+            io.emit("game.ended", gameClone);
+          }, 1000 * 15);
 
           if (collection[i]?.players?.length > 1) {
             setTimeout(() => {
               end_results(gameClone);
             }, 1000 * 10);
-            setTimeout(() => {
-              io.emit("game.ended", collection[i]);
-            }, 1000 * 15);
           }
         }, diff - 200);
       }
