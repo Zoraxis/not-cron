@@ -52,7 +52,7 @@ app.use(express.json());
 
 export let games = {};
 export let history = [0, 0, 0, 0];
-export let connectedUsers = {};
+export let connectedUsers = [];
 export let walletsToDisconnect = [];
 
 async function end(address) {
@@ -269,10 +269,11 @@ const checkTransactions = async () => {
 };
 
 const checkWalletDisconnect = async () => {
-  // for (const socketId of walletsToDisconnect) {
-  //   console.log("WALLET.DISCONNECTING... > ", socketId);
-  //   io.to(socketId).emit("wallet.disconnect");
-  // }
+  for (const wallet of walletsToDisconnect) {
+    console.log("WALLET.DISCONNECTING... > ", wallet.id, wallet.alt);
+    io.to(wallet.id).emit("wallet.disconnect");
+    io.to(wallet.alt).emit("wallet.disconnect");
+  }
 };
 
 const setup = async () => {
@@ -286,12 +287,15 @@ const setup = async () => {
 
 setup();
 
+const findUserBySocketId = (socketId) =>
+  connectedUsers.find((user) => user.id === socketId || user.alt === socketId);
+
 io.on("connection", (socket) => {
-  if (Object.keys(connectedUsers).length % 2 === 0) {
-    console.log(`SOCKET.U > [${Object.keys(connectedUsers).length}] + 1 | ${socket.id}`);
-    connectedUsers[socket.id] = { address: "" };
+  if (connectedUsers.length % 2 === 0) {
+    console.log(`SOCKET.U > [${connectedUsers.length}] + 1 | ${socket.id}`);
+    connectedUsers.push = { id: socket.id, alt: null, address: "" };
   } else {
-    connectedUsers[Object.keys(connectedUsers)].alt = socket.id;
+    connectedUsers[connectedUsers.length - 1].alt = socket.id;
   }
   socket.rooms.forEach((room) => {
     if (room !== socket.id) {
@@ -301,11 +305,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log(`SOCKET.U > [${Object.keys(connectedUsers).length}] - 1`);
+    console.log(`SOCKET.U > [${connectedUsers.length}] - 1`);
     Object.keys(socket.rooms).forEach((room) => {
       socket.leave(room);
     });
-    delete connectedUsers[socket.id];
+    const index = findUserBySocketId(socket.id);
+    delete connectedUsers[index];
   });
 
   socket.on("connection.address", async (address) => {
@@ -317,33 +322,28 @@ io.on("connection", (socket) => {
       return;
     }
 
-    const sameAddressIndex = Object.values(connectedUsers).findIndex(
+    const sameAddressIndex = connectedUsers.findIndex(
       (user) => user.address === address
     );
     if (sameAddressIndex !== -1) {
-      const foundSocketId = Object.keys(connectedUsers)[sameAddressIndex];
-      if (foundSocketId !== socket.id) {
-        console.log(`WALLET.CONFLICT > Disconnecting socket: ${foundSocketId}`);
-        walletsToDisconnect.push(foundSocketId);
-        connectedUsers[foundSocketId].address = "";
-        io.to(foundSocketId).emit("wallet.disconnect");
+      const foundUser = connectedUsers[sameAddressIndex];
+      if (foundUser.id !== socket.id && foundUser.alt !== socket.id) {
+        console.log(`WALLET.CONFLICT > Disconnecting socket: ${foundUser}`);
+        walletsToDisconnect.push(foundUser);
+        connectedUsers[sameAddressIndex].address = "";
       }
     }
-    connectedUsers[socket.id].address = address;
+    const index = findUserBySocketId(socket.id);
+    connectedUsers[index].address = address;
     console.log(`WALLET.CONNECTED > Socket: ${socket.id}, Address: ${address}`);
   });
 
   socket.on("connection.address.removed", async () => {
     console.log("WALLET.DISCONNECTED > ", socket.id);
-    let index = 0;
-    Object.keys(socket.adapter.rooms).forEach((room) => {
-      index = walletsToDisconnect.indexOf(room);
-    });
-    if (index !== -1) {
-      walletsToDisconnect.splice(index, 1);
-    }
-    connectedUsers[socket.id].address = "";
-    console.log(walletsToDisconnect);
+    const index = walletsToDisconnect.findIndex(x => x.id === socket.id || x.alt === socket.id);
+    delete walletsToDisconnect[index];
+    const uindex = findUserBySocketId(socket.id);
+    connectedUsers[uindex].address = "";
   });
 
   socket.on("game.pay", PaySocketHandle);
@@ -417,12 +417,11 @@ app.get("/", (req, res) => {
           const data = await response.json();
 
           const connectedUsersTable = document.getElementById('connected-users');
-          connectedUsersTable.innerHTML = '<tr><th>Socket ID</th><th>Game ID</th><th>Address</th></tr>';
-          Object.keys(data.connectedUsers).forEach(socketId => {
-            const user = data.connectedUsers[socketId];
+          connectedUsersTable.innerHTML = '<tr><th>Socket ID</th><th>ALT ID</th><th>Address</th></tr>';
+          data.connectedUsers.forEach(user => {
             connectedUsersTable.innerHTML += \`
               <tr>
-                <td>\${socketId}</td>
+                <td>\${user.id}</td>
                 <td>\${user.alt}</td>
                 <td>\${user.address}</td>
               </tr>
