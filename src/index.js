@@ -69,8 +69,8 @@ io.on("connection", (socket) => {
     connectedUsers.splice(index, 1);
   });
 
-  socket.on("connection.address", (address) =>
-    wallet_connected(address, socket)
+  socket.on("connection.address", ({address, username}) =>
+    wallet_connected(address, username, socket)
   );
 
   socket.on("connection.address.removed", async () => {

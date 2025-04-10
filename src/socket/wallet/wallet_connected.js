@@ -1,11 +1,13 @@
 import { connectedUsers, findUserBySocketId, walletsToDisconnect } from "../../index.js";
 
-export const wallet_connected = async (address, socket) => {
+export const wallet_connected = async (address, username, socket) => {
   if (!address) return;
   if (walletsToDisconnect.includes(socket.id)) {
     console.log(`WALLET.IGNORED > Socket: ${socket.id} is in disconnect list`);
     return;
   }
+  const index = findUserBySocketId(socket.id);
+  connectedUsers[index].username = username;
 
   const sameAddressIndex = connectedUsers.findIndex(
     (user) => user.address === address
@@ -18,7 +20,6 @@ export const wallet_connected = async (address, socket) => {
       connectedUsers[sameAddressIndex].address = "";
     }
   }
-  const index = findUserBySocketId(socket.id);
   connectedUsers[index].address = address;
-  console.log(`WALLET.CONNECTED > Socket: ${socket.id}, Address: ${address}`);
+  console.log(`WALLET.CONNECTED > S: ${socket.id} A: ${address} U: ${username}`);
 };

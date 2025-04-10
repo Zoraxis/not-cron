@@ -8,7 +8,15 @@ export const stats_page = (req, res) => {
           <table id="connected-users">
             <tr>
               <th>Socket ID</th>
+              <th>Username</th>
               <th>Address</th>
+            </tr>
+          </table>
+          <br/>
+          <h3>Wallets to Disconnect</h3>
+          <table id="wallets-to-disconnect">
+            <tr>
+              <th>Socket ID</th>
             </tr>
           </table>
           <br/>
@@ -28,13 +36,6 @@ export const stats_page = (req, res) => {
               <th>History</th>
             </tr>
           </table>
-          <br/>
-          <h3>Wallets to Disconnect</h3>
-          <table id="wallets-to-disconnect">
-            <tr>
-              <th>Socket ID</th>
-            </tr>
-          </table>
         </div>
         <script>
           const updateData = async () => {
@@ -42,11 +43,12 @@ export const stats_page = (req, res) => {
             const data = await response.json();
   
             const connectedUsersTable = document.getElementById('connected-users');
-            connectedUsersTable.innerHTML = '<tr><th>Socket ID</th><th>Address</th></tr>';
+            connectedUsersTable.innerHTML = '<tr><th>Socket ID</th><th>Username</th><th>Address</th></tr>';
             data.connectedUsers.forEach(user => {
               const row = connectedUsersTable.insertRow();
               row.insertCell(0).innerText = user.id || '';
-              row.insertCell(1).innerText = user.address || '';
+              row.insertCell(1).innerText = user.username || '';
+              row.insertCell(2).innerText = user.address || '';
             });
   
             const gamesTable = document.getElementById('games');
