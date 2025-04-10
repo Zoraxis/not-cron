@@ -1,4 +1,4 @@
-import { Address, fromNano, SendMode, TonClient, WalletContractV5R1 } from "@ton/ton";
+import { Address, beginCell, fromNano, internal, SendMode, TonClient, WalletContractV5R1 } from "@ton/ton";
 import { mnemonicToWalletKey } from "@ton/crypto";
 import { sleep } from "../utils/sleep.js";
 import { mnemonic } from "../../past/const.js";
