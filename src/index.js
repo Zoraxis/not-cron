@@ -287,10 +287,14 @@ const setup = async () => {
 
 setup();
 
-const findUserBySocketId = (socketId) =>
-  connectedUsers.findIndex(
+const findUserBySocketId = (socketId) => {
+  console.log(index);
+  console.log(connectedUsers);
+  return connectedUsers.findIndex(
     (user) => user.id === socketId || user.alt === socketId
   );
+}
+  
 
 io.on("connection", (socket) => {
   if (connectedUsers.length == 0 || connectedUsers[connectedUsers.length - 1]?.alt != null) {
@@ -336,8 +340,6 @@ io.on("connection", (socket) => {
       }
     }
     const index = findUserBySocketId(socket.id);
-    console.log(index);
-    console.log(connectedUsers);
     connectedUsers[index].address = address;
     console.log(`WALLET.CONNECTED > Socket: ${socket.id}, Address: ${address}`);
   });
