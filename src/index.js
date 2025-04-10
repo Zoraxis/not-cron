@@ -319,7 +319,8 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log(`SOCKET.U > [${connectedUsers.length}] - 1`);
     const index = findUserBySocketId(socket.id);
-    delete connectedUsers[index];
+    if (index === -1) return;
+    connectedUsers.splice(index, 1);
   });
 
   socket.on("connection.address", async (address) => {
@@ -352,7 +353,7 @@ io.on("connection", (socket) => {
     const index = walletsToDisconnect.findIndex(
       (x) => x.id === socket.id || x.alt === socket.id
     );
-    delete walletsToDisconnect[index];
+    walletsToDisconnect.splice(index, 1);
     const uindex = findUserBySocketId(socket.id);
     connectedUsers[uindex].address = "";
   });
