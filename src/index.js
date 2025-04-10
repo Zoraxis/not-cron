@@ -288,7 +288,7 @@ const setup = async () => {
 setup();
 
 const findUserBySocketId = (socketId) =>
-  connectedUsers.find((user) => user.id === socketId || user.alt === socketId);
+  connectedUsers.findIndex((user) => user.id === socketId || user.alt === socketId);
 
 io.on("connection", (socket) => {
   if (connectedUsers.length % 2 === 0) {
