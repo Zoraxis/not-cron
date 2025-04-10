@@ -293,7 +293,7 @@ const findUserBySocketId = (socketId) =>
   );
 
 io.on("connection", (socket) => {
-  if (connectedUsers.length % 2 === 0) {
+  if (connectedUsers.length == 0 || connectedUsers[connectedUsers.length - 1]?.alt != null) {
     console.log(`SOCKET.U > [${connectedUsers.length}] + 1 | ${socket.id}`);
     connectedUsers.push({ id: socket.id, alt: null, address: "" });
   } else {
