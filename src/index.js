@@ -55,7 +55,7 @@ const setup = async () => {
 
 setup();
 
-const findUserBySocketId = (socketId) => {
+export const findUserBySocketId = (socketId) => {
   console.log(connectedUsers.findIndex((user) => user.id === socketId));
   console.log(connectedUsers);
   return connectedUsers.findIndex((user) => user.id === socketId);

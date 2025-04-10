@@ -1,4 +1,4 @@
-import { connectedUsers, walletsToDisconnect } from "../../index.js";
+import { connectedUsers, findUserBySocketId, walletsToDisconnect } from "../../index.js";
 
 export const wallet_connected = async (address, socket) => {
   if (!address) return;

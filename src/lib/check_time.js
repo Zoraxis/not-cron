@@ -15,7 +15,7 @@ export const check_time = async () => {
     for (let i = 0; i < collection.length; i++) {
       const diff = collection[i].frequency - (date % collection[i].frequency);
 
-      if (diff < interval * 1000) {
+      if (diff < 10 * 1000) {
         const { gameId, address } = collection[i];
         const gameClone = JSON.parse(JSON.stringify(games[gameId]));
         games[gameId].players = [];
