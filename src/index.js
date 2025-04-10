@@ -288,16 +288,22 @@ const setup = async () => {
 setup();
 
 const findUserBySocketId = (socketId) => {
-  console.log(index);
+  console.log(
+    connectedUsers.findIndex(
+      (user) => user.id === socketId || user.alt === socketId
+    )
+  );
   console.log(connectedUsers);
   return connectedUsers.findIndex(
     (user) => user.id === socketId || user.alt === socketId
   );
-}
-  
+};
 
 io.on("connection", (socket) => {
-  if (connectedUsers.length == 0 || connectedUsers[connectedUsers.length - 1]?.alt != null) {
+  if (
+    connectedUsers.length == 0 ||
+    connectedUsers[connectedUsers.length - 1]?.alt != null
+  ) {
     console.log(`SOCKET.U > [${connectedUsers.length}] + 1 | ${socket.id}`);
     connectedUsers.push({ id: socket.id, alt: null, address: "" });
   } else {
@@ -312,9 +318,6 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log(`SOCKET.U > [${connectedUsers.length}] - 1`);
-    Object.keys(socket.rooms).forEach((room) => {
-      socket.leave(room);
-    });
     const index = findUserBySocketId(socket.id);
     delete connectedUsers[index];
   });
