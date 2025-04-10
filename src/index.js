@@ -287,17 +287,18 @@ const setup = async () => {
 setup();
 
 io.on("connection", (socket) => {
-  const clientIp = socket.handshake.address;
-  console.log(`New connection from IP: ${clientIp}, Socket ID: ${socket.id}`);
-  socket.emit("time", Date.now());
-  console.log(`SOCKET.U > [${Object.keys(connectedUsers).length}] + 1`);
+  if (Object.keys(connectedUsers).length % 2 === 0) {
+    console.log(`SOCKET.U > [${Object.keys(connectedUsers).length}] + 1 | ${socket.id}`);
+    connectedUsers[socket.id] = { address: "" };
+  } else {
+    connectedUsers[Object.keys(connectedUsers)].alt = socket.id;
+  }
   socket.rooms.forEach((room) => {
     if (room !== socket.id) {
       console.log(`Leaving room: ${room}`);
       socket.leave(room);
     }
   });
-  connectedUsers[socket.id] = { gameId: 1, address: "" };
 
   socket.on("disconnect", () => {
     console.log(`SOCKET.U > [${Object.keys(connectedUsers).length}] - 1`);
@@ -381,7 +382,7 @@ app.get("/", (req, res) => {
         <table id="connected-users">
           <tr>
             <th>Socket ID</th>
-            <th>Game ID</th>
+            <th>ALT ID</th>
             <th>Address</th>
           </tr>
         </table>
@@ -422,7 +423,7 @@ app.get("/", (req, res) => {
             connectedUsersTable.innerHTML += \`
               <tr>
                 <td>\${socketId}</td>
-                <td>\${user.gameId}</td>
+                <td>\${user.alt}</td>
                 <td>\${user.address}</td>
               </tr>
             \`;
