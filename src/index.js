@@ -412,59 +412,47 @@ app.get("/", (req, res) => {
         </table>
       </div>
       <script>
-        async function fetchData() {
+        const updateData = async () => {
           const response = await fetch('/api/status');
           const data = await response.json();
 
           const connectedUsersTable = document.getElementById('connected-users');
           connectedUsersTable.innerHTML = '<tr><th>Socket ID</th><th>ALT ID</th><th>Address</th></tr>';
           data.connectedUsers.forEach(user => {
-            connectedUsersTable.innerHTML += \`
-              <tr>
-                <td>\${user.id}</td>
-                <td>\${user.alt}</td>
-                <td>\${user.address}</td>
-              </tr>
-            \`;
+            const row = connectedUsersTable.insertRow();
+            row.insertCell(0).innerText = user.id || '';
+            row.insertCell(1).innerText = user.alt || '';
+            row.insertCell(2).innerText = user.address || '';
           });
 
           const gamesTable = document.getElementById('games');
           gamesTable.innerHTML = '<tr><th>Game</th><th>Players</th><th>Prize</th></tr>';
           Object.keys(data.games).forEach(gameId => {
             const game = data.games[gameId];
-            gamesTable.innerHTML += \`
-              <tr>
-                <td>\${gameId}</td>
-                <td>\${game?.players?.length ?? 0}</td>
-                <td>\${game?.prize ?? 0}</td>
-              </tr>
-            \`;
+            const row = gamesTable.insertRow();
+            row.insertCell(0).innerText = gameId;
+            row.insertCell(1).innerText = game.players?.length || 0;
+            row.insertCell(2).innerText = game.prize || 0;
           });
 
           const historyTable = document.getElementById('history');
           historyTable.innerHTML = '<tr><th>Game</th><th>History</th></tr>';
-          Object.keys(data.history).forEach(gameId => {
-            historyTable.innerHTML += \`
-              <tr>
-                <td>\${gameId}</td>
-                <td>\${data.history[gameId]}</td>
-              </tr>
-            \`;
+          data.history.forEach((history, index) => {
+            const row = historyTable.insertRow();
+            row.insertCell(0).innerText = index + 1;
+            row.insertCell(1).innerText = history;
           });
 
           const walletsTable = document.getElementById('wallets-to-disconnect');
           walletsTable.innerHTML = '<tr><th>Socket ID</th></tr>';
-          data.walletsToDisconnect.forEach(socketId => {
-            walletsTable.innerHTML += \`
-              <tr>
-                <td>\${socketId}</td>
-              </tr>
-            \`;
+          data.walletsToDisconnect.forEach(wallet => {
+            const row = walletsTable.insertRow();
+            row.insertCell(0).innerText = wallet.id || '';
           });
-        }
+        };
 
-        setInterval(fetchData, 1000);
-        fetchData();
+        setInterval(updateData, 5000); // Update every 5 seconds
+        updateData(); // Initial load
       </script>
     `);
 });
