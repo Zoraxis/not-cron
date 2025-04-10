@@ -1,8 +1,8 @@
 import { Address, Cell } from "@ton/ton";
 import { client, history } from "../index.js";
-import { getTonApi } from "../routes/util/getTonApi.js";
+import { getTonApi } from "../util/getTonApi.js";
 import { hideAddress } from "../utils/hideAddress.js";
-import { sleep } from "../utils/await.js";
+import { sleep } from "../utils/sleep.js";
 
 export const getWinnerId = async (game, winnerAddress) => {
   const gameRawAddress = Address.parseFriendly(
