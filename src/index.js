@@ -334,6 +334,8 @@ io.on("connection", (socket) => {
       }
     }
     const index = findUserBySocketId(socket.id);
+    console.log(index);
+    console.log(connectedUsers)
     connectedUsers[index].address = address;
     console.log(`WALLET.CONNECTED > Socket: ${socket.id}, Address: ${address}`);
   });
