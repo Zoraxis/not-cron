@@ -1,4 +1,4 @@
-import { client, io } from "../index.js";
+import { client, games, io } from "../index.js";
 import { end_game } from "./end_game.js";
 import { end_results } from "./end_results.js";
 import { end_server } from "./end_server.js";
