@@ -288,12 +288,14 @@ const setup = async () => {
 setup();
 
 const findUserBySocketId = (socketId) =>
-  connectedUsers.findIndex((user) => user.id === socketId || user.alt === socketId);
+  connectedUsers.findIndex(
+    (user) => user.id === socketId || user.alt === socketId
+  );
 
 io.on("connection", (socket) => {
   if (connectedUsers.length % 2 === 0) {
     console.log(`SOCKET.U > [${connectedUsers.length}] + 1 | ${socket.id}`);
-    connectedUsers.push = { id: socket.id, alt: null, address: "" };
+    connectedUsers.push({ id: socket.id, alt: null, address: "" });
   } else {
     connectedUsers[connectedUsers.length - 1].alt = socket.id;
   }
@@ -335,14 +337,16 @@ io.on("connection", (socket) => {
     }
     const index = findUserBySocketId(socket.id);
     console.log(index);
-    console.log(connectedUsers)
+    console.log(connectedUsers);
     connectedUsers[index].address = address;
     console.log(`WALLET.CONNECTED > Socket: ${socket.id}, Address: ${address}`);
   });
 
   socket.on("connection.address.removed", async () => {
     console.log("WALLET.DISCONNECTED > ", socket.id);
-    const index = walletsToDisconnect.findIndex(x => x.id === socket.id || x.alt === socket.id);
+    const index = walletsToDisconnect.findIndex(
+      (x) => x.id === socket.id || x.alt === socket.id
+    );
     delete walletsToDisconnect[index];
     const uindex = findUserBySocketId(socket.id);
     connectedUsers[uindex].address = "";
