@@ -69,17 +69,17 @@ io.on("connection", (socket) => {
     connectedUsers.splice(index, 1);
   });
 
-  socket.on("connection.address", ({address, username}) =>
-    wallet_connected(address, username, socket)
-  );
+  // socket.on("connection.address", ({address, username}) =>
+    // wallet_connected(address, username, socket)
+  // );
 
-  socket.on("connection.address.removed", async () => {
-    console.log("WALLET.DISCONNECTED > ", socket.id);
-    const index = walletsToDisconnect.findIndex((x) => x.id === socket.id);
-    walletsToDisconnect.splice(index, 1);
-    const uindex = findUserBySocketId(socket.id);
-    connectedUsers[uindex].address = "";
-  });
+  // socket.on("connection.address.removed", async () => {
+  //   console.log("WALLET.DISCONNECTED > ", socket.id);
+  //   const index = walletsToDisconnect.findIndex((x) => x.id === socket.id);
+  //   walletsToDisconnect.splice(index, 1);
+  //   const uindex = findUserBySocketId(socket.id);
+  //   connectedUsers[uindex].address = "";
+  // });
 
   socket.on("game.pay", PaySocketHandle);
 
