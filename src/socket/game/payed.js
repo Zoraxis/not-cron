@@ -46,38 +46,14 @@ export const PayedSocketHandle = async ({ gameId, address, boc }) => {
     {
       $inc: {
         spent: game.entry,
+        played: 1,
       },
     }
   );
-  try {
-    await users.updateOne(
-      { address },
-      {
-        $inc: {
-          played: {
-            [`g${game.gameId}`]: 1,
-          }
-        },
-      }
-    );
-  } catch {
-    await users.updateOne(
-      { address },
-      {
-        $set: {
-          played: {
-            [`g${game.gameId}`]: 1,
-          }
-        },
-      }
-    );
-  }
   claimRewardByUser(user, payloadReward);
 
   [10, 25, 50, 100].forEach((reward) => {
-    if (user.played[`g${game.gameId}`] + (1 % reward) === 0) {
-      claimRewardByUser(user, `play-any-${reward}`);
-    }
+    if (user.played === reward) claimRewardByUser(user, `play-any-${reward}`);
   });
 
   const result = await gamesCollection.updateOne(
