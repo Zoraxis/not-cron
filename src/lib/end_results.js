@@ -3,6 +3,7 @@ import { client, history } from "../index.js";
 import { getTonApi } from "../util/getTonApi.js";
 import { hideAddress } from "../utils/hideAddress.js";
 import { sleep } from "../utils/sleep.js";
+import { claimRewardByUser } from "./rewards.js";
 
 export const getWinnerId = async (game, winnerAddress) => {
   const gameRawAddress = Address.parseFriendly(
@@ -18,6 +19,8 @@ export const getWinnerId = async (game, winnerAddress) => {
   const winnerUser = await users.findOne({
     address: winner.address.toRawString(),
   });
+
+  claimRewardByUser(winnerUser, `win-1`);
 
   const { _id, ...gameData } = game;
   let winnerIndexById = -1;

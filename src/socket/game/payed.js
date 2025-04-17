@@ -3,6 +3,7 @@ import { client, games } from "../../index.js";
 import dotenv from "dotenv";
 import { JoinedHandle } from "../../routes/loto/join.js";
 import { hideAddress } from "../../utils/hideAddress.js";
+import { claimRewardByUser } from "../../lib/rewards.js";
 dotenv.config();
 
 export const PayedSocketHandle = async ({ gameId, address, boc }) => {
@@ -44,14 +45,20 @@ export const PayedSocketHandle = async ({ gameId, address, boc }) => {
     { address },
     {
       $inc: {
-        played: 1,
+        played: {
+          [`g${game.gameId}`]: 1,
+        },
         spent: game.entry,
-      },
-      $push: {
-        rewards: payloadReward,
       },
     }
   );
+  claimRewardByUser(user, payloadReward);
+
+  [10, 25, 50, 100].forEach((reward) => {
+    if (user.played[`g${game.gameId}`] + (1 % reward) === 0) {
+      claimRewardByUser(user, `play-any-${reward}`);
+    }
+  });
 
   const result = await gamesCollection.updateOne(
     { gameId: parseInt(gameId) },
