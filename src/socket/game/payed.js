@@ -40,6 +40,37 @@ export const PayedSocketHandle = async ({ gameId, address, boc }) => {
     date: Date.now(),
   };
 
+  [10, 25, 50, 100].forEach((reward) => {
+    if (user.played + 1 === reward) claimRewardByUser(user, `play-any-${reward}`);
+  });
+
+  // #region play-all-day
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const otherGamesPlayedToday = [1, 2, 3, 4]
+    .filter((id) => id !== game.gameId)
+    .every((id) => {
+      const lastPlayed = user[`g_${id}_last`];
+      return lastPlayed && new Date(lastPlayed).getTime() >= today.getTime();
+    });
+
+  if (otherGamesPlayedToday) {
+    claimRewardByUser(user, "play-all-day");
+    await users.updateOne(
+      { address },
+      {
+        $set: {
+          [`g_1_last`]: 0,
+          [`g_2_last`]: 0,
+          [`g_3_last`]: 0,
+          [`g_4_last`]: 0,
+        },
+      }
+    );
+  }
+  // #endregion
+
   const payloadReward = `play-${game.gameId}`;
   await users.updateOne(
     { address },
@@ -47,14 +78,11 @@ export const PayedSocketHandle = async ({ gameId, address, boc }) => {
       $inc: {
         spent: game.entry,
         played: 1,
+        [`g_${game.gameId}_last`]: Date.now(),
       },
     }
   );
   claimRewardByUser(user, payloadReward);
-
-  [10, 25, 50, 100].forEach((reward) => {
-    if (user.played === reward) claimRewardByUser(user, `play-any-${reward}`);
-  });
 
   const result = await gamesCollection.updateOne(
     { gameId: parseInt(gameId) },
