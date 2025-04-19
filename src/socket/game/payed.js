@@ -13,6 +13,12 @@ export const PayedSocketHandle = async ({ gameId, address, boc }) => {
   const transaction_pool = database.collection("transaction_pool");
   const users = database.collection("users");
 
+  const awaiting_transaction = await transaction_pool.findOne({
+    gameId,
+    address
+  });
+  if (!awaiting_transaction) return;
+
   await transaction_pool.deleteOne({
     gameId,
     address,
@@ -41,7 +47,8 @@ export const PayedSocketHandle = async ({ gameId, address, boc }) => {
   };
 
   [10, 25, 50, 100].forEach((reward) => {
-    if (user.played + 1 === reward) claimRewardByUser(user, `play-any-${reward}`);
+    if (user.played + 1 === reward)
+      claimRewardByUser(user, `play-any-${reward}`);
   });
 
   // #region play-all-day

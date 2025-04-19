@@ -1,11 +1,20 @@
-import { Address, Cell } from "@ton/ton";
+import { address, Address, Cell } from "@ton/ton";
 import { client, history } from "../index.js";
 import { getTonApi } from "../util/getTonApi.js";
 import { hideAddress } from "../utils/hideAddress.js";
 import { sleep } from "../utils/sleep.js";
 import { claimRewardByUser } from "./rewards.js";
 
-export const getWinnerId = async (game, winnerAddress) => {
+export const getWinnerId = async (game) => {
+  const res = await getTonApi(
+    `blockchain/accounts/${game.address}/methods/get_last_winner`
+  );
+  const slice = res.stack;
+  const winnerAddress = Cell.fromBoc(Buffer.from(slice[0].cell, "hex"))[0]
+    .beginParse()
+    .loadAddress()
+    .toString();
+
   const gameRawAddress = Address.parseFriendly(
     game.address
   ).address.toRawString();
@@ -52,7 +61,7 @@ export const getWinnerId = async (game, winnerAddress) => {
   if (winnerIndex === -1) console.log("WINNER.NUMBER > [NOT FOUND]");
   else console.log(`WINNER.NUMBER > ${winnerIndex}`);
 
-  return winnerIndex;
+  return { id: winnerIndex, address: winnerAddress };
 };
 
 export const getTransactionHash = async (game, winnerAddress) => {
@@ -89,6 +98,7 @@ export const getTransactionHash = async (game, winnerAddress) => {
     return hash;
   } catch (error) {
     console.log("WINNER.TRANSACTION !ERORR! >", error);
+    return "0";
   }
 };
 
@@ -101,22 +111,13 @@ export const end_results = async (game) => {
   const settings = await db.collection("settings");
   const archive_games = await db.collection("archive_games");
 
-  const res = await getTonApi(
-    `blockchain/accounts/${game.address}/methods/get_last_winner`
-  );
-  const slice = res.stack;
-  const winnerAddress = Cell.fromBoc(Buffer.from(slice[0].cell, "hex"))[0]
-    .beginParse()
-    .loadAddress()
-    .toString();
-
   const { _id, ...gameData } = game;
 
-  let winnerIndex = await getWinnerId(game, winnerAddress);
-  while (winnerIndex == -1) {
+  let winnerRes = await getWinnerId(game);
+  while (winnerRes.id == -1) {
     console.log("WAITING FOR WINNER...");
     await sleep(1000 * 5);
-    winnerIndex = await getWinnerId(game, winnerAddress);
+    winnerRes = await getWinnerId(game);
   }
 
   const { value: fee } = await settings.findOne({ name: "fee" });
@@ -125,19 +126,19 @@ export const end_results = async (game) => {
     ...gameData,
     endedAt: endetAt,
     fee,
-    winner: winnerAddress,
-    winnerNumber: winnerIndex ?? 0,
+    winner: winnerRes.address,
+    winnerNumber: winnerRes.id ?? 0,
     transaction: 0,
   });
   history[game.gameId] = Date.now();
 
   await sleep(1000 * 60 * 1.6);
 
-  let hash = await getTransactionHash(game, winnerAddress);
+  let hash = await getTransactionHash(game, winnerRes.address);
   while (hash == "0") {
     console.log("WAITING FOR TRANSACTION...");
     await sleep(1000 * 5);
-    hash = await getTransactionHash(game, winnerAddress);
+    hash = await getTransactionHash(game, winnerRes.address);
   }
 
   archive_games.updateOne(
