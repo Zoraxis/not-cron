@@ -1,0 +1,88 @@
+<html>
+  <head>
+    <title>Notto Admin</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+  </head>
+
+  <body
+    class="bg-black m-0 min-h-[100vh] w-screen max-w-[100vw] overflow-hidden"
+  >
+    <div class="absolute right-12 top-12">
+      <div id="ton-connect"></div>
+    </div>
+    <div class="bg-[#2B80E9]"></div>
+    <div class="w-screen h-screen flex flex-col items-center justify-center">
+      <div id="a:w">
+          <div id="a:w-c" class="flex gap-2 overflow-x-visible">
+            <div
+              id="30d"
+              class="bg-[#1A1A1A] py-2.5 w-[104px] flex justify-center rounded-md cursor-pointer"
+            >
+              <span
+                class="text-white pointer-events-none leading-llg text-md font-semibold w-max"
+              >
+                30 days
+              </span>
+            </div>
+            <div
+              id="7d"
+              class="bg-[#1A1A1A] py-2.5 w-[104px] flex justify-center rounded-md cursor-pointer"
+            >
+              <span
+                class="text-white pointer-events-none leading-llg text-md font-semibold w-max"
+              >
+                7 days
+              </span>
+            </div>
+            <div
+              id="24h"
+              class="bg-[#1A1A1A] py-2.5 w-[104px] flex justify-center rounded-md cursor-pointer"
+            >
+              <span
+                class="text-white pointer-events-none leading-llg text-md font-semibold w-max"
+              >
+                24 hours
+              </span>
+            </div>
+            <div
+              id="1h"
+              class="bg-[#1A1A1A] py-2.5 w-[104px] flex justify-center rounded-md cursor-pointer"
+            >
+              <span
+                class="text-white pointer-events-none leading-llg text-md font-semibold w-max"
+              >
+                1 hour
+              </span>
+            </div>
+          </div>
+          <div id="a:w-i" class="flex items-center justify-between">
+            
+          </div>
+      </div>
+      `
+    </div>
+
+    <script>
+      for (const radio of document.getElementById("a:w-c").children) {
+        radio.addEventListener("click", (e) => {
+          const id = e.target.id;
+          localStorage.setItem("w:clicked", id);
+          for (const radio of document.getElementById("a:w-c").children) {
+            radio.classList.remove("bg-[#2B80E9]");
+            radio.classList.add("bg-[#1A1A1A]");
+          }
+          e.target.classList.remove("bg-[#1A1A1A]");
+          e.target.classList.add("bg-[#2B80E9]");
+        });
+      }
+    </script>
+
+    <script>
+      const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+        manifestUrl: "https://notto.io/tonconnect-manifest.json",
+        buttonRootId: "ton-connect",
+      });
+    </script>
+  </body>
+</html>

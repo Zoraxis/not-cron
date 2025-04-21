@@ -1,8 +1,6 @@
-import axios from "axios";
-import { client, games } from "../../index.js";
+import { client } from "../../index.js";
 import dotenv from "dotenv";
 import { JoinedHandle } from "../../routes/loto/join.js";
-import { hideAddress } from "../../utils/hideAddress.js";
 import { claimRewardByUser } from "../../lib/rewards.js";
 dotenv.config();
 

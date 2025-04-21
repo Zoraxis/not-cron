@@ -9,6 +9,10 @@ export const getWinnerId = async (game) => {
   const res = await getTonApi(
     `blockchain/accounts/${game.address}/methods/get_last_winner`
   );
+  if (res.error) {
+    console.log("WINNER.ERROR >", res.error);
+    return { id: -1, address: "0" };
+  }
   const slice = res.stack;
   const winnerAddress = Cell.fromBoc(Buffer.from(slice[0].cell, "hex"))[0]
     .beginParse()

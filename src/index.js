@@ -14,6 +14,7 @@ import { wallet_connected } from "./socket/wallet/wallet_connected.js";
 import { gameGetHandler } from "./utils/gameGet.js";
 import { check_transactions } from "./lib/transactions.js";
 import { stats_page } from "./routes/stats_page.js";
+import { admin_page } from "./routes/admin/admin_page.js";
 dotenv.config();
 
 const { MONGO_URI } = process.env;
@@ -108,6 +109,7 @@ server.listen(3011, () => {
 });
 
 app.get("/", stats_page);
+app.get("/admin", admin_page);
 
 app.get("/api/status", (req, res) => {
   res.json({
