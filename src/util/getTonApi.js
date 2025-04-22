@@ -20,7 +20,7 @@ const makeRequest = async (url) => {
     const { data } = await axios.get(url, { headers: HEADERS });
     return data;
   } catch (error) {
-    console.error("TON API request failed:", error);
+    console.error(`TON API ERROR > ${error?.response?.data?.error} : ${error.status}`);
     return null;
   }
 };

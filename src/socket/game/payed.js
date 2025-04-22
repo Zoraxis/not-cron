@@ -4,18 +4,18 @@ import { JoinedHandle } from "../../routes/loto/join.js";
 import { claimRewardByUser } from "../../lib/rewards.js";
 dotenv.config();
 
-export const PayedSocketHandle = async ({ gameId, address, boc }) => {
+export const PayedSocketHandle = async ({ gameId, address }) => {
   await client.connect();
   const database = client.db("notto");
   const gamesCollection = database.collection("games");
   const transaction_pool = database.collection("transaction_pool");
   const users = database.collection("users");
 
-  const awaiting_transaction = await transaction_pool.findOne({
-    gameId,
-    address
-  });
-  if (!awaiting_transaction) return;
+  // const awaiting_transaction = await transaction_pool.findOne({
+  //   gameId,
+  //   address
+  // });
+  // if (!awaiting_transaction) return;
 
   await transaction_pool.deleteOne({
     gameId,
@@ -41,6 +41,7 @@ export const PayedSocketHandle = async ({ gameId, address, boc }) => {
 
   const player = {
     id: user._id,
+    address,
     date: Date.now(),
   };
 

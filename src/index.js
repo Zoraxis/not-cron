@@ -82,7 +82,7 @@ io.on("connection", (socket) => {
   //   connectedUsers[uindex].address = "";
   // });
 
-  socket.on("game.pay", PaySocketHandle);
+  // socket.on("game.pay", PaySocketHandle);
 
   socket.on("game.get", async (gameId) => {
     const game = await games[gameId];
@@ -124,7 +124,7 @@ app.post("/util/timeout", TimeoutRouteHandle);
 
 cron.schedule(`*/10 * * * * *`, check_time);
 cron.schedule("*/1 * * * * *", check_wallet_disconnect);
-cron.schedule("*/5 * * * * *", check_transactions);
+cron.schedule("*/6 * * * * *", check_transactions);
 
 //3600000
 //2592000000

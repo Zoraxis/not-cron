@@ -83,6 +83,11 @@ export const getTransactionHash = async (game, winnerAddress) => {
         lastTransLt - 500
       }`
     );
+
+    if (data.error) {
+      console.log("WINNER.ERROR >", res.error);
+      return "0";
+    }
     // for (const transaction of data.transactions) {
     //   console.log(transaction);
     //   if (transaction?.in_msg?.decoded_body?.text) {
