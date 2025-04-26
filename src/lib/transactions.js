@@ -102,13 +102,10 @@ export const check_transaction = async (gameId) => {
       cell
     );
     const players = playersCell.values();
-    console.log(players);
-    console.log(games[gameId]);
     const filteredPlayers = Array.from(players).filter(
       (player) =>
         !games[gameId].players.map((x) => x.address).includes(player.toRawString())
     );
-    console.log(games[gameId].players.map((x) => x.address))
 
     if (filteredPlayers.length === 0) {
       console.log("NO |NEW| PLAYERS");
