@@ -108,7 +108,7 @@ export const check_transaction = async (gameId) => {
     );
 
     if (filteredPlayers.length === 0) {
-      console.log("NO |NEW| PLAYERS");
+      // console.log("NO |NEW| PLAYERS");
       return;
     }
 
@@ -118,7 +118,7 @@ export const check_transaction = async (gameId) => {
     games[gameId].prize += games[gameId].entry * filteredPlayers.length;
     console.log("GAME JOINED:", filteredPlayers);
   } catch (e) {
-    console.log("NO PLAYERS");
+    // console.log("NO PLAYERS");
     // console.log("NO PLAYERS", e);
   }
 };
