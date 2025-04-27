@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
-import { TimeoutRouteHandle } from "./util/timeout.js";
 import { PayedSocketHandle } from "./socket/game/payed.js";
 import { PaySocketHandle } from "./socket/game/pay.js";
 import { check_time } from "./lib/check_time.js";
@@ -16,6 +15,8 @@ import { check_transactions } from "./lib/transactions.js";
 import { stats_page } from "./routes/stats_page.js";
 import { admin_page } from "./routes/admin/admin_page.js";
 import { log } from "./utils/log.js";
+import { LogToggleHandle } from "./routes/utils/log_toggle.js";
+import { TimeoutRouteHandle } from "./routes/utils/timeout.js";
 dotenv.config();
 
 const { MONGO_URI } = process.env;
@@ -122,7 +123,8 @@ app.get("/api/status", (req, res) => {
   });
 });
 
-app.post("/util/timeout", TimeoutRouteHandle);
+app.post("/utils/timeout", TimeoutRouteHandle);
+app.post("/utils/logs", LogToggleHandle);
 
 cron.schedule(`*/10 * * * * *`, check_time);
 cron.schedule("*/1 * * * * *", check_wallet_disconnect);

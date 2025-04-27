@@ -1,6 +1,6 @@
 import { address, Address, Cell } from "@ton/ton";
 import { client, history } from "../index.js";
-import { getTonApi } from "../util/getTonApi.js";
+import { getTonApi } from "../utils/getTonApi.js";
 import { hideAddress } from "../utils/hideAddress.js";
 import { sleep } from "../utils/sleep.js";
 import { claimRewardByUser } from "./rewards.js";

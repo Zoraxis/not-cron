@@ -1,8 +1,8 @@
 import { Address, beginCell, fromNano, internal, SendMode, TonClient, WalletContractV5R1 } from "@ton/ton";
 import { mnemonicToWalletKey } from "@ton/crypto";
 import { sleep } from "../utils/sleep.js";
-import { mnemonic } from "../../past/const.js";
 import { log } from "../utils/log.js";
+import { mnemonic } from "../constants/mnemonic.js";
 
 export const end_game = async (address) => {
   // open wallet v4 (notice the correct wallet version here)
