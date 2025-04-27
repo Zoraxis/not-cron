@@ -18,9 +18,6 @@ export const check_time = async () => {
       if (diff < 10 * 1000) {
         const { gameId, address } = collection[i];
         const gameClone = JSON.parse(JSON.stringify(games[gameId]));
-        games[gameId].players = [];
-        games[gameId].prize = 0;
-        games[gameId].lastUpdated = Date.now();
         if (collection[i]?.players?.length <= 0) continue;
         console.log("==============================");
         console.log("==============================");
@@ -31,7 +28,13 @@ export const check_time = async () => {
           console.log(
             `END.EMIT > G:${gameId} P:${collection[i]?.players?.length}`
           );
-          end_server(gameId);
+          setTimeout(() => {
+            games[gameId].players = [];
+            games[gameId].prize = 0;
+            games[gameId].lastUpdated = Date.now();
+            end_server(gameId);
+          }, 1000 * 10);
+
           setTimeout(() => {
             io.emit("game.ended", gameClone);
           }, 1000 * 15);
