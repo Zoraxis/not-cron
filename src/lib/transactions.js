@@ -3,23 +3,23 @@ import { games } from "../index.js";
 import dotenv from "dotenv";
 import { PayedSocketHandle } from "../socket/game/payed.js";
 import { sleep } from "../utils/sleep.js";
+import axios from "axios";
 import { log } from "../utils/log.js";
 dotenv.config();
 
 export const check_transaction = async (gameId) => {
   try {
-    const client = new TonClient({
-      endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
-    });
-    const res = await client.runMethod(
-      Address.parse(games[gameId].address),
-      "get_players"
+    const rawAddress = Address.parseFriendly(
+      games[gameId].address
+    ).address.toRawString();
+    const res = await axios.get(
+      `https://testnet.tonapi.io/v2/blockchain/accounts/${rawAddress}/methods/get_players`
     );
-    if (!res) {
+    if (!res?.data) {
       return;
     }
 
-    const cell = Cell.fromBoc(Buffer.from(res?.stack[0].cell, "hex"))[0];
+    const cell = Cell.fromBoc(Buffer.from(res?.data?.stack[0].cell, "hex"))[0];
 
     const playersCell = Dictionary.loadDirect(
       Dictionary.Keys.Uint(8),
@@ -29,7 +29,9 @@ export const check_transaction = async (gameId) => {
     const players = playersCell.values();
     const filteredPlayers = Array.from(players).filter(
       (player) =>
-        !games[gameId].players.map((x) => x.address).includes(player.toRawString())
+        !games[gameId].players
+          .map((x) => x.address)
+          .includes(player.toRawString())
     );
 
     if (filteredPlayers.length === 0) {
@@ -55,7 +57,7 @@ export const check_transactions = async () => {
     await check_transaction(id);
     await sleep(600);
   }
-  log("==============", "transactions")
+  log("==============", "transactions");
 };
 
 // export const check_transactions = async () => {
