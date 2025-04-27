@@ -6,10 +6,8 @@ import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import { PayedSocketHandle } from "./socket/game/payed.js";
-import { PaySocketHandle } from "./socket/game/pay.js";
 import { check_time } from "./lib/check_time.js";
 import { check_wallet_disconnect } from "./socket/wallet/check_wallet_disconnect.js";
-import { wallet_connected } from "./socket/wallet/wallet_connected.js";
 import { gameGetHandler } from "./utils/gameGet.js";
 import { check_transactions } from "./lib/transactions.js";
 import { stats_page } from "./routes/stats_page.js";
@@ -72,20 +70,6 @@ io.on("connection", (socket) => {
     if (index === -1) return;
     connectedUsers.splice(index, 1);
   });
-
-  // socket.on("connection.address", ({address, username}) =>
-    // wallet_connected(address, username, socket)
-  // );
-
-  // socket.on("connection.address.removed", async () => {
-  //   log("WALLET.DISCONNECTED > ", socket.id);
-  //   const index = walletsToDisconnect.findIndex((x) => x.id === socket.id);
-  //   walletsToDisconnect.splice(index, 1);
-  //   const uindex = findUserBySocketId(socket.id);
-  //   connectedUsers[uindex].address = "";
-  // });
-
-  // socket.on("game.pay", PaySocketHandle);
 
   socket.on("game.get", async (gameId) => {
     const game = await games[gameId];

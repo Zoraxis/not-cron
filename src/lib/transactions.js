@@ -59,16 +59,3 @@ export const check_transactions = async () => {
   }
   log("==============", "transactions");
 };
-
-// export const check_transactions = async () => {
-//   await client.connect();
-//   const database = client.db("notto");
-//   const games = database.collection("games");
-//   const allGames = await games.find({}).toArray();
-//   let reportString = "";
-//   for (const game of allGames) {
-//     const res = await checkTransaction(game, database);
-//     reportString += `${res} `;
-//   }
-//   // log(reportString);
-// };
