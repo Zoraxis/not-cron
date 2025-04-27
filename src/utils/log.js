@@ -7,5 +7,5 @@ export const log = (message, zone) => {
   const formattedDate = date.toISOString().replace("T", " ").split(".")[0];
   const itemsLength = Object.keys(message).length;
   if (itemsLength === 0) console.log(`[${formattedDate}] ${message}`);
-  else console.log(`[${formattedDate}] ${JSON.stringify(message).replaceAll(",", ", ")}`);
+  else console.log(`[${formattedDate}] `, message);
 };
