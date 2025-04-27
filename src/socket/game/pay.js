@@ -1,7 +1,8 @@
 import { client, games } from "../../index.js";
+import { log } from "../../utils/log.js";
 
 export const PaySocketHandle = async ({ gameId, address }) => {
-  console.log(`GAME.JOIN.REQ > G:${gameId} A:${address}`);
+  log(`GAME.JOIN.REQ > G:${gameId} A:${address}`);
   await client.connect();
   const database = client.db("notto");
   const transaction_pool = database.collection("transaction_pool");

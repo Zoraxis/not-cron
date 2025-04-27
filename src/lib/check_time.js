@@ -2,6 +2,7 @@ import { client, games, io } from "../index.js";
 import { end_game } from "./end_game.js";
 import { end_results } from "./end_results.js";
 import { end_server } from "./end_server.js";
+import { log } from "../utils/log.js";
 
 export const check_time = async () => {
   try {
@@ -19,13 +20,13 @@ export const check_time = async () => {
         const { gameId, address } = collection[i];
         const gameClone = JSON.parse(JSON.stringify(games[gameId]));
         if (collection[i]?.players?.length <= 0) continue;
-        console.log("==============================");
-        console.log("==============================");
-        console.log(`GAME.ENDING > G:${gameId}`);
-        console.log(address);
+        log("==============================");
+        log("==============================");
+        log(`GAME.ENDING > G:${gameId}`);
+        log(address);
         end_game(address);
         setTimeout(async () => {
-          console.log(
+          log(
             `END.EMIT > G:${gameId} P:${collection[i]?.players?.length}`
           );
           setTimeout(() => {
@@ -48,6 +49,6 @@ export const check_time = async () => {
       }
     }
   } catch (error) {
-    console.log("Error:", error);
+    log(error);
   }
 };

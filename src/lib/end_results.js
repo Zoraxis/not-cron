@@ -4,13 +4,15 @@ import { getTonApi } from "../util/getTonApi.js";
 import { hideAddress } from "../utils/hideAddress.js";
 import { sleep } from "../utils/sleep.js";
 import { claimRewardByUser } from "./rewards.js";
+import { log } from "../utils/log.js";
 
 export const getWinnerId = async (game) => {
   const res = await getTonApi(
     `blockchain/accounts/${game.address}/methods/get_last_winner`
   );
   if (res.error) {
-    console.log("WINNER.ERROR >", res.error);
+    log("WINNER.ERROR >");
+    log(res.error);
     return { id: -1, address: "0" };
   }
   const slice = res.stack;
@@ -34,7 +36,7 @@ export const getWinnerId = async (game) => {
   });
 
   if (!winnerUser) {
-    console.log("WINNER.USER > [NOT FOUND]");
+    log("WINNER.USER > [NOT FOUND]");
     return { id: -1, address: "0" };
   }
 
@@ -52,9 +54,9 @@ export const getWinnerId = async (game) => {
     );
   } catch {}
 
-  console.log(winner.address.toRawString());
-  console.log(gameData.players);
-  console.log(winnerUser);
+  log(winner.address.toRawString());
+  log(gameData.players);
+  log(winnerUser);
 
   let winnerIndexByAddress = -1;
   try {
@@ -65,9 +67,9 @@ export const getWinnerId = async (game) => {
 
   const winnerIndex =
     winnerIndexByAddress !== -1 ? winnerIndexByAddress : winnerIndexById;
-  if (winnerIndex === -1) console.log("WINNER.NUMBER > [NOT FOUND]");
+  if (winnerIndex === -1) log("WINNER.NUMBER > [NOT FOUND]");
   else {
-    console.log(`WINNER.NUMBER > ${winnerIndex}`);
+    log(`WINNER.NUMBER > ${winnerIndex}`);
 
     claimRewardByUser(winnerUser, `win-1`);
   }
@@ -92,13 +94,14 @@ export const getTransactionHash = async (game, winnerAddress) => {
     );
 
     if (data.error) {
-      console.log("WINNER.ERROR >", res.error);
+      log("WINNER.ERROR >");
+      log(res.error);
       return "0";
     }
     // for (const transaction of data.transactions) {
-    //   console.log(transaction);
+    //   log(transaction);
     //   if (transaction?.in_msg?.decoded_body?.text) {
-    //     console.log(transaction?.in_msg?.decoded_body?.text);
+    //     log(transaction?.in_msg?.decoded_body?.text);
     //   }
     // }
 
@@ -107,13 +110,13 @@ export const getTransactionHash = async (game, winnerAddress) => {
         transaction?.in_msg?.decoded_body?.text &&
         transaction?.in_msg?.decoded_body?.text == "Notto: You won the game!"
     );
-    if (!!outTrasaction?.hash)
-      console.log("WINNER.TRANSACTION >", outTrasaction.hash);
-    else console.log("WINNER.TRANSACTION > [NOT FOUND]");
+    if (!!outTrasaction?.hash) log("WINNER.TRANSACTION >", outTrasaction.hash);
+    else log("WINNER.TRANSACTION > [NOT FOUND]");
     hash = outTrasaction?.hash ?? "0";
     return hash;
   } catch (error) {
-    console.log("WINNER.TRANSACTION !ERORR! >", error);
+    log("WINNER.TRANSACTION !ERORR! >");
+    log(error);
     return "0";
   }
 };
@@ -131,7 +134,7 @@ export const end_results = async (game) => {
 
   let winnerRes = await getWinnerId(game);
   while (winnerRes.id == -1) {
-    console.log("WAITING FOR WINNER...");
+    log("WAITING FOR WINNER...");
     await sleep(1000 * 5);
     winnerRes = await getWinnerId(game);
   }
@@ -152,7 +155,7 @@ export const end_results = async (game) => {
 
   let hash = await getTransactionHash(game, winnerRes.address);
   while (hash == "0") {
-    console.log("WAITING FOR TRANSACTION...");
+    log("WAITING FOR TRANSACTION...");
     await sleep(1000 * 5);
     hash = await getTransactionHash(game, winnerRes.address);
   }

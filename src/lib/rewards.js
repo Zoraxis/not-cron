@@ -1,4 +1,5 @@
 import { client } from "../index.js";
+import { log } from "../utils/log.js";
 
 const calculateUserRewards = async (user, rewardSlug) => {
   await client.connect();
@@ -9,7 +10,7 @@ const calculateUserRewards = async (user, rewardSlug) => {
 
   const reward = await rewards.findOne({ slug: rewardSlug });
   if (!reward) {
-    console.log("Reward not found by claiming reward");
+    log("Reward not found by claiming reward");
 
     return false;
   }

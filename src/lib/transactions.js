@@ -1,100 +1,25 @@
-import { Address, Cell, Dictionary, toNano } from "@ton/ton";
+import { Address, Cell, Dictionary, toNano, TonClient } from "@ton/ton";
 import { games } from "../index.js";
-import axios from "axios";
 import dotenv from "dotenv";
 import { PayedSocketHandle } from "../socket/game/payed.js";
 import { sleep } from "../utils/sleep.js";
+import { log } from "../utils/log.js";
 dotenv.config();
-
-const { TONAPI_KEY } = process.env;
-const TONAPI_URL = "https://testnet.tonapi.io/v2/";
-
-async function checkTransaction(game, database) {
-  let found = 0;
-  let awaiting = 0;
-  let errors = 0;
-  try {
-    const { gameId, address, lastFetchedLt } = game;
-    const correctAddress = Address.parseFriendly(address).address.toString();
-
-    const games = database.collection("games");
-    const transaction_pool = database.collection("transaction_pool");
-
-    // Get transactions for the contract
-    // const txResponse = await axios.get(
-    //   `${TONCENTER_API_URL}getTransactions?api_key=${TONCENTER_KEY}&address=${correctAddress}&lt=${
-    //     lastFetchedLt ?? 0
-    //   }`
-    // );
-
-    const awaitingTransactions = await transaction_pool
-      .find({ gameId })
-      .toArray();
-
-    if (awaitingTransactions.length == 0) return "-:-";
-
-    const txResponse = await axios.get(
-      `${TONAPI_URL}blockchain/accounts/${correctAddress}/transactions?after_lt=${
-        lastFetchedLt ?? 31650441000000
-      }`,
-      {
-        headers: {
-          Authorization: `Bearer ${TONAPI_KEY}`,
-        },
-      }
-    );
-    const transactions = txResponse.data.transactions;
-
-    found = transactions.length;
-    for (let i = 0; i < transactions.length; i++) {
-      // console.log("New transaction detected:", transactions[i]);
-      if (i === transactions.length - 1) {
-        const { lt } = transactions[i];
-        await games.updateOne({ gameId }, { $set: { lastFetchedLt: lt } });
-      }
-
-      // TODO: Check if transaction is incoming
-      const source = transactions[i].in_msg?.source.address;
-
-      const isAwaiting = awaitingTransactions.find(
-        (at) => at.address == source
-      );
-      if (!isAwaiting) {
-        continue;
-      }
-
-      awaiting++;
-      const { value } = transactions[i].in_msg;
-      console.log("Transaction value:", value, toNano(game.entry));
-      const isPaid = BigInt(value) >= toNano(game.entry);
-
-      if (!isPaid) continue;
-
-      PayedSocketHandle({
-        gameId,
-        address: isAwaiting.address,
-      });
-    }
-  } catch (error) {
-    errors++;
-  }
-
-  return `${found}:${awaiting}${errors > 0 ? `-${errors}` : ""}`;
-}
 
 export const check_transaction = async (gameId) => {
   try {
-    const rawAddress = Address.parseFriendly(
-      games[gameId].address
-    ).address.toRawString();
-    const res = await axios.get(
-      `https://testnet.tonapi.io/v2/blockchain/accounts/${rawAddress}/methods/get_players`
+    const client = new TonClient({
+      endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
+    });
+    const res = await client.runMethod(
+      Address.parse(games[gameId].address),
+      "get_players"
     );
-    if (!res?.data) {
+    if (!res) {
       return;
     }
 
-    const cell = Cell.fromBoc(Buffer.from(res?.data?.stack[0].cell, "hex"))[0];
+    const cell = Cell.fromBoc(Buffer.from(res?.stack[0].cell, "hex"))[0];
 
     const playersCell = Dictionary.loadDirect(
       Dictionary.Keys.Uint(8),
@@ -108,7 +33,7 @@ export const check_transaction = async (gameId) => {
     );
 
     if (filteredPlayers.length === 0) {
-      // console.log("NO |NEW| PLAYERS");
+      log("NO |NEW| PLAYERS", "transactions");
       return;
     }
 
@@ -116,10 +41,10 @@ export const check_transaction = async (gameId) => {
       PayedSocketHandle({ gameId, address: player.toRawString() });
     }
     games[gameId].prize += games[gameId].entry * filteredPlayers.length;
-    console.log("GAME JOINED:", filteredPlayers);
+    log("GAME JOINED:", "transactions");
+    log(filteredPlayers, "transactions");
   } catch (e) {
-    // console.log("NO PLAYERS");
-    // console.log("NO PLAYERS", e);
+    log("NO PLAYERS", "transactions");
   }
 };
 
@@ -130,6 +55,7 @@ export const check_transactions = async () => {
     await check_transaction(id);
     await sleep(600);
   }
+  log("==============", "transactions")
 };
 
 // export const check_transactions = async () => {
@@ -142,5 +68,5 @@ export const check_transactions = async () => {
 //     const res = await checkTransaction(game, database);
 //     reportString += `${res} `;
 //   }
-//   // console.log(reportString);
+//   // log(reportString);
 // };

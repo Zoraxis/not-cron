@@ -15,6 +15,7 @@ import { gameGetHandler } from "./utils/gameGet.js";
 import { check_transactions } from "./lib/transactions.js";
 import { stats_page } from "./routes/stats_page.js";
 import { admin_page } from "./routes/admin/admin_page.js";
+import { log } from "./utils/log.js";
 dotenv.config();
 
 const { MONGO_URI } = process.env;
@@ -36,6 +37,7 @@ export let games = {};
 export let history = [0, 0, 0, 0];
 export let connectedUsers = [];
 export let walletsToDisconnect = [];
+export let log_zones = [];
 
 export const client = new MongoClient(MONGO_URI, {
   serverApi: {
@@ -51,7 +53,7 @@ const setup = async () => {
     game.lastUpdated = Date.now();
     games[i] = game;
   }
-  console.log(games);
+  log(games);
 };
 
 setup();
@@ -60,11 +62,11 @@ export const findUserBySocketId = (socketId) =>
   connectedUsers.findIndex((user) => user.id === socketId);
 
 io.on("connection", (socket) => {
-  console.log(`SOCKET.U > [${connectedUsers.length}] + 1 | ${socket.id}`);
+  log(`SOCKET.U > [${connectedUsers.length}] + 1 | ${socket.id}`);
   connectedUsers.push({ id: socket.id, address: "" });
 
   socket.on("disconnect", () => {
-    console.log(`SOCKET.U > [${connectedUsers.length}] - 1`);
+    log(`SOCKET.U > [${connectedUsers.length}] - 1`);
     const index = findUserBySocketId(socket.id);
     if (index === -1) return;
     connectedUsers.splice(index, 1);
@@ -75,7 +77,7 @@ io.on("connection", (socket) => {
   // );
 
   // socket.on("connection.address.removed", async () => {
-  //   console.log("WALLET.DISCONNECTED > ", socket.id);
+  //   log("WALLET.DISCONNECTED > ", socket.id);
   //   const index = walletsToDisconnect.findIndex((x) => x.id === socket.id);
   //   walletsToDisconnect.splice(index, 1);
   //   const uindex = findUserBySocketId(socket.id);
@@ -101,11 +103,11 @@ io.on("connection", (socket) => {
 });
 
 app.listen(3010, () => {
-  console.log("server is running on port 3010");
+  log("server is running on port 3010");
 });
 
 server.listen(3011, () => {
-  console.log("websocket running at http://localhost:3011");
+  log("websocket running at http://localhost:3011");
 });
 
 app.get("/", stats_page);

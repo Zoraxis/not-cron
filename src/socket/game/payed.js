@@ -2,6 +2,7 @@ import { client } from "../../index.js";
 import dotenv from "dotenv";
 import { JoinedHandle } from "../../routes/loto/join.js";
 import { claimRewardByUser } from "../../lib/rewards.js";
+import { log } from "../../utils/log.js";
 dotenv.config();
 
 export const PayedSocketHandle = async ({ gameId, address }) => {
@@ -101,8 +102,8 @@ export const PayedSocketHandle = async ({ gameId, address }) => {
   );
 
   if (result.modifiedCount === 1) {
-    console.log("GAME.JOIN > POS");
+    log("GAME.JOIN > POS");
   } else {
-    console.log("GAME.JOIN > NEG");
+    log("GAME.JOIN > NEG");
   }
 };
