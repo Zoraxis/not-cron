@@ -8,7 +8,6 @@ export const end_server = async (period) => {
   const stats = await db.collection("stats");
 
   const game = await games.findOne({ gameId: parseInt(period) });
-  const playersCount = game?.players.length;
 
   const { _id, ...gameData } = game;
 

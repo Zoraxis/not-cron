@@ -33,7 +33,10 @@ export const getWinnerId = async (game) => {
     address: winner.address.toRawString(),
   });
 
-  claimRewardByUser(winnerUser, `win-1`);
+  if (!winnerUser) {
+    console.log("WINNER.USER > [NOT FOUND]");
+    return { id: -1, address: "0" };
+  }
 
   const { _id, ...gameData } = game;
   let winnerIndexById = -1;
@@ -63,7 +66,11 @@ export const getWinnerId = async (game) => {
   const winnerIndex =
     winnerIndexByAddress !== -1 ? winnerIndexByAddress : winnerIndexById;
   if (winnerIndex === -1) console.log("WINNER.NUMBER > [NOT FOUND]");
-  else console.log(`WINNER.NUMBER > ${winnerIndex}`);
+  else {
+    console.log(`WINNER.NUMBER > ${winnerIndex}`);
+
+    claimRewardByUser(winnerUser, `win-1`);
+  }
 
   return { id: winnerIndex, address: winnerAddress };
 };
