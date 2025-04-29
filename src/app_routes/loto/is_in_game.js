@@ -1,13 +1,14 @@
 import { client } from "../../index.js";
+import Cookies from 'cookies';
 
 export const LotoIsInGameHandler = async (req, res) => {
   try {
     const { period } = req.params;
-    const cookieStore = cookies();
+    let cookies = new Cookies(req, res)
 
     let address;
     try {
-      const { value } = cookieStore.get("x-user-adress");
+      const { value } = cookies.get("x-user-adress");
       address = value;
     } catch {
       return res.send({ message: "User not found", status: 400 });
