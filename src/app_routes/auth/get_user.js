@@ -1,17 +1,12 @@
 import { client } from "../../index.js";
-import Cookies from 'cookies';
+import Cookies from "cookies";
 
 export const User = async (req, res) => {
-  let cookies = new Cookies(req, res)
+  const cookies = new Cookies(req, res);
 
-  let address;
-  try {
-    const { value } = cookies.get("x-user-adress");
-    address = value;
-  } catch {
-    return res.send({ message: "User not found", status: 400 });
-  }
-  
+  const address = cookies.get("x-user-adress");
+  if (!address) return res.send({ message: "User not found", status: 400 });
+
   const db = client.db("notto");
   const collection = db.collection("users");
 

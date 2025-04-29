@@ -3,22 +3,12 @@ import Cookies from 'cookies';
 import { claimRewardByUser } from "../../lib/rewards.js";
 
 export const UserPost = async (req, res) => {
-  let cookies = new Cookies(req, res)
+  const cookies = new Cookies(req, res)
 
-  let address;
-  try {
-    const { value } = cookies.get("x-user-adress");
-    address = value;
-  } catch {
-    return res.send({ message: "User not found", status: 400 });
-  }
+  const address = cookies.get("x-user-adress");
+  if (!address) return res.send({ message: "User not found", status: 400 });
   
-  let referal = null;
-  try {
-    const { value } = cookies.get("x-user-referal");
-    referal = value;
-  } catch {
-  }
+  const referal = cookies.get("x-user-referal");
   
   const { name } = req.body;
 
