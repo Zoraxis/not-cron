@@ -1,4 +1,4 @@
-import { coin_rates } from "../..";
+import { coin_rates } from "../../index.js";
 
 export const BlockchainCoinRate = async (req, res) => {
   const { coin } = req.params;
