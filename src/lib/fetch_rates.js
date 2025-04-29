@@ -1,5 +1,5 @@
 import { coin_rates } from "../index.js";
-import { axios } from 'axios';
+import axios from 'axios';
 
 export const fetch_rates = async () => {
     const { data: tonData } = await axios.get(
