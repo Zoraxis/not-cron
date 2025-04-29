@@ -22,6 +22,7 @@ import { HistoryWinners } from "./app_routes/history/winners.js";
 import { fetch_rates } from "./lib/fetch_rates.js";
 import { User } from "./app_routes/auth/get_user.js";
 import { UserPost } from "./app_routes/auth/post_user.js";
+import { BlockchainCoinRate } from "./app_routes/blockchain/rate.js";
 dotenv.config();
 
 const { MONGO_URI } = process.env;
@@ -121,7 +122,7 @@ app.get("/api/history/:period/winners", HistoryWinners);
 
 app.get("/api/rewards", Rewards);
 
-app.get("/api/:coin/rate", LotoIsInGameHandler);
+app.get("/api/:coin/rate", BlockchainCoinRate);
 // #endregion
 
 app.get("/api/status", (req, res) => {
