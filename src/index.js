@@ -19,6 +19,7 @@ import { LotoFee } from "./app_routes/loto/fetch_fee.js";
 import { Rewards } from "./app_routes/rewards/get_rewards.js";
 import { History } from "./app_routes/history/get_history.js";
 import { HistoryWinners } from "./app_routes/history/winners.js";
+import { fetch_rates } from "./lib/fetch_rates";
 dotenv.config();
 
 const { MONGO_URI } = process.env;
@@ -59,6 +60,7 @@ const setup = async () => {
     games[i] = game;
   }
   log(games);
+  fetch_rates();
 };
 
 setup();
@@ -130,7 +132,7 @@ app.post("/utils/logs", LogToggleHandle);
 
 cron.schedule(`*/10 * * * * *`, check_time);
 cron.schedule("*/6 * * * * *", check_transactions);
-cron.schedule("* * */3 * * *", check_transactions);
+cron.schedule("* * */3 * * *", fetch_rates);
 
 //3600000
 //2592000000
