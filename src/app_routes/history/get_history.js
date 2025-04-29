@@ -6,7 +6,7 @@ export const History = async (req, res) => {
 
   const stat = await stats.findOne({ stat: 1 });
 
-  return req.send({
+  return res.send({
     totalAmount: stat?.prize ?? 0,
     totalPlayers: stat?.players ?? 0,
   });

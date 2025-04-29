@@ -10,7 +10,7 @@ export const Rewards = async (req, res) => {
     address = value;
   } catch {
     console.log("empty address");
-    return req.send({ message: "User not found", status: 400 });
+    return res.send({ message: "User not found", status: 400 });
   }
 
   const db = client.db("notto");
@@ -20,7 +20,7 @@ export const Rewards = async (req, res) => {
     address,
   });
 
-  return req.send({
+  return res.send({
     rewards: user?.rewards,
     rewardsc: user?.rewardsc,
   });

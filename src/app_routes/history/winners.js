@@ -1,7 +1,7 @@
 import { client } from "../../index.js";
 
 export const HistoryWinners = async (req, res) => {
-  const { period } = params.params;
+  const { period } = req.params;
 
   const db = client.db("notto");
   const archive = db.collection("archive_games");
@@ -23,5 +23,5 @@ export const HistoryWinners = async (req, res) => {
     date: winnerRaw.endedAt,
     currency: winnerRaw.coin,
   }));
-  return req.send(winners);
+  return res.send(winners);
 };
