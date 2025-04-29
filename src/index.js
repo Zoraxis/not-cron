@@ -11,10 +11,10 @@ import { check_wallet_disconnect } from "./socket/wallet/check_wallet_disconnect
 import { gameGetHandler } from "./utils/gameGet.js";
 import { check_transactions } from "./lib/transactions.js";
 import { stats_page } from "./routes/stats_page.js";
-import { admin_page } from "./routes/admin/admin_page.js";
 import { log } from "./utils/log.js";
 import { LogToggleHandle } from "./routes/utils/log_toggle.js";
 import { TimeoutRouteHandle } from "./routes/utils/timeout.js";
+import { LotoPeriodHandle } from "./app_routes/loto/period.js";
 dotenv.config();
 
 const { MONGO_URI } = process.env;
@@ -96,7 +96,10 @@ server.listen(3011, () => {
 });
 
 app.get("/", stats_page);
-app.get("/admin", admin_page);
+
+// #region App Routes
+app.get("/loto/:period/period", LotoPeriodHandle);
+// #endregion
 
 app.get("/api/status", (req, res) => {
   res.json({
