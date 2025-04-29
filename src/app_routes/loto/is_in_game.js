@@ -10,7 +10,6 @@ export const LotoIsInGameHandler = async (req, res) => {
       const { value } = cookieStore.get("x-user-adress");
       address = value;
     } catch {
-      console.log("empty address");
       return res.send({ message: "User not found", status: 400 });
     }
 
