@@ -104,16 +104,16 @@ server.listen(3011, () => {
 app.get("/", stats_page);
 
 // #region App Routes
-app.get("/loto/:period/period", LotoPeriodHandle);
-app.get("/loto/:period/is_in_game", LotoIsInGameHandler);
-app.get("/loto/fee", LotoFee);
+app.get("/api/loto/:period/period", LotoPeriodHandle);
+app.get("/api/loto/:period/is_in_game", LotoIsInGameHandler);
+app.get("/api/loto/fee", LotoFee);
 
-app.get("/history/:period", History);
-app.get("/history/:period/winners", HistoryWinners);
+app.get("/api/history/:period", History);
+app.get("/api/history/:period/winners", HistoryWinners);
 
-app.get("/rewards", Rewards);
+app.get("/api/rewards", Rewards);
 
-app.get("/:coin/rate", LotoIsInGameHandler);
+app.get("/api/:coin/rate", LotoIsInGameHandler);
 // #endregion
 
 app.get("/api/status", (req, res) => {
