@@ -19,7 +19,9 @@ import { LotoFee } from "./app_routes/loto/fetch_fee.js";
 import { Rewards } from "./app_routes/rewards/get_rewards.js";
 import { History } from "./app_routes/history/get_history.js";
 import { HistoryWinners } from "./app_routes/history/winners.js";
-import { fetch_rates } from "./lib/fetch_rates";
+import { fetch_rates } from "./lib/fetch_rates.js";
+import { User } from "./app_routes/auth/get_user.js";
+import { UserPost } from "./app_routes/auth/post_user.js";
 dotenv.config();
 
 const { MONGO_URI } = process.env;
@@ -106,6 +108,10 @@ server.listen(3011, () => {
 app.get("/", stats_page);
 
 // #region App Routes
+app.get("/api/auth", User);
+app.post("/api/auth", UserPost);
+app.put("/api/auth", LotoPeriodHandle);
+
 app.get("/api/loto/:period/period", LotoPeriodHandle);
 app.get("/api/loto/:period/is_in_game", LotoIsInGameHandler);
 app.get("/api/loto/fee", LotoFee);
