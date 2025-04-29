@@ -23,6 +23,7 @@ import { fetch_rates } from "./lib/fetch_rates.js";
 import { User } from "./app_routes/auth/get_user.js";
 import { UserPost } from "./app_routes/auth/post_user.js";
 import { BlockchainCoinRate } from "./app_routes/blockchain/rate.js";
+import { UserPut } from "./app_routes/auth/put_user.js";
 dotenv.config();
 
 const { MONGO_URI } = process.env;
@@ -111,7 +112,7 @@ app.get("/", stats_page);
 // #region App Routes
 app.get("/api/auth", User);
 app.post("/api/auth", UserPost);
-app.put("/api/auth", LotoPeriodHandle);
+app.put("/api/auth", UserPut);
 
 app.get("/api/loto/:period/period", LotoPeriodHandle);
 app.get("/api/loto/:period/is_in_game", LotoIsInGameHandler);

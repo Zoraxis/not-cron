@@ -1,14 +1,11 @@
 import { client } from "../../index.js";
-import Cookies from 'cookies';
 import { claimRewardByUser } from "../../lib/rewards.js";
 
 export const UserPost = async (req, res) => {
-  const cookies = new Cookies(req, res)
-
-  const address = cookies.get("x-user-adress");
+  const address = req.headers["x-user-adress"];
   if (!address) return res.send({ message: "User not found", status: 400 });
   
-  const referal = cookies.get("x-user-referal");
+  const referal = req.headers["x-user-referal"];
   
   const { name } = req.body;
 
