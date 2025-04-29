@@ -11,5 +11,5 @@ export const User = async (req, res) => {
     address,
   });
 
-  return req.send(user);
+  return res.send(user);
 };
