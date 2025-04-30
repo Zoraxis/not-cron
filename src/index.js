@@ -24,6 +24,7 @@ import { User } from "./app_routes/auth/get_user.js";
 import { UserPost } from "./app_routes/auth/post_user.js";
 import { BlockchainCoinRate } from "./app_routes/blockchain/rate.js";
 import { UserPut } from "./app_routes/auth/put_user.js";
+import { BlockchainCheckRandom } from "./app_routes/blockchain/check_random.js";
 dotenv.config();
 
 const { MONGO_URI } = process.env;
@@ -123,6 +124,7 @@ app.get("/api/history/:period/winners", HistoryWinners);
 
 app.get("/api/rewards", Rewards);
 
+app.get("/api/check_random/:tx", BlockchainCheckRandom);
 app.get("/api/:coin/rate", BlockchainCoinRate);
 // #endregion
 
