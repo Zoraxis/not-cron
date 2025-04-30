@@ -2,7 +2,7 @@ import { client } from "../../index.js";
 import { getTonApi } from "../../utils/getTonApi.js";
 
 export const BlockchainCheckRandom = async (req, res) => {
-  const { tx, id } = req.params;
+  const { tx, id } = req.query;
 
   const db = client.db("notto");
   const archive_games = db.collection("archive_games");

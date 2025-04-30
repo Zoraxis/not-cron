@@ -124,7 +124,7 @@ app.get("/api/history/:period/winners", HistoryWinners);
 
 app.get("/api/rewards", Rewards);
 
-app.get("/api/check_random/:tx/:id", BlockchainCheckRandom);
+app.get("/api/check_random", BlockchainCheckRandom);
 app.get("/api/:coin/rate", BlockchainCoinRate);
 // #endregion
 
