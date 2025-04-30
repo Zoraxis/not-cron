@@ -2,13 +2,14 @@ import { client } from "../../index.js";
 import { getTonApi } from "../../utils/getTonApi.js";
 
 export const BlockchainCheckRandom = async (req, res) => {
-  const { tx } = req.params;
+  const { tx, id } = req.params;
 
   const db = client.db("notto");
   const archive_games = db.collection("archive_games");
 
   const game = await archive_games.findOne({
     transaction: tx,
+    gameId: id
   });
 
   if (!game) {
@@ -16,11 +17,9 @@ export const BlockchainCheckRandom = async (req, res) => {
   }
 
   let data = { error: true };
-  while (data.error) {
+  while (!!data?.error) {
     data = await getTonApi(`blockchain/transactions/${tx}`);
-    if (data.error) {
-      await sleep(1000);
-    }
+    if (!!data?.error) await sleep(1000);
   }
 
   res.send({
