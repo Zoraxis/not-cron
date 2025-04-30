@@ -9,12 +9,9 @@ export const BlockchainCheckRandom = async (req, res) => {
 
   const game = await archive_games.findOne({
     transaction: tx,
-    gameId: id
   });
 
-  if (!game) {
-    return res.send({ message: "Game not found", status: 400 });
-  }
+  if (!game) return res.send({ message: "Game not found", status: 400 });
 
   let data = { error: true };
   while (!!data?.error) {
