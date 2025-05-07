@@ -19,7 +19,7 @@ export const HistoryWinners = async (req, res) => {
     prize: winnerRaw.prize * winnerRaw.fee,
     address: winnerRaw?.winner,
     transaction: winnerRaw?.transaction ?? "N/A",
-    id: winnerRaw?._id.id,
+    id: winnerRaw?._id,
     winnerNumber: winnerRaw?.winnerNumber,
     date: winnerRaw.endedAt,
     currency: winnerRaw.coin,
