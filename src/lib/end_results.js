@@ -13,11 +13,11 @@ export const getWinnerId = async (game) => {
     log(res.error);
     return { id: -1, address: "0" };
   }
-  const slice = data.stack;
-  const winnerAddress = Cell.fromBoc(Buffer.from(slice[0].cell, "hex"))[0]
+  const winnerAddress = Cell.fromBoc(Buffer.from(data?.stack[0].cell, "hex"))[0]
     .beginParse()
     .loadAddress()
     .toString();
+  log(winnerAddress);
 
   await client.connect();
   const db = client.db("notto");
@@ -83,7 +83,7 @@ export const getTransactionHash = async (game, winnerAddress) => {
 
     const data = await tonClient.getTransactions(winnerAddress, {
       lt: lastTransLt - 500,
-    })
+    });
     log(data);
 
     if (data.error) {
