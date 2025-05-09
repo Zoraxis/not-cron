@@ -1,28 +1,22 @@
+import { ObjectId } from "mongodb";
 import { client } from "../../index.js";
-import { getTonApi } from "../../utils/getTonApi.js";
 
 export const BlockchainCheckRandom = async (req, res) => {
-  const { tx } = req.query;
+  const { id } = req.query;
 
   const db = client.db("notto");
   const archive_games = db.collection("archive_games");
 
   const game = await archive_games.findOne({
-    _id: tx,
+    _id: new ObjectId(id),
   });
 
   if (!game) return res.send({ message: "Game not found", status: 400 });
 
-  let data = { error: true };
-  while (!!data?.error) {
-    data = await getTonApi(`blockchain/transactions/${tx}`);
-    if (!!data?.error) await sleep(1000);
-  }
-
   res.send({
-    hash: data.hash,
-    cur_lt: data.lt,
-    block_lt: data.block,
+    hash: game?.hash ?? 999000999,
+    cur_lt: game?.cur_lt ?? 999000999,
+    block_lt: game?.block_lt ?? 999000999,
     prize: game.prize,
     players: game.players,
     endedAt: game.endedAt,

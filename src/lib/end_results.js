@@ -1,21 +1,19 @@
-import { address, Address, Cell } from "@ton/ton";
-import { client, history } from "../index.js";
-import { getTonApi } from "../utils/getTonApi.js";
+import { Address, Cell } from "@ton/ton";
+import { client, history, tonClient } from "../index.js";
 import { hideAddress } from "../utils/hideAddress.js";
 import { sleep } from "../utils/sleep.js";
 import { claimRewardByUser } from "./rewards.js";
 import { log } from "../utils/log.js";
 
 export const getWinnerId = async (game) => {
-  const res = await getTonApi(
-    `blockchain/accounts/${game.address}/methods/get_last_winner`
-  );
+  const data = await tonClient.runMethod(game.address, "get_last_winner", []);
+  log(data);
   if (res.error) {
     log("WINNER.ERROR >");
     log(res.error);
     return { id: -1, address: "0" };
   }
-  const slice = res.stack;
+  const slice = data.stack;
   const winnerAddress = Cell.fromBoc(Buffer.from(slice[0].cell, "hex"))[0]
     .beginParse()
     .loadAddress()
@@ -82,16 +80,15 @@ export const getTransactionHash = async (game, winnerAddress) => {
   try {
     if ((game?.players?.length ?? 0) == 0) return;
 
-    const accData = await getTonApi(`blockchain/accounts/${winnerAddress}`);
+    const accData = await tonClient.getAccount(winnerAddress);
     const lastTransLt = accData.last_transaction_lt;
 
     await sleep(1000 * 1);
 
-    const data = await getTonApi(
-      `blockchain/accounts/${winnerAddress}/transactions?after_lt=${
-        lastTransLt - 500
-      }`
-    );
+    const data = await tonClient.getTransactions(winnerAddress, {
+      lt: lastTransLt - 500,
+    })
+    log(data);
 
     if (data.error) {
       log("WINNER.ERROR >");
@@ -110,6 +107,7 @@ export const getTransactionHash = async (game, winnerAddress) => {
         transaction?.in_msg?.decoded_body?.text &&
         transaction?.in_msg?.decoded_body?.text == "Notto: You won the game!"
     );
+    log(outTrasaction);
     if (!!outTrasaction?.hash) log("WINNER.TRANSACTION >", outTrasaction.hash);
     else log("WINNER.TRANSACTION > [NOT FOUND]");
     hash = outTrasaction?.hash ?? "0";

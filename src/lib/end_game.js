@@ -3,6 +3,7 @@ import { mnemonicToWalletKey } from "@ton/crypto";
 import { sleep } from "../utils/sleep.js";
 import { log } from "../utils/log.js";
 import { mnemonic } from "../constants/mnemonic.js";
+import { tonClient } from "../index.js";
 
 export const end_game = async (address) => {
   const key = await mnemonicToWalletKey(mnemonic.split(" "));
@@ -10,20 +11,15 @@ export const end_game = async (address) => {
 
   try {
     log("==============================");
-    const client = new TonClient({
-      endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
-      apiKey:
-        "94730209e75a9928c1b0b24b62ed308858d6e9b1b4001b795b2364bdbd752455",
-    });
 
-    if (!(await client.isContractDeployed(wallet.address))) {
+    if (!(await tonClient.isContractDeployed(wallet.address))) {
       return log("wallet is not deployed");
     }
 
-    const balance = await client.getBalance(wallet.address);
+    const balance = await tonClient.getBalance(wallet.address);
     log("BALANCE:");
     log(fromNano(balance));
-    const walletContract = client.open(wallet);
+    const walletContract = tonClient.open(wallet);
     const seqno = await walletContract.getSeqno();
     const payload = beginCell()
       .storeUint(0x87f29cf5, 32)
@@ -48,6 +44,7 @@ export const end_game = async (address) => {
     while (currentSeqno == seqno) {
       await sleep(1500);
       currentSeqno = await walletContract.getSeqno();
+      walletContract
     }
     log(`END.PAY.BLOCKCHAIN POS - D:${new Date().toTimeString()}`);
   } catch (e) {

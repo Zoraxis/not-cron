@@ -25,6 +25,7 @@ import { UserPost } from "./app_routes/auth/post_user.js";
 import { BlockchainCoinRate } from "./app_routes/blockchain/rate.js";
 import { UserPut } from "./app_routes/auth/put_user.js";
 import { BlockchainCheckRandom } from "./app_routes/blockchain/check_random.js";
+import { TonClient } from "@ton/ton";
 dotenv.config();
 
 const { MONGO_URI } = process.env;
@@ -56,6 +57,12 @@ export const client = new MongoClient(MONGO_URI, {
     strict: true,
     deprecationErrors: true,
   },
+});
+
+export const tonClient = new TonClient({
+  endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
+  apiKey:
+    "94730209e75a9928c1b0b24b62ed308858d6e9b1b4001b795b2364bdbd752455",
 });
 
 const setup = async () => {

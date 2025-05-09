@@ -1,9 +1,8 @@
 import { Address, Cell, Dictionary, toNano, TonClient } from "@ton/ton";
-import { games } from "../index.js";
+import { games, tonClient } from "../index.js";
 import dotenv from "dotenv";
 import { PayedSocketHandle } from "../socket/game/payed.js";
 import { sleep } from "../utils/sleep.js";
-import axios from "axios";
 import { log } from "../utils/log.js";
 dotenv.config();
 
@@ -12,15 +11,9 @@ export const check_transaction = async (gameId) => {
     const rawAddress = Address.parseFriendly(
       games[gameId].address
     ).address.toRawString();
-    const res = await axios.get(
-      `https://testnet.tonapi.io/v2/blockchain/accounts/${rawAddress}/methods/get_players`
-    );
-    if (!res?.data) {
-      return;
-    }
+    const data = await tonClient.runMethod(rawAddress, "get_players", []);
 
-    const cell = Cell.fromBoc(Buffer.from(res?.data?.stack[0].cell, "hex"))[0];
-
+    const cell = Cell.fromBoc(Buffer.from(data?.stack[0].cell, "hex"))[0];
     const playersCell = Dictionary.loadDirect(
       Dictionary.Keys.Uint(8),
       Dictionary.Values.Address(),
