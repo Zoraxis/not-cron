@@ -2,6 +2,7 @@ import { log_zones } from "../index.js";
 
 export const log = (message, zone) => {
   if (!log_zones.includes(zone) && !!zone) return;
+  if (!message) return;
 
   const date = new Date();
   const formattedDate = date.toISOString().replace("T", " ").split(".")[0];

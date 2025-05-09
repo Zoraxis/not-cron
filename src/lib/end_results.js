@@ -8,7 +8,7 @@ import { log } from "../utils/log.js";
 export const getWinnerId = async (game) => {
   const data = await tonClient.runMethod(game.address, "get_last_winner", []);
   log(data);
-  log(data?.stack[0]);
+  log(data?.stack);
   if (data.error) {
     log("WINNER.ERROR >");
     log(res.error);
