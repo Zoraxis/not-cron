@@ -13,11 +13,10 @@ export const check_transaction = async (gameId) => {
     ).address.toRawString();
     const data = await tonClient.runMethod(rawAddress, "get_players", []);
 
-    const cell = Cell.fromBoc(Buffer.from(data?.stack[0].cell, "hex"))[0];
     const playersCell = Dictionary.loadDirect(
       Dictionary.Keys.Uint(8),
       Dictionary.Values.Address(),
-      cell
+      data?.stack.readCell()
     );
     const players = playersCell.values();
     const filteredPlayers = Array.from(players).filter(

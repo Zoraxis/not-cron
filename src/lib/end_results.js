@@ -7,19 +7,12 @@ import { log } from "../utils/log.js";
 
 export const getWinnerId = async (game) => {
   const data = await tonClient.runMethod(game.address, "get_last_winner", []);
-  log(data);
-  log(data?.stack);
-  log(data?.stack.readAddress());
-  log(data?.stack.items);
   if (data.error) {
     log("WINNER.ERROR >");
     log(res.error);
     return { id: -1, address: "0" };
   }
-  const winnerAddress = Cell.fromBoc(Buffer.from(data?.stack[0].cell, "hex"))[0]
-    .beginParse()
-    .loadAddress()
-    .toString();
+  const winnerAddress = data?.stack.readAddress().toString();
   log(winnerAddress);
 
   await client.connect();
