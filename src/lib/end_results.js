@@ -8,7 +8,7 @@ import { log } from "../utils/log.js";
 export const getWinnerId = async (game) => {
   const data = await tonClient.runMethod(game.address, "get_last_winner", []);
   log(data);
-  if (res.error) {
+  if (data.error) {
     log("WINNER.ERROR >");
     log(res.error);
     return { id: -1, address: "0" };
@@ -18,10 +18,6 @@ export const getWinnerId = async (game) => {
     .beginParse()
     .loadAddress()
     .toString();
-
-  const gameRawAddress = Address.parseFriendly(
-    game.address
-  ).address.toRawString();
 
   await client.connect();
   const db = client.db("notto");
@@ -125,8 +121,8 @@ export const end_results = async (game) => {
   await client.connect();
   const db = client.db("notto");
 
-  const settings = await db.collection("settings");
-  const archive_games = await db.collection("archive_games");
+  const settings = db.collection("settings");
+  const archive_games = db.collection("archive_games");
 
   const { _id, ...gameData } = game;
 
