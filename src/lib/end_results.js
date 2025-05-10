@@ -95,6 +95,7 @@ export const getTransactionHash = async (game, winnerAddress) => {
         log("no inMessage");
       }
     }
+    log(data.length);
 
     const outTrasaction = data.find(
       (transaction) =>
