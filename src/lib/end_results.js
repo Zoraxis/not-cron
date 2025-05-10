@@ -1,5 +1,5 @@
 import { Address } from "@ton/ton";
-import { client, history, tonClient, tonClient4 } from "../index.js";
+import { client, g_seqno, history, tonClient, tonClient4 } from "../index.js";
 import { hideAddress } from "../utils/hideAddress.js";
 import { sleep } from "../utils/sleep.js";
 import { claimRewardByUser } from "./rewards.js";
