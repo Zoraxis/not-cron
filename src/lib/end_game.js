@@ -3,9 +3,9 @@ import { mnemonicToWalletKey } from "@ton/crypto";
 import { sleep } from "../utils/sleep.js";
 import { log } from "../utils/log.js";
 import { mnemonic } from "../constants/mnemonic.js";
-import { tonClient } from "../index.js";
+import { games, tonClient } from "../index.js";
 
-export const end_game = async (address) => {
+export const end_game = async (address, gameId) => {
   const key = await mnemonicToWalletKey(mnemonic.split(" "));
   const wallet = WalletContractV5R1.create({ publicKey: key.publicKey });
 
@@ -46,6 +46,8 @@ export const end_game = async (address) => {
       currentSeqno = await walletContract.getSeqno();
       walletContract
     }
+    const state = await tonClient.getContractState(address);
+    games[gameId].seqno = state.blockId.seqno;
     log(`END.PAY.BLOCKCHAIN POS - D:${new Date().toTimeString()}`);
   } catch (e) {
     log("END.PAY.BLOCKCHAIN > NEG");

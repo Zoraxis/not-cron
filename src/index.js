@@ -64,6 +64,11 @@ export const tonClient = new TonClient({
   apiKey:
     "94730209e75a9928c1b0b24b62ed308858d6e9b1b4001b795b2364bdbd752455",
 });
+export const tonClient4= new TonClient4({
+  endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
+  apiKey:
+    "94730209e75a9928c1b0b24b62ed308858d6e9b1b4001b795b2364bdbd752455",
+});
 
 const setup = async () => {
   for (let i = 1; i <= 4; i++) {

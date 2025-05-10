@@ -24,7 +24,7 @@ export const check_time = async () => {
         log("==============================");
         log(`GAME.ENDING > G:${gameId}`);
         log(address);
-        end_game(address);
+        end_game(address, gameId);
         setTimeout(async () => {
           log(
             `END.EMIT > G:${gameId} P:${collection[i]?.players?.length}`

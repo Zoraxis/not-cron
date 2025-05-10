@@ -1,5 +1,5 @@
 import { Address } from "@ton/ton";
-import { client, history, tonClient } from "../index.js";
+import { client, games, history, tonClient, tonClient4 } from "../index.js";
 import { hideAddress } from "../utils/hideAddress.js";
 import { sleep } from "../utils/sleep.js";
 import { claimRewardByUser } from "./rewards.js";
@@ -69,7 +69,6 @@ export const getWinnerId = async (game) => {
 };
 
 export const getTransactionHash = async (game, winnerAddress) => {
-  let hash = "0";
   try {
     if ((game?.players?.length ?? 0) == 0) return;
 
@@ -85,7 +84,7 @@ export const getTransactionHash = async (game, winnerAddress) => {
     if (data.error) {
       log("WINNER.ERROR >");
       log(data.error);
-      return "0";
+      return { hash: "0" };
     }
     for (const transaction of data) {
       if (transaction?.inMessage?.info) {
@@ -101,15 +100,24 @@ export const getTransactionHash = async (game, winnerAddress) => {
         transaction?.inMessage?.info?.dest &&
         transaction?.inMessage?.info?.dest == winnerAddress
     );
-    log(outTrasaction);
-    if (!!outTrasaction?.hash) log("WINNER.TRANSACTION >", outTrasaction.hash);
+
+    const { lt: cur_lt, now, hash } = outTrasaction;
+
+    const block = await tonClient4.getBlock(games[game.gameId].seqno);
+    log(block);
+
+    log(cur_lt);
+    log(now);
+    log(outTrasaction.hash);
+
+    if (!!outTrasaction) log("WINNER.TRANSACTION >", outTrasaction.hash);
     else log("WINNER.TRANSACTION > [NOT FOUND]");
     hash = outTrasaction?.hash ?? "0";
-    return hash;
+    return { hash, cur_lt, now };
   } catch (error) {
     log("WINNER.TRANSACTION !ERORR! >");
     console.log(error);
-    return "0";
+    return { hash: "0" };
   }
 };
 
@@ -145,16 +153,18 @@ export const end_results = async (game) => {
 
   await sleep(1000 * 60 * 1.6);
 
-  let hash = await getTransactionHash(game, winnerRes.address);
-  while (hash == "0") {
+  let transaction = await getTransactionHash(game, winnerRes.address);
+  while (transaction?.hash == "0") {
     log("WAITING FOR TRANSACTION...");
     await sleep(1000 * 5);
-    hash = await getTransactionHash(game, winnerRes.address);
+    transaction = await getTransactionHash(game, winnerRes.address);
   }
+
+  const { hash, cur_lt, now } = transaction;
 
   archive_games.updateOne(
     { address: game.address, endedAt: endetAt },
-    { $set: { transaction: hash } }
+    { $set: { transaction: hash, cur_lt, now } }
   );
   history[game.gameId] = Date.now();
 };
