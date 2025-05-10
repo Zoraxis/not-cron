@@ -74,7 +74,7 @@ export const getTransactionHash = async (game, winnerAddress) => {
     if ((game?.players?.length ?? 0) == 0) return;
     log("not empty")
 
-    const accData = await tonClient4.getAccount(winnerAddress);
+    const accData = await tonClient4.getAccount(g_seqno, winnerAddress);
     log("fetched lt")
     log(accData);
     const lastTransLt = accData.last_transaction_lt;

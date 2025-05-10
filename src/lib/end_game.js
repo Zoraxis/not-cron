@@ -3,7 +3,7 @@ import { mnemonicToWalletKey } from "@ton/crypto";
 import { sleep } from "../utils/sleep.js";
 import { log } from "../utils/log.js";
 import { mnemonic } from "../constants/mnemonic.js";
-import { tonClient } from "../index.js";
+import { g_seqno, tonClient } from "../index.js";
 
 export const end_game = async (address) => {
   const key = await mnemonicToWalletKey(mnemonic.split(" "));
@@ -44,6 +44,7 @@ export const end_game = async (address) => {
     while (currentSeqno == seqno) {
       await sleep(1500);
       currentSeqno = await walletContract.getSeqno();
+      g_seqno = currentSeqno;
       walletContract
     }
     log(`END.PAY.BLOCKCHAIN POS - D:${new Date().toTimeString()}`);

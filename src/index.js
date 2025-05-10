@@ -50,6 +50,7 @@ export let walletsToDisconnect = [];
 export let log_zones = [];
 export let coin_rates = {};
 export let fee = 0.9;
+export let g_seqno = 0;
 
 export const client = new MongoClient(MONGO_URI, {
   serverApi: {
