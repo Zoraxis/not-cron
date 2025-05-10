@@ -81,7 +81,6 @@ export const getTransactionHash = async (game, winnerAddress) => {
     const data = await tonClient.getTransactions(winnerAddress, {
       lt: lastTransLt - 300,
     });
-    log(data);
 
     if (data.error) {
       log("WINNER.ERROR >");
@@ -99,8 +98,8 @@ export const getTransactionHash = async (game, winnerAddress) => {
 
     const outTrasaction = data.find(
       (transaction) =>
-        transaction?.inMessage?.dest &&
-        transaction?.inMessage?.dest == winnerAddress
+        transaction?.inMessage?.info?.dest &&
+        transaction?.inMessage?.info?.dest == winnerAddress
     );
     log(outTrasaction);
     if (!!outTrasaction?.hash) log("WINNER.TRANSACTION >", outTrasaction.hash);
