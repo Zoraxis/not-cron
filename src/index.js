@@ -50,7 +50,6 @@ export let walletsToDisconnect = [];
 export let log_zones = [];
 export let coin_rates = {};
 export let fee = 0.9;
-export let g_seqno = 0;
 
 export const client = new MongoClient(MONGO_URI, {
   serverApi: {
@@ -61,11 +60,6 @@ export const client = new MongoClient(MONGO_URI, {
 });
 
 export const tonClient = new TonClient({
-  endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
-  apiKey:
-    "94730209e75a9928c1b0b24b62ed308858d6e9b1b4001b795b2364bdbd752455",
-});
-export const tonClient4 = new TonClient4({
   endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
   apiKey:
     "94730209e75a9928c1b0b24b62ed308858d6e9b1b4001b795b2364bdbd752455",

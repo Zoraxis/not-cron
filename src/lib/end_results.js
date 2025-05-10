@@ -1,9 +1,10 @@
 import { Address } from "@ton/ton";
-import { client, g_seqno, history, tonClient, tonClient4 } from "../index.js";
+import { client, history, tonClient } from "../index.js";
 import { hideAddress } from "../utils/hideAddress.js";
 import { sleep } from "../utils/sleep.js";
 import { claimRewardByUser } from "./rewards.js";
 import { log } from "../utils/log.js";
+import { getTonApi } from "../utils/getTonApi.js";
 
 export const getWinnerId = async (game) => {
   const data = await tonClient.runMethod(game.address, "get_last_winner", []);
@@ -70,13 +71,9 @@ export const getWinnerId = async (game) => {
 export const getTransactionHash = async (game, winnerAddress) => {
   let hash = "0";
   try {
-    log("start")
     if ((game?.players?.length ?? 0) == 0) return;
-    log("not empty")
 
-    const accData = await tonClient4.getAccount(g_seqno, winnerAddress);
-    log("fetched lt")
-    log(accData);
+    const accData = await getTonApi(`blockchain/accounts/${winnerAddress}`);
     const lastTransLt = accData.last_transaction_lt;
 
     await sleep(1000 * 1);
@@ -84,7 +81,6 @@ export const getTransactionHash = async (game, winnerAddress) => {
     const data = await tonClient.getTransactions(winnerAddress, {
       lt: lastTransLt - 500,
     });
-    log("fetched transactions");
     log(data);
 
     if (data.error) {
