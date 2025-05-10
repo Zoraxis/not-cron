@@ -95,11 +95,12 @@ export const getTransactionHash = async (game, winnerAddress) => {
       }
     }
 
-    const outTrasaction = data.find(
-      (transaction) =>
-        transaction?.in_msg?.decoded_body?.text &&
-        transaction?.in_msg?.decoded_body?.text == "Notto: You won the game!"
-    );
+    // const outTrasaction = data.find(
+    //   (transaction) =>
+    //     transaction?.in_msg?.decoded_body?.text &&
+    //     transaction?.in_msg?.decoded_body?.text == "Notto: You won the game!"
+    // );
+    return "1";
     log(outTrasaction);
     if (!!outTrasaction?.hash) log("WINNER.TRANSACTION >", outTrasaction.hash);
     else log("WINNER.TRANSACTION > [NOT FOUND]");
