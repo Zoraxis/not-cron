@@ -12,7 +12,8 @@ export const getWinnerId = async (game) => {
     log(res.error);
     return { id: -1, address: "0" };
   }
-  const winnerAddress = data?.stack.readAddress().toString();
+  log(data);
+  const winnerAddress = data.stack.readAddress().toString();
   log(winnerAddress);
 
   await client.connect();
