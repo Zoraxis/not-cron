@@ -89,18 +89,18 @@ export const getTransactionHash = async (game, winnerAddress) => {
       return "0";
     }
     for (const transaction of data) {
-      log(transaction);
       if (transaction?.inMessage?.info) {
         log(transaction?.inMessage?.info);
+      } else {
+        log("no inMessage");
       }
     }
 
-    // const outTrasaction = data.find(
-    //   (transaction) =>
-    //     transaction?.in_msg?.decoded_body?.text &&
-    //     transaction?.in_msg?.decoded_body?.text == "Notto: You won the game!"
-    // );
-    return "1";
+    const outTrasaction = data.find(
+      (transaction) =>
+        transaction?.inMessage?.dest &&
+        transaction?.inMessage?.dest == winnerAddress
+    );
     log(outTrasaction);
     if (!!outTrasaction?.hash) log("WINNER.TRANSACTION >", outTrasaction.hash);
     else log("WINNER.TRANSACTION > [NOT FOUND]");
