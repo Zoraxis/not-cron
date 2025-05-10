@@ -70,9 +70,12 @@ export const getWinnerId = async (game) => {
 export const getTransactionHash = async (game, winnerAddress) => {
   let hash = "0";
   try {
+    log("start")
     if ((game?.players?.length ?? 0) == 0) return;
+    log("not empty")
 
     const accData = await tonClient4.getAccount(winnerAddress);
+    log("fetched lt")
     log(accData);
     const lastTransLt = accData.last_transaction_lt;
 
@@ -81,6 +84,7 @@ export const getTransactionHash = async (game, winnerAddress) => {
     const data = await tonClient.getTransactions(winnerAddress, {
       lt: lastTransLt - 500,
     });
+    log("fetched transactions");
     log(data);
 
     if (data.error) {
@@ -107,7 +111,7 @@ export const getTransactionHash = async (game, winnerAddress) => {
     return hash;
   } catch (error) {
     log("WINNER.TRANSACTION !ERORR! >");
-    log(error);
+    console.log(error);
     return "0";
   }
 };
