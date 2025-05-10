@@ -1,5 +1,5 @@
-import { Address, Cell } from "@ton/ton";
-import { client, history, tonClient } from "../index.js";
+import { Address } from "@ton/ton";
+import { client, history, tonClient, tonClient4 } from "../index.js";
 import { hideAddress } from "../utils/hideAddress.js";
 import { sleep } from "../utils/sleep.js";
 import { claimRewardByUser } from "./rewards.js";
@@ -72,7 +72,7 @@ export const getTransactionHash = async (game, winnerAddress) => {
   try {
     if ((game?.players?.length ?? 0) == 0) return;
 
-    const accData = await tonClient.getAccount(winnerAddress);
+    const accData = await tonClient4.getAccount(winnerAddress);
     const lastTransLt = accData.last_transaction_lt;
 
     await sleep(1000 * 1);
