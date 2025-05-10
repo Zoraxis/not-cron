@@ -12,7 +12,6 @@ export const getWinnerId = async (game) => {
     log(res.error);
     return { id: -1, address: "0" };
   }
-  log(data);
   const winnerAddress = data.stack.readAddress().toString();
   log(winnerAddress);
 
@@ -74,6 +73,7 @@ export const getTransactionHash = async (game, winnerAddress) => {
     if ((game?.players?.length ?? 0) == 0) return;
 
     const accData = await tonClient4.getAccount(winnerAddress);
+    log(accData);
     const lastTransLt = accData.last_transaction_lt;
 
     await sleep(1000 * 1);
@@ -85,7 +85,7 @@ export const getTransactionHash = async (game, winnerAddress) => {
 
     if (data.error) {
       log("WINNER.ERROR >");
-      log(res.error);
+      log(data.error);
       return "0";
     }
     // for (const transaction of data.transactions) {
