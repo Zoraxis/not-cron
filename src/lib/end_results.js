@@ -79,7 +79,7 @@ export const getTransactionHash = async (game, winnerAddress) => {
     await sleep(1000 * 1);
 
     const data = await tonClient.getTransactions(winnerAddress, {
-      lt: lastTransLt - 500,
+      lt: lastTransLt - 300,
     });
     log(data);
 
@@ -88,14 +88,14 @@ export const getTransactionHash = async (game, winnerAddress) => {
       log(data.error);
       return "0";
     }
-    // for (const transaction of data.transactions) {
-    //   log(transaction);
-    //   if (transaction?.in_msg?.decoded_body?.text) {
-    //     log(transaction?.in_msg?.decoded_body?.text);
-    //   }
-    // }
+    for (const transaction of data) {
+      log(transaction);
+      if (transaction?.inMessage?.info) {
+        log(transaction?.inMessage?.info);
+      }
+    }
 
-    const outTrasaction = data.transactions.find(
+    const outTrasaction = data.find(
       (transaction) =>
         transaction?.in_msg?.decoded_body?.text &&
         transaction?.in_msg?.decoded_body?.text == "Notto: You won the game!"
