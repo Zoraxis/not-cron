@@ -5,6 +5,7 @@ import { sleep } from "../utils/sleep.js";
 import { claimRewardByUser } from "./rewards.js";
 import { log } from "../utils/log.js";
 import { getTonApi } from "../utils/getTonApi.js";
+import { getTonCenter } from "../utils/getTonCenter.js";
 
 export const getWinnerId = async (game) => {
   const data = await tonClient.runMethod(game.address, "get_last_winner", []);
@@ -74,50 +75,51 @@ export const getTransactionHash = async (game, winnerAddress) => {
 
     const lastTransLt = game.last_lt ?? 0;
     if (lastTransLt == 0) {
-      const accData = await getTonApi(`blockchain/accounts/${winnerAddress}`);
+      const accData = await getTonApi(`blockchain/accounts/${admin_address}`);
       lastTransLt = accData.last_transaction_lt - 400;
     }
 
     await sleep(1000 * 1);
 
-    const data = await tonClient.getTransactions(winnerAddress, {
-      lt: lastTransLt + 100,
-    });
+    const data = (
+      await tonClient.getTransactions(admin_address, {
+        lt: lastTransLt + 100,
+        limit: 1,
+      })
+    )[0];
+    log(data);
 
-    if (data.error) {
-      log("WINNER.ERROR >");
-      log(data.error);
-      return { hash: "0" };
-    }
-    for (const transaction of data) {
-      if (transaction?.inMessage?.info) {
-        log(transaction?.inMessage?.info);
-      } else {
-        log("no inMessage");
-      }
-    }
-    log(data.length);
+    const outMessage = data.outMessages.values()[0];
+    const realLt = parseInt(data.lt.toString());
+    const realAddress = outMessage.info.dest;
 
-    const outTrasaction = data.find(
-      (transaction) =>
-        transaction?.inMessage?.info?.dest &&
-        transaction?.inMessage?.info?.dest == winnerAddress
-    );
+    const outTrasaction = (
+      await tonClient.getTransactions(realAddress, {
+        lt: realLt,
+        limit: 1,
+      })
+    )[0];
+    log(outTrasaction);
+    const hash = outTrasaction.hash().toString("hex");
+    const { lt: cur_lt, now } = outTrasaction;
 
-    const { lt: cur_lt, now, hash } = outTrasaction;
-
-    // const block = await tonClient4.getBlock(games[game.gameId].seqno);
-    // log(block);
+    // TESTNET
+    const block = (
+      await getTonCenter(
+        `blocks?worckchain=-1&start_utime=${outTrasaction.now}&limit=1&start_lt=${outTrasaction.prevTransactionLt}&end_lt=${outTrasaction.lt}`
+      )
+    )[0];
+    const block_lt = block?.start_lt
 
     games[game.gameId].last_lt = cur_lt;
     log(cur_lt);
+    log(block_lt);
     log(now);
-    log(outTrasaction.hash);
 
     if (!!outTrasaction) log("WINNER.TRANSACTION >", outTrasaction.hash);
     else log("WINNER.TRANSACTION > [NOT FOUND]");
     hash = outTrasaction?.hash ?? "0";
-    return { hash, cur_lt, now };
+    return { hash, cur_lt, block_lt, now };
   } catch (error) {
     log("WINNER.TRANSACTION !ERORR! >");
     console.log(error);
@@ -164,11 +166,11 @@ export const end_results = async (game) => {
     transaction = await getTransactionHash(game, winnerRes.address);
   }
 
-  const { hash, cur_lt, now } = transaction;
+  const { hash, cur_lt, block_lt, now } = transaction;
 
   archive_games.updateOne(
     { address: game.address, endedAt: endetAt },
-    { $set: { transaction: hash, cur_lt, now } }
+    { $set: { transaction: hash, cur_lt, block_lt, now } }
   );
   history[game.gameId] = Date.now();
 };

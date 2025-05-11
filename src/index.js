@@ -28,7 +28,7 @@ import { BlockchainCheckRandom } from "./app_routes/blockchain/check_random.js";
 import { TonClient, TonClient4 } from "@ton/ton";
 dotenv.config();
 
-const { MONGO_URI } = process.env;
+const { MONGO_URI, TONCENTER_KEY } = process.env;
 
 const app = express();
 const server = http.createServer(app);
@@ -49,7 +49,9 @@ export let connectedUsers = [];
 export let walletsToDisconnect = [];
 export let log_zones = [];
 export let coin_rates = {};
-export let fee = 0.9;
+export let fee = 0.9; 
+
+export const admin_address = "EQD5kwG16rZ7DdCUB5KnkeAzdCf0oqwKnx1yprkjNc42jlGE";
 
 export const client = new MongoClient(MONGO_URI, {
   serverApi: {
@@ -59,15 +61,14 @@ export const client = new MongoClient(MONGO_URI, {
   },
 });
 
+// TESTNET
 export const tonClient = new TonClient({
   endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
-  apiKey:
-    "94730209e75a9928c1b0b24b62ed308858d6e9b1b4001b795b2364bdbd752455",
+  apiKey: TONCENTER_KEY,
 });
 export const tonClient4= new TonClient4({
   endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
-  apiKey:
-    "94730209e75a9928c1b0b24b62ed308858d6e9b1b4001b795b2364bdbd752455",
+  apiKey: TONCENTER_KEY,
 });
 
 const setup = async () => {
@@ -76,7 +77,8 @@ const setup = async () => {
     game.lastUpdated = Date.now();
     games[i] = game;
   }
-  log(games);
+  log("==============================");
+  log("STARTED");
   fetch_rates();
 };
 
