@@ -144,10 +144,10 @@ app.get("/api/check_random", BlockchainCheckRandom);
 app.get("/api/:coin/rate", BlockchainCoinRate);
 // #endregion
 
-app.post("/utils/timeout", TimeoutRouteHandle);
-app.post("/utils/logs", LogToggleHandle);
-app.post("/utils/populate", PopulateGame);
-app.post("/utils/end", SimulateEnd);
+app.post("/api/utils/timeout", TimeoutRouteHandle);
+app.post("/api/utils/logs", LogToggleHandle);
+app.post("/api/utils/populate", PopulateGame);
+app.post("/api/utils/end", SimulateEnd);
 
 cron.schedule(`*/10 * * * * *`, check_time);
 cron.schedule("*/6 * * * * *", check_transactions);
