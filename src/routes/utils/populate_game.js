@@ -1,4 +1,4 @@
-import { fake_join } from "../../lib/fake_join";
+import { fake_join } from "../../lib/fake_join.js";
 
 export const PopulateGame = async (req, res) => {
   const { gameId } = req.params;
