@@ -1,3 +1,4 @@
+import { test_wallets } from "../../constants/mnemonic.js";
 import { fake_join } from "../../lib/fake_join.js";
 
 export const PopulateGame = async (req, res) => {
