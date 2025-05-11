@@ -20,11 +20,8 @@ export const fake_join = async (gameId, walletId) => {
   if (games[gameId]?.players?.find((x) => x.address == wallet.address)) return;
 
   try {
+    log(wallet.address.toString());
     if (!(await tonClient.isContractDeployed(wallet.address))) {
-      await tonClient.deployContract({
-        contract: wallet,
-        secretKey: key.secretKey,
-      });
       return log("wallet is not deployed");
     }
 
