@@ -72,13 +72,16 @@ export const getTransactionHash = async (game, winnerAddress) => {
   try {
     if ((game?.players?.length ?? 0) == 0) return;
 
-    const accData = await getTonApi(`blockchain/accounts/${winnerAddress}`);
-    const lastTransLt = accData.last_transaction_lt;
+    const lastTransLt = game.last_lt ?? 0;
+    if (lastTransLt == 0) {
+      const accData = await getTonApi(`blockchain/accounts/${winnerAddress}`);
+      lastTransLt = accData.last_transaction_lt - 400;
+    }
 
     await sleep(1000 * 1);
 
     const data = await tonClient.getTransactions(winnerAddress, {
-      lt: lastTransLt - 300,
+      lt: lastTransLt + 100,
     });
 
     if (data.error) {
@@ -103,9 +106,10 @@ export const getTransactionHash = async (game, winnerAddress) => {
 
     const { lt: cur_lt, now, hash } = outTrasaction;
 
-    const block = await tonClient4.getBlock(games[game.gameId].seqno);
-    log(block);
+    // const block = await tonClient4.getBlock(games[game.gameId].seqno);
+    // log(block);
 
+    games[game.gameId].last_lt = cur_lt;
     log(cur_lt);
     log(now);
     log(outTrasaction.hash);
@@ -151,7 +155,7 @@ export const end_results = async (game) => {
   });
   history[game.gameId] = Date.now();
 
-  await sleep(1000 * 60 * 1.6);
+  await sleep(1000 * 5);
 
   let transaction = await getTransactionHash(game, winnerRes.address);
   while (transaction?.hash == "0") {
