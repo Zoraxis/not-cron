@@ -15,6 +15,7 @@ import { games, tonClient } from "../index.js";
 import { PayedSocketHandle } from "../socket/game/payed.js";
 
 export const fake_join = async (gameId, walletId) => {
+  console.log(test_wallets[walletId]);
   const key = await mnemonicToWalletKey(test_wallets[walletId].split(" "));
   const wallet = WalletContractV5R1.create({ publicKey: key.publicKey });
   if (games[gameId]?.players?.find((x) => x.address == wallet.address)) return;
