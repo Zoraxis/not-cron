@@ -48,7 +48,7 @@ export const end_game = async (address, gameId) => {
     }
     const state = await tonClient.getContractState(address);
     log(state.blockId)
-    games[gameId].seqno = state.blockId.seqno;
+    games[gameId].seqno = parseInt(state.blockId.seqno.toString());
     log(`END.PAY.BLOCKCHAIN POS - D:${new Date().toTimeString()}`);
   } catch (e) {
     log("END.PAY.BLOCKCHAIN > NEG");

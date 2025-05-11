@@ -47,6 +47,11 @@ export const fake_join = async (gameId, walletId) => {
       ],
     });
 
+    const response = PayedSocketHandle({
+      gameId,
+      address: wallet.address.toRawString(),
+    });
+
     let currentSeqno = seqno;
     while (currentSeqno == seqno) {
       await sleep(1500);
@@ -54,10 +59,6 @@ export const fake_join = async (gameId, walletId) => {
     }
     log("FAKE JOIN > BLOCKCHAIN POS");
 
-    const response = await PayedSocketHandle({
-      gameId,
-      address: wallet.address.toRawString(),
-    });
     log(response)
     log("FAKE JOIN > POS");
   } catch (e) {
