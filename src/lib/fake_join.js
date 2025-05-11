@@ -54,11 +54,13 @@ export const fake_join = async (gameId, walletId) => {
       currentSeqno = await walletContract.getSeqno();
       walletContract;
     }
+    log("FAKE JOIN > BLOCKCHAIN POS");
 
     await PayedSocketHandle({
       gameId,
       address: wallet.address.toString(),
     });
+    log("FAKE JOIN > POS");
   } catch (e) {
     log(e);
     log("FAKE JOIN > NEG");
