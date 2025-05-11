@@ -112,7 +112,12 @@ export const getTransactionHash = async (game, winnerAddress) => {
 
     if (!!outTrasaction) log("WINNER.TRANSACTION >", outTrasaction.hash);
     else log("WINNER.TRANSACTION > [NOT FOUND]");
-    return { hash, cur_lt, block_lt, now };
+    return {
+      hash,
+      cur_lt: cur_lt.toString(),
+      block_lt: block?.start_lt?.toString() ?? null,
+      now,
+    };
   } catch (error) {
     log("WINNER.TRANSACTION !ERORR! >");
     console.log(error);
@@ -158,7 +163,7 @@ export const end_results = async (game) => {
     await sleep(1000 * 5);
     transaction = await getTransactionHash(game, winnerRes.address);
   }
-
+  log(transaction);
   const { hash, cur_lt, block_lt, now } = transaction;
 
   archive_games.updateOne(
