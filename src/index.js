@@ -86,11 +86,11 @@ export const findUserBySocketId = (socketId) =>
   connectedUsers.findIndex((user) => user.id === socketId);
 
 io.on("connection", (socket) => {
-  log(`SOCKET.U > [${connectedUsers.length}] + 1 | ${socket.id}`);
+  log(`SOCKET.U > [${connectedUsers.length}] + 1 | ${socket.id}`, "sockets");
   connectedUsers.push({ id: socket.id, address: "" });
 
   socket.on("disconnect", () => {
-    log(`SOCKET.U > [${connectedUsers.length}] - 1`);
+    log(`SOCKET.U > [${connectedUsers.length}] - 1`, "sockets");
     const index = findUserBySocketId(socket.id);
     if (index === -1) return;
     connectedUsers.splice(index, 1);
