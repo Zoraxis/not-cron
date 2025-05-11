@@ -80,6 +80,7 @@ const setup = async () => {
     games[i] = game;
   }
   log("==============================");
+  log(games[1]);
   log("STARTED");
   fetch_rates();
 };
