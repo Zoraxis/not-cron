@@ -88,7 +88,6 @@ export const getTransactionHash = async (game, winnerAddress) => {
       })
     )[0];
     games[game.gameId].last_lt = data.lt;
-    log(data);
 
     const outMessage = data.outMessages.values()[0];
     const realLt = parseInt(data.lt.toString());
@@ -100,7 +99,6 @@ export const getTransactionHash = async (game, winnerAddress) => {
         limit: 1,
       })
     )[0];
-    log(outTrasaction);
     const hash = outTrasaction.hash().toString("hex");
     const { lt: cur_lt, now } = outTrasaction;
 
@@ -110,11 +108,7 @@ export const getTransactionHash = async (game, winnerAddress) => {
         `blocks?worckchain=-1&start_utime=${outTrasaction.now}&limit=1&start_lt=${outTrasaction.prevTransactionLt}&end_lt=${outTrasaction.lt}`
       )
     )[0];
-    const block_lt = block?.start_lt
-
-    log(cur_lt);
-    log(block_lt);
-    log(now);
+    const block_lt = block?.start_lt;
 
     if (!!outTrasaction) log("WINNER.TRANSACTION >", outTrasaction.hash);
     else log("WINNER.TRANSACTION > [NOT FOUND]");
