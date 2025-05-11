@@ -73,7 +73,7 @@ export const getTransactionHash = async (game, winnerAddress) => {
   try {
     if ((game?.players?.length ?? 0) == 0) return;
 
-    const lastTransLt = game.last_lt ?? 0;
+    let lastTransLt = game.last_lt ?? 0;
     if (lastTransLt == 0) {
       const accData = await getTonApi(`blockchain/accounts/${admin_address}`);
       lastTransLt = accData.last_transaction_lt - 400;
