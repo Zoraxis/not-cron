@@ -2,7 +2,7 @@ import { client } from "../index.js";
 import { log } from "../utils/log.js";
 import { end_all } from "./end_all.js";
 
-export const check_time = async (simulate = false) => {
+export const check_time = async () => {
   try {
     await client.connect();
     await client.db("notto").command({ ping: 1 });
@@ -14,7 +14,7 @@ export const check_time = async (simulate = false) => {
     for (let i = 0; i < collection.length; i++) {
       const diff = collection[i].frequency - (date % collection[i].frequency);
 
-      if (diff < 10 * 1000 || simulate) {
+      if (diff < 10 * 1000) {
         end_all(collection[i], diff);
       }
     }
