@@ -87,7 +87,7 @@ export const getTransactionHash = async (game, winnerAddress) => {
         limit: 1,
       })
     )[0];
-    games[game.gameId].last_lt = lt;
+    games[game.gameId].last_lt = data.lt;
     log(data);
 
     const outMessage = data.outMessages.values()[0];
