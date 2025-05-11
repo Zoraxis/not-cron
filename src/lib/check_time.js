@@ -1,10 +1,8 @@
-import { client, games, io } from "../index.js";
-import { end_game } from "./end_game.js";
-import { end_results } from "./end_results.js";
-import { end_server } from "./end_server.js";
+import { client } from "../index.js";
 import { log } from "../utils/log.js";
+import { end_all } from "./end_all.js";
 
-export const check_time = async () => {
+export const check_time = async (simulate = false) => {
   try {
     await client.connect();
     await client.db("notto").command({ ping: 1 });
@@ -16,36 +14,8 @@ export const check_time = async () => {
     for (let i = 0; i < collection.length; i++) {
       const diff = collection[i].frequency - (date % collection[i].frequency);
 
-      if (diff < 10 * 1000) {
-        const { gameId, address } = collection[i];
-        const gameClone = JSON.parse(JSON.stringify(games[gameId]));
-        if (collection[i]?.players?.length <= 0) continue;
-        log("==============================");
-        log("==============================");
-        log(`GAME.ENDING > G:${gameId}`);
-        log(address);
-        end_game(address, gameId);
-        setTimeout(async () => {
-          log(
-            `END.EMIT > G:${gameId} P:${collection[i]?.players?.length}`
-          );
-          setTimeout(() => {
-            games[gameId].players = [];
-            games[gameId].prize = 0;
-            games[gameId].lastUpdated = Date.now();
-            end_server(gameId);
-          }, 1000 * 10);
-
-          setTimeout(() => {
-            io.emit("game.ended", gameClone);
-          }, 1000 * 15);
-
-          if (collection[i]?.players?.length > 1) {
-            setTimeout(() => {
-              end_results(gameClone);
-            }, 1000 * 10);
-          }
-        }, diff - 200);
+      if (diff < 10 * 1000 || simulate) {
+        end_all(collection[i]);
       }
     }
   } catch (error) {
