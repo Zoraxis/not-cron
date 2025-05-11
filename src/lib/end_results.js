@@ -1,5 +1,5 @@
 import { Address } from "@ton/ton";
-import { client, games, history, tonClient, tonClient4 } from "../index.js";
+import { admin_address, client, games, history, tonClient, tonClient4 } from "../index.js";
 import { hideAddress } from "../utils/hideAddress.js";
 import { sleep } from "../utils/sleep.js";
 import { claimRewardByUser } from "./rewards.js";
@@ -87,6 +87,7 @@ export const getTransactionHash = async (game, winnerAddress) => {
         limit: 1,
       })
     )[0];
+    games[game.gameId].last_lt = lt;
     log(data);
 
     const outMessage = data.outMessages.values()[0];
@@ -111,7 +112,6 @@ export const getTransactionHash = async (game, winnerAddress) => {
     )[0];
     const block_lt = block?.start_lt
 
-    games[game.gameId].last_lt = cur_lt;
     log(cur_lt);
     log(block_lt);
     log(now);
