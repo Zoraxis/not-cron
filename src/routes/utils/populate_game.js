@@ -3,9 +3,8 @@ import { fake_join } from "../../lib/fake_join.js";
 export const PopulateGame = async (req, res) => {
   const { gameId } = req.params;
   
-  await fake_join(gameId, 0);
-  await fake_join(gameId, 1);
-  await fake_join(gameId, 2);
-  await fake_join(gameId, 3);
-  await fake_join(gameId, 4);
+  for (let i = 0; i < test_wallets.length; i++) {
+    await fake_join(gameId, i);
+  }
+  res.status(200).json({ message: "Game populated" });
 };
