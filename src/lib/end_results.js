@@ -1,5 +1,5 @@
 import { Address } from "@ton/ton";
-import { admin_address, client, games, history, tonClient, tonClient4 } from "../index.js";
+import { admin_address, client, games, history, tonClient } from "../index.js";
 import { hideAddress } from "../utils/hideAddress.js";
 import { sleep } from "../utils/sleep.js";
 import { claimRewardByUser } from "./rewards.js";
@@ -118,7 +118,6 @@ export const getTransactionHash = async (game, winnerAddress) => {
 
     if (!!outTrasaction) log("WINNER.TRANSACTION >", outTrasaction.hash);
     else log("WINNER.TRANSACTION > [NOT FOUND]");
-    hash = outTrasaction?.hash ?? "0";
     return { hash, cur_lt, block_lt, now };
   } catch (error) {
     log("WINNER.TRANSACTION !ERORR! >");
