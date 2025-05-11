@@ -21,11 +21,10 @@ export const fake_join = async (gameId, walletId) => {
 
   try {
     log(wallet.address.toString());
-    // if (!(await tonClient.isContractDeployed(wallet.address))) {
-    //   return log("wallet is not deployed");
-    // }
+    if (!(await tonClient.isContractDeployed(wallet.address))) {
+      return log("wallet is not deployed");
+    }
 
-    const balance = await tonClient.getBalance(wallet.address);
     const walletContract = tonClient.open(wallet);
     const seqno = await walletContract.getSeqno();
 
@@ -40,8 +39,8 @@ export const fake_join = async (gameId, walletId) => {
       sendMode: SendMode.PAY_GAS_SEPARATELY,
       messages: [
         internal({
-          to: Address.parse(games[gameId].address),
-          value: games[gameId].cost.toString(),
+          to: Address.parse(games[gameId]?.address),
+          value: games[gameId].entry.toString(),
           bounce: true,
           body: transferPayload,
         }),
@@ -52,17 +51,16 @@ export const fake_join = async (gameId, walletId) => {
     while (currentSeqno == seqno) {
       await sleep(1500);
       currentSeqno = await walletContract.getSeqno();
-      walletContract;
     }
     log("FAKE JOIN > BLOCKCHAIN POS");
 
-    await PayedSocketHandle({
+    const response = await PayedSocketHandle({
       gameId,
-      address: wallet.address.toString(),
+      address: wallet.address.toRawString(),
     });
+    log(response)
     log("FAKE JOIN > POS");
   } catch (e) {
-    throw e;
     log("FAKE JOIN > NEG");
   }
 };

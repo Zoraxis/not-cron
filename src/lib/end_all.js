@@ -4,7 +4,7 @@ import { end_game } from "./end_game.js";
 import { end_results } from "./end_results.js";
 import { end_server } from "./end_server.js";
 
-export const end_all = async (game) => {
+export const end_all = async (game, diff) => {
   if (game?.players?.length <= 0) return;
   const { gameId, address } = game;
   const gameClone = JSON.parse(JSON.stringify(games[gameId]));

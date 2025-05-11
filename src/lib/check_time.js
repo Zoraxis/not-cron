@@ -15,7 +15,7 @@ export const check_time = async (simulate = false) => {
       const diff = collection[i].frequency - (date % collection[i].frequency);
 
       if (diff < 10 * 1000 || simulate) {
-        end_all(collection[i]);
+        end_all(collection[i], diff);
       }
     }
   } catch (error) {

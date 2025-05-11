@@ -18,25 +18,27 @@ export const PayedSocketHandle = async ({ gameId, address }) => {
   // });
   // if (!awaiting_transaction) return;
 
-  await transaction_pool.deleteOne({
-    gameId,
-    address,
-  });
+  try {
+    transaction_pool.deleteOne({
+      gameId,
+      address,
+    });
+  } catch { }
 
   const user = await users.findOne({
     address,
   });
-  if (!user) return;
+  if (!user) return "user not found";
 
   const game = await gamesCollection.findOne({
     gameId: parseInt(gameId),
   });
-  if (!game) return;
+  if (!game) return "game not found";
 
   const joined = !!game.players.find(
     (player) => player.id.toString() == user._id
   );
-  if (!!joined) return;
+  if (!!joined) return "already joined";
 
   JoinedHandle({ gameId, address });
 

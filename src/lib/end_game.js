@@ -33,7 +33,7 @@ export const end_game = async (address, gameId) => {
       messages: [
         internal({
           to: Address.parse(address),
-          value: "0.0035",
+          value: "0.005",
           bounce: true,
           body: payload,
         }),
