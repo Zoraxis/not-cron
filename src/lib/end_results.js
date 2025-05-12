@@ -15,6 +15,7 @@ export const getWinnerId = async (game) => {
     return { id: -1, address: "0" };
   }
   const winnerAddress = data.stack.readAddress().toString();
+  log("WINNER.ADDRESS >");
   log(winnerAddress);
 
   await client.connect();
@@ -46,9 +47,9 @@ export const getWinnerId = async (game) => {
     );
   } catch {}
 
-  log(winner.address.toRawString());
-  log(gameData.players);
-  log(winnerUser);
+  log(winner.address.toRawString(), "winner-number");
+  log(gameData.players, "winner-number");
+  log(winnerUser, "winner-number");
 
   let winnerIndexByAddress = -1;
   try {
@@ -109,9 +110,9 @@ export const getTransactionHash = async (game, winnerAddress) => {
       await getTonCenter(
         `blocks?worckchain=-1&start_utime=${outTrasaction.now}&limit=1&start_lt=${outTrasaction.prevTransactionLt}&end_lt=${outTrasaction.lt}`
       )
-    )[0];
+    )?.blocks[0];
+    console.log(block);
     const block_lt = block?.start_lt;
-    log(block);
 
     if (!!outTrasaction) log("WINNER.TRANSACTION >", outTrasaction.hash);
     else log("WINNER.TRANSACTION > [NOT FOUND]");
