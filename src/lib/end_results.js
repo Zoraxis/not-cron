@@ -84,12 +84,14 @@ export const getTransactionHash = async (game, winnerAddress) => {
     const data = (
       await tonClient.getTransactions(admin_address, {
         lt: lastTransLt + 100,
-        limit: 1,
+        limit: 4,
       })
     )[0];
     games[game.gameId].last_lt = data.lt;
 
-    const outMessage = data.outMessages.values()[0];
+    const outMessage = data.outMessages
+      .values()
+      .find((mesasge) => mesasge.info.dest == game.address);
     const realLt = parseInt(data.lt.toString());
     const realAddress = outMessage.info.dest;
 
@@ -109,13 +111,14 @@ export const getTransactionHash = async (game, winnerAddress) => {
       )
     )[0];
     const block_lt = block?.start_lt;
+    log(block_lt);
 
     if (!!outTrasaction) log("WINNER.TRANSACTION >", outTrasaction.hash);
     else log("WINNER.TRANSACTION > [NOT FOUND]");
     return {
       hash,
       cur_lt: cur_lt.toString(),
-      block_lt: block?.start_lt?.toString() ?? null,
+      block_lt: block_lt?.toString() ?? null,
       now,
     };
   } catch (error) {
