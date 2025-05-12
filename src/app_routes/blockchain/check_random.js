@@ -14,7 +14,7 @@ export const BlockchainCheckRandom = async (req, res) => {
   if (!game) return res.send({ message: "Game not found", status: 400 });
 
   res.send({
-    hash: game?.hash ?? 999000999,
+    hash: game?.transaction ?? 999000999,
     cur_lt: game?.cur_lt ?? 999000999,
     block_lt: game?.block_lt ?? 999000999,
     now: game?.now ?? 999000999,
