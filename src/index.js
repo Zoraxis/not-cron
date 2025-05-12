@@ -28,6 +28,7 @@ import { BlockchainCheckRandom } from "./app_routes/blockchain/check_random.js";
 import { TonClient, TonClient4 } from "@ton/ton";
 import { SimulateEnd } from "./routes/utils/simulate_end.js";
 import { PopulateGame } from "./routes/utils/populate_game.js";
+import { HistoryWinner } from "./app_routes/history/winner.js";
 dotenv.config();
 
 const { MONGO_URI, TONCENTER_KEY } = process.env;
@@ -141,7 +142,8 @@ app.get("/api/history/:period/winners", HistoryWinners);
 
 app.get("/api/rewards", Rewards);
 
-app.get("/api/check_random", BlockchainCheckRandom);
+app.get("/api/results", BlockchainCheckRandom);
+app.get("/api/results/players", HistoryWinner);
 app.get("/api/:coin/rate", BlockchainCoinRate);
 // #endregion
 
