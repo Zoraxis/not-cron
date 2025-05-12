@@ -111,7 +111,7 @@ export const getTransactionHash = async (game, winnerAddress) => {
       )
     )[0];
     const block_lt = block?.start_lt;
-    log(block_lt);
+    log(block);
 
     if (!!outTrasaction) log("WINNER.TRANSACTION >", outTrasaction.hash);
     else log("WINNER.TRANSACTION > [NOT FOUND]");
