@@ -21,6 +21,9 @@ export const end_server = async (period) => {
     }
   );
 
+  stats.totalAmount += (game?.prize ?? 0) * 0.9;
+  stats.totalPlayers += game?.players?.length ?? 0;
+
   await games.updateOne(
     { gameId: parseInt(period) },
     {

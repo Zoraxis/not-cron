@@ -52,7 +52,11 @@ export let connectedUsers = [];
 export let walletsToDisconnect = [];
 export let log_zones = [];
 export let coin_rates = {};
-export let fee = 0.9; 
+export let fee = 0.9;
+export let stats = {
+  totalAmount: 0,
+  totalPlayers: 0,
+};
 
 export const admin_address = "EQD5kwG16rZ7DdCUB5KnkeAzdCf0oqwKnx1yprkjNc42jlGE";
 
@@ -67,7 +71,7 @@ export const client = new MongoClient(MONGO_URI, {
 // TESTNET
 export const tonClient = new TonClient({
   endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
-  apiKey: TONCENTER_KEY
+  apiKey: TONCENTER_KEY,
 });
 export const tonClient4 = new TonClient4({
   endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
@@ -80,6 +84,15 @@ const setup = async () => {
     game.lastUpdated = Date.now();
     games[i] = game;
   }
+
+  const db = client.db("notto");
+  const stats = db.collection("stats");
+
+  const stat = await stats.findOne({ stat: 1 });
+  stats = {
+    totalAmount: stat?.prize ?? 0,
+    totalPlayers: stat?.players ?? 0,
+  };
   log("==============================");
   log(games[1]);
   log("STARTED");
