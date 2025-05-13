@@ -3,20 +3,28 @@ import { client } from "../../index.js";
 import { hideAddress } from "../../utils/hideAddress.js";
 
 export const HistoryWinner = async (req, res) => {
-  const { id } = req.query;
+  try {
+    const { id } = req.query;
+    if (!id) return res.status(400).send([]);
 
-  const db = client.db("notto");
-  const archive = db.collection("archive_games");
+    const db = client.db("notto");
+    const archive = db.collection("archive_games");
 
-  const winnersRaw = await archive.findOne({
-    _id: new ObjectId(id),
-  });
-  console.log(winnersRaw);
+    const winnersRaw = await archive.findOne(
+      { _id: new ObjectId(id) },
+      { projection: { players: 1 } }
+    );
 
-  return res.send(
-    winnersRaw?.players?.map((player) => ({
+    if (!winnersRaw?.players) return res.send([]);
+
+    const result = winnersRaw.players.map((player) => ({
       name: hideAddress(player.address),
       date: player.date,
-    })) ?? []
-  );
+    }));
+
+    return res.send(result);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send([]);
+  }
 };

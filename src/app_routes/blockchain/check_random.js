@@ -4,12 +4,26 @@ import { client } from "../../index.js";
 export const BlockchainCheckRandom = async (req, res) => {
   const { id } = req.query;
 
+  if (!id) return res.status(400).send({ message: "Missing id", status: 400 });
+
   const db = client.db("notto");
   const archive_games = db.collection("archive_games");
 
-  const game = await archive_games.findOne({
-    _id: new ObjectId(id),
-  });
+  const game = await archive_games.findOne(
+    { _id: new ObjectId(id) },
+    {
+      projection: {
+        transaction: 1,
+        cur_lt: 1,
+        block_lt: 1,
+        now: 1,
+        prize: 1,
+        players: 1,
+        endedAt: 1,
+        winnerNumber: 1,
+      },
+    }
+  );
 
   if (!game) return res.send({ message: "Game not found", status: 400 });
 
