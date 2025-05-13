@@ -86,9 +86,9 @@ const setup = async () => {
   }
 
   const db = client.db("notto");
-  const stats = db.collection("stats");
+  const statsDb = db.collection("stats");
 
-  const stat = await stats.findOne({ stat: 1 });
+  const stat = await statsDb.findOne({ stat: 1 });
   stats = {
     totalAmount: stat?.prize ?? 0,
     totalPlayers: stat?.players ?? 0,

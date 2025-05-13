@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import { client } from "../../index.js";
 import { hideAddress } from "../../utils/hideAddress.js";
 
@@ -11,7 +10,7 @@ export const HistoryWinner = async (req, res) => {
     const archive = db.collection("archive_games");
 
     const winnersRaw = await archive.findOne(
-      { _id: new ObjectId(id) },
+      { _id: ObjectId(id) },
       { projection: { players: 1 } }
     );
 
