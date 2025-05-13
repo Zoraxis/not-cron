@@ -10,7 +10,7 @@ export const BlockchainCheckRandom = async (req, res) => {
   const archive_games = db.collection("archive_games");
 
   const game = await archive_games.findOne(
-    { _id: new ObjectId(id) },
+    { _id: ObjectId.createFromHexString(id) },
     {
       projection: {
         transaction: 1,

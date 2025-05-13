@@ -40,7 +40,7 @@ export const UserPost = async (req, res) => {
     try {
       const referedId = createdUser._id;
       const referalUser = await users.findOneAndUpdate(
-        { _id: new ObjectId(referal) },
+        { _id: ObjectId.createFromHexString(referal) },
         {
           $push: {
             refered: referedId,

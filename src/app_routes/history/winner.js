@@ -11,7 +11,7 @@ export const HistoryWinner = async (req, res) => {
     const archive = db.collection("archive_games");
 
     const winnersRaw = await archive.findOne(
-      { _id: ObjectId(id) },
+      { _id: ObjectId.createFromHexString(id) },
       { projection: { players: 1 } }
     );
 
