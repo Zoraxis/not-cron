@@ -1,30 +1,16 @@
-import { client } from "../../index.js";
+import { client, games } from "../../index.js";
 
 export const LotoIsInGameHandler = async (req, res) => {
   try {
     const { period } = req.params;
+    if (!period) return res.send({ message: "period not found", status: 400 });
     const address = req.headers["x-user-adress"];
+    if (!games[period])
+      return res.send({ message: "Game not found", status: 400 });
     if (!address) return res.send({ message: "User not found", status: 400 });
 
-    const db = client.db("notto");
-
-    const users = db.collection("users");
-
-    const user = await users.findOne({
-      address: address,
-    });
-    if (!user) return res.send({ message: "User not found", status: 400 });
-
-    const games = await db.collection("games");
-
-    const game = await games.findOne({
-      gameId: parseInt(period),
-    });
-
-    if (!game) return res.send({ message: "Game not found", status: 400 });
-
-    const joined = !!game.players.find(
-      (player) => player.id.toString() == user._id
+    const joined = !!games[period].players.find(
+      (player) => player.address == address
     );
     return res.send(joined);
   } catch (error) {
