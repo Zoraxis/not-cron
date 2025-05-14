@@ -46,6 +46,12 @@ const gameIds = [1, 2, 3, 4];
 
 export const check_transactions = async () => {
   for (const id of gameIds) {
+    const elapsedTime = Date.now() % games[id].frequency;
+    if (elapsedTime < 1000 * 15) {
+      log("FREQUENCY 0", "transactions");
+      continue;
+    }
+
     await check_transaction(id);
     await sleep(600);
   }
