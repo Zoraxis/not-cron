@@ -128,9 +128,7 @@ export const getTransactionHash = async (game, winnerAddress) => {
   }
 };
 
-export const end_results = async (game) => {
-  const endetAt = Date.now() - 9000;
-
+export const end_results = async (game, endetAt) => {
   await client.connect();
   const db = client.db("notto");
 

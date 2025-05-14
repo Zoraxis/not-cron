@@ -14,6 +14,7 @@ export const end_all = async (game, diff) => {
   log(`GAME.ENDING > G:${gameId}`);
   log(address);
   end_game(address, gameId);
+  const endetAt = parseInt(Date.now().toString());
   setTimeout(async () => {
     log(`END.EMIT > G:${gameId} P:${game?.players?.length}`);
     setTimeout(() => {
@@ -29,7 +30,7 @@ export const end_all = async (game, diff) => {
 
     if (game?.players?.length > 1) {
       setTimeout(() => {
-        end_results(gameClone);
+        end_results(gameClone, endetAt);
       }, 1000 * 10);
     }
   }, diff - 200);
