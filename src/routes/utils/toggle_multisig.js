@@ -35,15 +35,17 @@ export const ToggleMultisig = async (req, res) => {
 
   const adminValue = adminIndex + 1;
 
-  multisigStateOperation[gameId - 1] =
-    multisigStateOperation[gameId - 1] ^ (1 << (adminValue - 1));
+  const gameIdValue = parseInt(gameId);
+
+  multisigStateOperation[gameIdValue - 1] =
+    multisigStateOperation[gameIdValue - 1] ^ (1 << (adminValue - 1));
 
   if (
-    (multisigStateOperation[gameId - 1] &
-      (multisigStateOperation[gameId - 1] - 1)) !=
+    (multisigStateOperation[gameIdValue - 1] &
+      (multisigStateOperation[gameIdValue - 1] - 1)) !=
     0
   )
-    multisigStateOperation[gameId - 1] = 0;
+    multisigStateOperation[gameIdValue - 1] = 0;
 
   const newOperaions = {
     ...multisigStateOperations,
