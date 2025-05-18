@@ -1,12 +1,23 @@
-import { Address, beginCell, fromNano, internal, SendMode, TonClient, WalletContractV5R1 } from "@ton/ton";
+import {
+  Address,
+  beginCell,
+  fromNano,
+  internal,
+  SendMode,
+  TonClient,
+  WalletContractV5R1,
+} from "@ton/ton";
 import { mnemonicToWalletKey } from "@ton/crypto";
 import { sleep } from "../utils/sleep.js";
 import { log } from "../utils/log.js";
+import dotenv from "dotenv";
 import { mnemonic } from "../constants/mnemonic.js";
 import { games, tonClient } from "../index.js";
+dotenv.config();
 
 export const end_game = async (address, gameId) => {
-  const key = await mnemonicToWalletKey(mnemonic.split(" "));
+  const { END_MNEMONIC } = process.env;
+  const key = await mnemonicToWalletKey(END_MNEMONIC.split(" "));
   const wallet = WalletContractV5R1.create({ publicKey: key.publicKey });
 
   try {
@@ -44,10 +55,10 @@ export const end_game = async (address, gameId) => {
     while (currentSeqno == seqno) {
       await sleep(1500);
       currentSeqno = await walletContract.getSeqno();
-      walletContract
+      walletContract;
     }
     const state = await tonClient.getContractState(address);
-    log(state.blockId)
+    log(state.blockId);
     games[gameId].seqno = parseInt(state.blockId.seqno.toString());
     log(`END.PAY.BLOCKCHAIN POS - D:${new Date().toTimeString()}`);
   } catch (e) {
