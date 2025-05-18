@@ -172,7 +172,7 @@ app.post("/api/utils/multisig", ToggleMultisig);
 app.get("/api/utils/multisig", GetMultisig);
 app.get("/api/utils/multisig/address", GetMultisigAddress);
 
-cron.schedule("*/1 * * * * *", fetch_games);
+cron.schedule("*/2 * * * * *", fetch_games);
 cron.schedule(`*/10 * * * * *`, check_time);
 cron.schedule("*/6 * * * * *", check_transactions);
 cron.schedule("* * */3 * * *", fetch_rates);
