@@ -63,7 +63,7 @@ export let stats = {
   totalPlayers: 0,
 };
 
-export const admin_address = "EQD5kwG16rZ7DdCUB5KnkeAzdCf0oqwKnx1yprkjNc42jlGE";
+export const admin_address = "UQCbNnNudMVK0Qgo4GxzfwKPrBWWmQaFWjOMqm1NLvhxEeEu";
 
 export const client = new MongoClient(MONGO_URI, {
   serverApi: {
