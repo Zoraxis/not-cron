@@ -29,6 +29,9 @@ import { TonClient, TonClient4 } from "@ton/ton";
 import { SimulateEnd } from "./routes/utils/simulate_end.js";
 import { PopulateGame } from "./routes/utils/populate_game.js";
 import { HistoryWinner } from "./app_routes/history/winner.js";
+import { ToggleMultisig } from "./routes/utils/toggle_multisig.js";
+import { GetMultisig } from "./routes/utils/get_multisig.js";
+import { GetMultisigAddress } from "./routes/utils/get_multisig_address.js";
 dotenv.config();
 
 const { MONGO_URI, TONCENTER_KEY } = process.env;
@@ -164,6 +167,9 @@ app.post("/api/utils/timeout", TimeoutRouteHandle);
 app.post("/api/utils/logs", LogToggleHandle);
 app.post("/api/utils/populate", PopulateGame);
 app.post("/api/utils/end", SimulateEnd);
+app.post("/api/utils/multisig", ToggleMultisig);
+app.get("/api/utils/multisig", GetMultisig);
+app.get("/api/utils/multisig/address", GetMultisigAddress);
 
 cron.schedule(`*/10 * * * * *`, check_time);
 cron.schedule("*/6 * * * * *", check_transactions);
