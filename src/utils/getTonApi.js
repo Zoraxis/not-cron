@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // TESTNET
-const TONAPI_URL = "https://testnet.tonapi.io/v2";
+const TONAPI_URL = "https://tonapi.io/v2";
 const { TONAPI_KEY } = process.env;
 const HEADERS = { Authorization: `Bearer ${TONAPI_KEY}` };
 

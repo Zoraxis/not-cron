@@ -105,7 +105,6 @@ export const getTransactionHash = async (game, winnerAddress) => {
     const hash = outTrasaction.hash().toString("hex");
     const { lt: cur_lt, now } = outTrasaction;
 
-    // TESTNET
     const block = (
       await getTonCenter(
         `blocks?worckchain=-1&start_utime=${outTrasaction.now}&limit=1&start_lt=${outTrasaction.prevTransactionLt}&end_lt=${outTrasaction.lt}`

@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // TESTNET
-const TONCENTER_URL = "https://testnet.toncenter.com/api/v3";
+const TONCENTER_URL = "https://toncenter.com/api/v3";
 const { TONCENTER_KEY } = process.env;
 const HEADERS = {
   Authorization: `Bearer ${TONCENTER_KEY}`,

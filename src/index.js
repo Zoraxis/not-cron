@@ -75,11 +75,11 @@ export const client = new MongoClient(MONGO_URI, {
 
 // TESTNET
 export const tonClient = new TonClient({
-  endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
+  endpoint: "https://toncenter.com/api/v2/jsonRPC",
   apiKey: TONCENTER_KEY,
 });
 export const tonClient4 = new TonClient4({
-  endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
+  endpoint: "https://toncenter.com/api/v2/jsonRPC",
   apiKey: TONCENTER_KEY,
 });
 
