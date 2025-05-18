@@ -1,4 +1,5 @@
 import { client } from "../../index.js";
+import { hideAddress } from "../../utils/hideAddress.js";
 
 export const ToggleMultisig = async (req, res) => {
   const address = req.headers["x-user-adress"];
@@ -12,7 +13,7 @@ export const ToggleMultisig = async (req, res) => {
   const settings = db.collection("settings");
 
   const admins = (await settings.findOne({ name: "admins" })).value;
-  const adminIndex = admins.findIndex((admin) => admin.address === address);
+  const adminIndex = admins.findIndex((admin) => hideAddress(admin.address) === hideAddress(address));
   if (adminIndex === -1) {
     res.status(403).send("Not an admin");
     return;
