@@ -20,6 +20,7 @@ export const BlockchainCheckRandom = async (req, res) => {
         prize: 1,
         players: 1,
         endedAt: 1,
+        winner: 1,
         winnerNumber: 1,
       },
     }
@@ -35,6 +36,7 @@ export const BlockchainCheckRandom = async (req, res) => {
     prize: game.prize,
     players: game.players,
     endedAt: game.endedAt,
+    wallet: game.winner,
     random: game.winnerNumber,
   });
 };
