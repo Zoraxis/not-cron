@@ -33,6 +33,7 @@ import { ToggleMultisig } from "./routes/utils/toggle_multisig.js";
 import { GetMultisig } from "./routes/utils/get_multisig.js";
 import { GetMultisigAddress } from "./routes/utils/get_multisig_address.js";
 import { fetch_games } from "./lib/fetch_games.js";
+import { GetAdmins } from "./routes/utils/get_admins.js";
 dotenv.config();
 
 const { MONGO_URI, TONCENTER_KEY } = process.env;
@@ -171,6 +172,7 @@ app.post("/api/utils/end", SimulateEnd);
 app.post("/api/utils/multisig", ToggleMultisig);
 app.get("/api/utils/multisig", GetMultisig);
 app.get("/api/utils/multisig/address", GetMultisigAddress);
+app.get("/api/utils/admins", GetAdmins);
 
 cron.schedule("*/2 * * * * *", fetch_games);
 cron.schedule(`*/10 * * * * *`, check_time);
