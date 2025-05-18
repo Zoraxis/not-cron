@@ -54,4 +54,9 @@ export const ToggleMultisig = async (req, res) => {
     { name: "multisig-state" },
     { $set: { operations: newOperaions } }
   );
+
+  res.send({
+    message: "Operation updated",
+    status: 200,
+  });
 };
