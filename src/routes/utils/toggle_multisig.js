@@ -13,7 +13,9 @@ export const ToggleMultisig = async (req, res) => {
   const settings = db.collection("settings");
 
   const admins = (await settings.findOne({ name: "admins" })).value;
-  const adminIndex = admins.findIndex((admin) => hideAddress(admin.address) === hideAddress(address));
+  const adminIndex = admins.findIndex(
+    (admin) => hideAddress(admin) === hideAddress(address)
+  );
   if (adminIndex === -1) {
     res.status(403).send("Not an admin");
     return;
@@ -31,8 +33,7 @@ export const ToggleMultisig = async (req, res) => {
     return;
   }
 
-  const adminValue =
-    adminIndex == 0 ? 1 : adminIndex == 1 ? 2 : adminIndex == 2 ? 4 : 8;
+  const adminValue = adminIndex + 1;
 
   multisigStateOperation[gameId - 1] =
     multisigStateOperation[gameId - 1] ^ (1 << (adminValue - 1));
