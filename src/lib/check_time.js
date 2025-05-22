@@ -1,4 +1,4 @@
-import { client } from "../index.js";
+import { client, stats } from "../index.js";
 import { log } from "../utils/log.js";
 import { end_all } from "./end_all.js";
 
@@ -8,6 +8,13 @@ export const check_time = async () => {
     await client.db("notto").command({ ping: 1 });
 
     const database = client.db("notto");
+    const statsDb = db.collection("stats");
+
+    const stat = await statsDb.findOne({ stat: 1 });
+    stats = {
+      totalAmount: stat?.prize ?? 0,
+      totalPlayers: stat?.players ?? 0,
+    };
     const collection = await database.collection("games").find({}).toArray();
 
     const date = Date.now();
