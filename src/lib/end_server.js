@@ -11,18 +11,20 @@ export const end_server = async (period) => {
 
   const { _id, ...gameData } = game;
 
-  await stats.updateOne(
-    { stat: 1 },
-    {
-      $inc: {
-        players: game?.players?.length ?? 0,
-        prize: (game?.prize ?? 0) * 0.9,
-      },
-    }
-  );
+  if (gameData?.players?.length >= 2) {
+    await stats.updateOne(
+      { stat: 1 },
+      {
+        $inc: {
+          players: game?.players?.length ?? 0,
+          prize: (game?.prize ?? 0) * 0.9,
+        },
+      }
+    );
 
-  stats.totalAmount += (game?.prize ?? 0) * 0.9;
-  stats.totalPlayers += game?.players?.length ?? 0;
+    stats.totalAmount += (game?.prize ?? 0) * 0.9;
+    stats.totalPlayers += game?.players?.length ?? 0;
+  }
 
   await games.updateOne(
     { gameId: parseInt(period) },
