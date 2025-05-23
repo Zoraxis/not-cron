@@ -19,9 +19,9 @@ export const getWinnerId = async (game) => {
   log(winnerAddress);
 
   await client.connect();
-  const db = client.db("notto");
 
-  const users = await db.collection("users");
+  const db = client.db("notto");
+  const users = db.collection("users");
 
   const winner = Address.parseFriendly(winnerAddress);
   const winnerUser = await users.findOne({
